@@ -133,6 +133,10 @@
 }
 
 .priceContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
   margin: var(--spacing-2) 0;
 }
 
@@ -140,6 +144,29 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+}
+
+.originalPrice {
+  font-size: var(--font-size-xl);
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-error);
+  text-decoration-thickness: 2px;
+}
+
+.salePrice {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-error);
+}
+
+.discountBadge {
+  background: var(--color-error);
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 }
 
 .addToCartBtn {
@@ -264,8 +291,12 @@
     min-height: 300px;
   }
   
-  .productPrice {
+  .productPrice, .salePrice {
     font-size: var(--font-size-2xl);
+  }
+  
+  .originalPrice {
+    font-size: var(--font-size-lg);
   }
   
   .addToCartBtn {
@@ -295,5 +326,13 @@
   .carouselBtn {
     font-size: 18px;
     padding: var(--spacing-1) var(--spacing-2);
+  }
+  
+  .priceContainer {
+    gap: var(--spacing-2);
+  }
+  
+  .discountBadge {
+    font-size: var(--font-size-xs);
   }
 }

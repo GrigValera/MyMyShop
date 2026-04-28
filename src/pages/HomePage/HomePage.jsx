@@ -71,7 +71,17 @@ export const HomePage = () => {
           {saleItems.map((product) => {
             const ratingValue = normalizeRating(product.rating);
             return (
-              <Link to={`/product/${product.id}`} key={`sale-${product.id}`} className={styles.productLink}>
+              <Link 
+                to={`/product/${product.id}`} 
+                state={{ 
+                  fromSale: true, 
+                  salePrice: product.salePrice, 
+                  originalPrice: product.originalPrice, 
+                  discountPercent: product.discountPercent 
+                }}
+                key={`sale-${product.id}`} 
+                className={styles.productLink}
+              >
                 <Card className={styles.productCard}>
                   <div className={styles.discountBadge}>-{product.discountPercent}%</div>
                   <div className={styles.productImage}>

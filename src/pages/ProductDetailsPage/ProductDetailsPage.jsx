@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetProductByIdQuery } from '../../features/products/api/productsApi';
@@ -86,9 +86,20 @@ const Reviews = ({ reviews }) => {
 export const ProductDetailsPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: product, isLoading, error } = useGetProductByIdQuery(id);
+
+  const saleInfo = location.state || {};
+  const hasDiscount = saleInfo.fromSale || false;
+  const discountPercent = saleInfo.discountPercent || 0;
+  const salePrice = saleInfo.salePrice || null;
+  const originalPriceFromState = saleInfo.originalPrice || null;
+
+  const displayPrice = hasDiscount && salePrice ? salePrice : product?.price;
+  const displayOriginalPrice = hasDiscount && originalPriceFromState ? originalPriceFromState : product?.price;
+  const showDiscount = hasDiscount && discountPercent > 0;
 
   const handleAddToCart = () => {
     if (product) {
@@ -99,10 +110,10 @@ export const ProductDetailsPage = () => {
           image: product.images?.[0] || product.thumbnail || '',
           category: product.category,
         },
-        price: product.price,
-        originalPrice: product.price,
-        hasDiscount: false,
-        discountPercent: 0,
+        price: displayPrice,
+        originalPrice: displayOriginalPrice,
+        hasDiscount: showDiscount,
+        discountPercent: discountPercent,
       }));
     }
   };
@@ -148,7 +159,15 @@ export const ProductDetailsPage = () => {
           </div>
           <p className={styles.productDescription}>{product.description}</p>
           <div className={styles.priceContainer}>
-            <span className={styles.productPrice}>${product.price}</span>
+            {showDiscount ? (
+              <>
+                <span className={styles.originalPrice}>${displayOriginalPrice}</span>
+                <span className={styles.salePrice}>${displayPrice}</span>
+                <span className={styles.discountBadge}>-{discountPercent}%</span>
+              </>
+            ) : (
+              <span className={styles.productPrice}>${displayPrice}</span>
+            )}
           </div>
           <Button 
             variant="primary" 
