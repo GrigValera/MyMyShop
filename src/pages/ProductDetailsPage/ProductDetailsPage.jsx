@@ -147,9 +147,6 @@ export const ProductDetailsPage = () => {
             <span className={styles.ratingValue}>({product.rating || 0})</span>
           </div>
           <p className={styles.productDescription}>{product.description}</p>
-          <div className={styles.translationNote}>
-            <small>{t('product.translationNote')}</small>
-          </div>
           <div className={styles.priceContainer}>
             <span className={styles.productPrice}>${product.price}</span>
           </div>
@@ -170,7 +167,7 @@ export const ProductDetailsPage = () => {
           <ul>
             <li><strong>Бренд:</strong> {product.brand || 'MyMy Shop'}</li>
             <li><strong>SKU:</strong> {product.sku || `SKU-${product.id}`}</li>
-            <li><strong>{t('product.inCart')}:</strong> {product.stock || 100} шт.</li>
+            <li><strong>В наличии:</strong> {product.stock || 100} шт.</li>
           </ul>
         </div>
         

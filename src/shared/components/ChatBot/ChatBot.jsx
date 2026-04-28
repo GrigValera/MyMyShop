@@ -6,17 +6,17 @@ export const ChatBot = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { type: 'bot', text: 'Hello! How can I help you today?' }
+    { type: 'bot', text: t('chatBot.greeting') }
   ]);
   const [input, setInput] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
 
   const botResponses = {
-    'order': 'You can check your order status in your profile.',
-    'delivery': 'Delivery usually takes 3-5 business days.',
-    'return': 'You can return items within 14 days of purchase.',
-    'payment': 'We accept credit cards, PayPal, and cash on delivery.',
-    'default': 'Thank you for your message! Our support team will contact you soon.'
+    'order': t('chatBot.responseOrder'),
+    'delivery': t('chatBot.responseDelivery'),
+    'return': t('chatBot.responseReturn'),
+    'payment': t('chatBot.responsePayment'),
+    'default': t('chatBot.responseDefault')
   };
 
   const handleSend = () => {
@@ -50,12 +50,12 @@ export const ChatBot = () => {
           <button className={styles.chatToggle} onClick={() => setIsOpen(true)}>
             💬
           </button>
-          {showTooltip && <span className={styles.tooltip}>Задать вопрос</span>}
+          {showTooltip && <span className={styles.tooltip}>{t('chatBot.tooltip')}</span>}
         </div>
       ) : (
         <div className={styles.chatWindow}>
           <div className={styles.chatHeader}>
-            <span>{t('contact.chatBot')}</span>
+            <span>{t('chatBot.title')}</span>
             <button onClick={() => setIsOpen(false)}>✕</button>
           </div>
           <div className={styles.chatMessages}>
@@ -71,9 +71,9 @@ export const ChatBot = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type your message..."
+              placeholder={t('chatBot.placeholder')}
             />
-            <button onClick={handleSend}>Send</button>
+            <button onClick={handleSend}>{t('chatBot.send')}</button>
           </div>
         </div>
       )}
