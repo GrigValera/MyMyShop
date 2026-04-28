@@ -11,9 +11,12 @@
   font-size: var(--font-size-base);
   color: var(--text-secondary);
   margin-bottom: var(--spacing-4);
-  padding: var(--spacing-1) var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
 }
 
 .backBtn:hover {
