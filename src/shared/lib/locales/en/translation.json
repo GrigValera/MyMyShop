@@ -48,8 +48,7 @@
     "rating": "Rating",
     "reviews": "Reviews",
     "specifications": "Specifications",
-    "noReviews": "No reviews yet",
-    "translationNote": "English only, translation in development"
+    "noReviews": "No reviews yet"
   },
   "filter": {
     "search": "Search",
@@ -79,7 +78,7 @@
     "follow": "Follow Us",
     "phone": "Phone",
     "rights": "All rights reserved",
-    "tagline": "Premium quality products"
+    "tagline": "Comfort to life"
   },
   "common": {
     "loading": "Loading...",
@@ -123,18 +122,33 @@
     "additionalText": "Free delivery on orders over $50. Order tracking is available in your personal account."
   },
   "contact": {
-    "title": "Contact Us",
-    "sendMessage": "Send Message",
-    "name": "Name",
-    "email": "Email",
-    "message": "Message",
-    "send": "Send",
-    "success": "Message sent!",
-    "contactInfo": "Contact Information",
-    "workHours": "Working Hours",
-    "chatBot": "Chat Bot"
-  },
+  "title": "Contact Us",
+  "sendMessage": "Send Message",
+  "name": "Name",
+  "email": "Email",
+  "message": "Message",
+  "send": "Send",
+  "success": "Message sent!",
+  "contactInfo": "Contact Information",
+  "workHours": "Working Hours",
+  "chatBot": "Chat Bot",
+  "monFri": "Mon-Fri: 9:00 - 18:00",
+  "sat": "Sat: 10:00 - 16:00",
+  "sun": "Sun: Closed"
+},
   "button": {
     "back": "Back"
-  }
+  },
+  "chatBot": {
+  "title": "Chat Bot",
+  "tooltip": "Ask a question",
+  "greeting": "Hello! How can I help you today?",
+  "placeholder": "Type your message...",
+  "send": "Send",
+  "responseOrder": "You can check your order status in your profile.",
+  "responseDelivery": "Delivery usually takes 3-5 business days.",
+  "responseReturn": "You can return items within 14 days of purchase.",
+  "responsePayment": "We accept credit cards, PayPal, and cash on delivery.",
+  "responseDefault": "Thank you for your message! Our support team will contact you soon."
+}
 }
