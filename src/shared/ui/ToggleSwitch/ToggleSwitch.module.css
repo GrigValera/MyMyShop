@@ -1,0 +1,61 @@
+.switch {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 32px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 32px;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.3px;
+  z-index: 2;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1;
+}
+
+.label.active {
+  color: white;
+}
+
+.knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 38px;
+  height: 28px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-bounce);
+}
+
+.input:checked + .slider .knob {
+  transform: translateX(38px);
+}

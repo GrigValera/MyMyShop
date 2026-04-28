@@ -1,0 +1,364 @@
+.contactPage {
+  max-width: 1200px;
+  width: calc(100% - 48px);
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.contactPage h1 {
+  margin-bottom: var(--spacing-6);
+  text-align: center;
+}
+
+.contactContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-8);
+}
+
+/* Form Section */
+.formSection {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  border: 1px solid var(--border-light);
+}
+
+.formSection h2 {
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-xl);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.formSection input,
+.textareaWrapper textarea,
+.chatInput input {
+  transition: none;
+}
+
+body.light .formSection input,
+body.light .textareaWrapper textarea,
+body.light .chatInput input {
+  transition: none;
+}
+
+.textareaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.textareaWrapper label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.textareaWrapper textarea {
+  padding: var(--spacing-3);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  resize: vertical;
+  min-height: 120px;
+  width: 100%;
+}
+
+/* Явные границы для textarea в светлой теме */
+body.light .textareaWrapper textarea {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.textareaWrapper textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.success {
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-2);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+/* Info Section */
+.infoSection {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  border: 1px solid var(--border-light);
+}
+
+.infoSection h2 {
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-xl);
+}
+
+.infoSection ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: var(--spacing-6);
+}
+
+.infoSection li {
+  padding: var(--spacing-2) 0;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.workHours {
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--border-light);
+}
+
+.workHours h3 {
+  margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-lg);
+}
+
+.workHours p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-1);
+}
+
+/* Chat Bot */
+.chatBot {
+  position: fixed;
+  bottom: var(--spacing-4);
+  right: var(--spacing-4);
+  z-index: 1000;
+}
+
+.chatToggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-base);
+}
+
+.chatToggle:hover {
+  transform: scale(1.05);
+}
+
+.chatWindow {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 350px;
+  height: 500px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-primary);
+  color: white;
+  font-weight: var(--font-weight-semibold);
+}
+
+.chatHeader button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: var(--spacing-3);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.message {
+  max-width: 80%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.message.user {
+  align-self: flex-end;
+  background: var(--color-primary);
+  color: white;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.chatInput {
+  display: flex;
+  padding: var(--spacing-2);
+  border-top: 1px solid var(--border-light);
+  gap: var(--spacing-2);
+}
+
+.chatInput input {
+  flex: 1;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Явные границы для чат-инпута в светлой теме */
+body.light .chatInput input {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.chatInput input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.chatInput button {
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+/* ============================================
+   ЯВНЫЕ ГРАНИЦЫ ДЛЯ ИНПУТОВ В СВЕТЛОЙ ТЕМЕ
+   ============================================ */
+body.light .formSection input,
+body.light .textareaWrapper textarea,
+body.light .chatInput input {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+body.light .formSection input:focus,
+body.light .textareaWrapper textarea:focus,
+body.light .chatInput input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* Для инпутов из UI библиотеки (Input компонент) */
+body.light .formSection input {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+}
+
+body.light .formSection input:focus {
+  border-color: var(--color-primary) !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1240px) {
+  .contactPage {
+    padding: var(--spacing-4) var(--spacing-6);
+  }
+}
+
+@media (max-width: 1024px) {
+  .contactContent {
+    gap: var(--spacing-6);
+  }
+  
+  .formSection,
+  .infoSection {
+    padding: var(--spacing-5);
+  }
+}
+
+@media (max-width: 900px) {
+  .contactContent {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-5);
+  }
+  
+  .chatWindow {
+    width: 320px;
+    height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contactPage {
+    padding: var(--spacing-3);
+    width: calc(100% - 32px);
+  }
+  
+  .formSection,
+  .infoSection {
+    padding: var(--spacing-4);
+  }
+  
+  .chatToggle {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+  
+  .chatWindow {
+    width: 300px;
+    height: 400px;
+    bottom: 70px;
+  }
+  
+  .message {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .contactPage {
+    padding: var(--spacing-2);
+    width: calc(100% - 24px);
+  }
+  
+  .contactPage h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .formSection h2,
+  .infoSection h2 {
+    font-size: var(--font-size-lg);
+  }
+  
+  .chatWindow {
+    width: 280px;
+    height: 380px;
+    right: -10px;
+  }
+}

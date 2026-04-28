@@ -1,0 +1,56 @@
+.aboutPage {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.aboutPage h1 {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+  font-size: var(--font-size-3xl);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.content section {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  border: 1px solid var(--border-light);
+}
+
+.content section h2 {
+  margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+}
+
+.content section p {
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.content section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.content section li {
+  padding: var(--spacing-2) 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+@media (max-width: 768px) {
+  .aboutPage {
+    padding: var(--spacing-3);
+  }
+  
+  .content section {
+    padding: var(--spacing-4);
+  }
+}

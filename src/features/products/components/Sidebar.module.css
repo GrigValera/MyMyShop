@@ -1,0 +1,106 @@
+.sidebar {
+  position: sticky;
+  top: 92px;
+  height: fit-content;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  border: 1px solid var(--border-light);
+}
+
+.section {
+  margin-bottom: var(--spacing-6);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-3);
+  color: var(--text-primary);
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  /* Убираем transition: all - оставляем только для box-shadow */
+  transition: box-shadow var(--transition-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.categoryBtn {
+  text-align: left;
+  padding: var(--spacing-2) var(--spacing-3);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  /* Убираем transition: all - оставляем только для transform */
+  transition: transform var(--transition-fast);
+}
+
+.categoryBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  transform: translateX(4px);
+}
+
+.categoryBtn.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.sortOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.sortLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.sortLabel:hover {
+  color: var(--color-primary);
+}
+
+.sortLabel input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+    margin-bottom: var(--spacing-5);
+  }
+}

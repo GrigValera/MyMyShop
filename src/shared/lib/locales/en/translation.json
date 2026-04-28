@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "home": "Today's Deals",
+    "products": "All Products",
+    "cart": "Cart",
+    "login": "Login",
+    "logout": "Logout",
+    "about": "About Us",
+    "delivery": "Delivery",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Welcome to MyMy Shop!",
+    "subtitle": "Premium products at best prices",
+    "heroTitle": "Limited Time Offer",
+    "heroSubtitle": "Up to 50% off on selected items. Offer valid only until the end of the day!",
+    "saleTitle": "Deal of the Day",
+    "cta": "Start Shopping"
+  },
+  "products": {
+    "title": "Products",
+    "empty": "No products found",
+    "filtered": "products found",
+    "loading": "Loading products...",
+    "shown": "shown of",
+    "endMessage": "You've seen all products!"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty, time to fix that!",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "orderSummary": "Order Summary",
+    "deliveryMethod": "Delivery Method",
+    "deliveryPrice": "Delivery Price"
+  },
+  "product": {
+    "addToCart": "Add to Cart",
+    "inCart": "In Cart",
+    "price": "Price",
+    "category": "Category",
+    "description": "Description",
+    "rating": "Rating",
+    "reviews": "Reviews",
+    "specifications": "Specifications",
+    "noReviews": "No reviews yet",
+    "translationNote": "English only, translation in development"
+  },
+  "filter": {
+    "search": "Search",
+    "searchPlaceholder": "Search products...",
+    "category": "Category",
+    "all": "All",
+    "sort": "Sort by",
+    "default": "Default",
+    "asc": "Price: Low to High",
+    "desc": "Price: High to Low",
+    "filters": "Filters",
+    "resetAll": "Reset all",
+    "apply": "Apply"
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign In",
+    "error": "Invalid email or password",
+    "demoUser": "Demo User: user@example.com / user123",
+    "demoAdmin": "Demo Admin: admin@example.com / admin123"
+  },
+  "footer": {
+    "links": "Links",
+    "contact": "Contact",
+    "follow": "Follow Us",
+    "phone": "Phone",
+    "rights": "All rights reserved",
+    "tagline": "Premium quality products"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue Shopping"
+  },
+  "about": {
+    "title": "About Us",
+    "whoWeAre": "Who We Are",
+    "whoWeAreText": "MyMy Shop is a modern platform for purchasing quality products. We have been operating since 2024 and have already won the trust of thousands of customers.",
+    "mission": "Our Mission",
+    "missionText": "To provide our customers with the best shopping experience by offering only quality products at affordable prices.",
+    "values": "Our Values",
+    "value1": "Quality First",
+    "value2": "Customer Focus",
+    "value3": "Innovation and Growth"
+  },
+  "delivery": {
+    "title": "Delivery",
+    "howItWorks": "How Delivery Works",
+    "step1Title": "Place Order",
+    "step1Desc": "Select products and place your order in the cart",
+    "step2Title": "Confirmation",
+    "step2Desc": "We will contact you to confirm your order",
+    "step3Title": "Shipping",
+    "step3Desc": "Order is packed and shipped within 24 hours",
+    "step4Title": "Delivery",
+    "step4Desc": "Receive your order in a way convenient for you",
+    "options": "Delivery Options",
+    "optionCourier": "Courier",
+    "optionPost": "Postal Service",
+    "optionPickup": "Pickup",
+    "timeCourier": "1-2 days",
+    "timePost": "3-7 days",
+    "timePickup": "Today",
+    "free": "Free",
+    "additionalInfo": "Additional Information",
+    "additionalText": "Free delivery on orders over $50. Order tracking is available in your personal account."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "sendMessage": "Send Message",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "success": "Message sent!",
+    "contactInfo": "Contact Information",
+    "workHours": "Working Hours",
+    "chatBot": "Chat Bot"
+  },
+  "button": {
+    "back": "Back"
+  }
+}

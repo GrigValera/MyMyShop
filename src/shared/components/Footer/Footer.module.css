@@ -1,0 +1,153 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+}
+
+.footerBar {
+  padding: var(--spacing-2) 0;
+}
+
+.barContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.expandBtn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+  padding: 0;
+}
+
+.expandBtn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.footerExpandable {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+}
+
+.footerExpandable.expanded {
+  max-height: 300px;
+  transition: max-height 0.3s ease-in;
+}
+
+.footerContent {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-6);
+  padding: var(--spacing-4) 0;
+}
+
+.footerSection h4 {
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+}
+
+.footerSection ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footerSection li {
+  margin-bottom: var(--spacing-1);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.footerSection a {
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+  font-size: var(--font-size-xs);
+}
+
+.footerSection a:hover {
+  color: var(--color-primary);
+}
+
+.socialLinks {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+/* Повышаем специфичность селектора для socialLink */
+.footer .socialLinks .socialLink {
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Повышаем специфичность для hover */
+.footer .socialLinks .socialLink:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Отступ для контента */
+body {
+  padding-bottom: 48px;
+}
+
+@media (max-width: 768px) {
+  .footerContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+  
+  .footerExpandable.expanded {
+    max-height: 400px;
+  }
+  
+  body {
+    padding-bottom: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footerContent {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--spacing-3);
+  }
+  
+  .socialLinks {
+    justify-content: center;
+  }
+  
+  .footerExpandable.expanded {
+    max-height: 500px;
+  }
+}

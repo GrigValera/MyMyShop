@@ -1,0 +1,40 @@
+.loginCard {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--spacing-8);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: var(--spacing-2);
+}
+
+.demoInfo {
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--border-light);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.demoInfo p {
+  margin-bottom: var(--spacing-1);
+}

@@ -1,0 +1,219 @@
+.deliveryPage {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.deliveryPage h1 {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+  font-size: var(--font-size-3xl);
+}
+
+/* Steps Section */
+.steps {
+  margin-bottom: var(--spacing-10);
+}
+
+.steps h2 {
+  text-align: center;
+  margin-bottom: var(--spacing-6);
+  font-size: var(--font-size-2xl);
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-4);
+}
+
+.stepCard {
+  text-align: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  border: 1px solid var(--border-light);
+  transition: transform var(--transition-base);
+}
+
+.stepCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.stepNumber {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--spacing-3);
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.stepCard h3 {
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-lg);
+}
+
+.stepCard p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+/* Options Section */
+.options {
+  margin-bottom: var(--spacing-10);
+}
+
+.options h2 {
+  text-align: center;
+  margin-bottom: var(--spacing-6);
+  font-size: var(--font-size-2xl);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+.optionCard {
+  text-align: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  border: 1px solid var(--border-light);
+  transition: transform var(--transition-base);
+}
+
+.optionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.optionCard h3 {
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-lg);
+}
+
+.optionPrice {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.optionTime {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Info Section */
+.info {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  text-align: center;
+}
+
+.info h2 {
+  margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-xl);
+}
+
+.info p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .stepsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+  
+  .optionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .deliveryPage {
+    padding: var(--spacing-3);
+  }
+  
+  .deliveryPage h1 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-6);
+  }
+  
+  .steps h2,
+  .options h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stepCard,
+  .optionCard {
+    padding: var(--spacing-4);
+  }
+  
+  .stepNumber {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+  }
+  
+  .optionPrice {
+    font-size: var(--font-size-xl);
+  }
+  
+  .info {
+    padding: var(--spacing-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .stepCard h3,
+  .optionCard h3 {
+    font-size: var(--font-size-base);
+  }
+  
+  .stepCard p,
+  .optionTime {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 1240px) {
+  .deliveryPage {
+    padding: var(--spacing-4) var(--spacing-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .deliveryPage {
+    padding: var(--spacing-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .deliveryPage {
+    padding: var(--spacing-2);
+  }
+}
