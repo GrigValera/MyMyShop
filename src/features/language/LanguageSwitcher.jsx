@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { ToggleSwitch } from '../../shared/ui/ToggleSwitch/ToggleSwitch';
+import { ToggleSwitch } from '../../shared/ui';
 
-export const LanguageSwitcher = () => {
+const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
 
@@ -20,3 +20,4 @@ export const LanguageSwitcher = () => {
     />
   );
 };
+export default LanguageSwitcher;

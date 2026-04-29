@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetProductByIdQuery } from '../../features/products/api/productsApi';
-import { Button } from '../../shared/ui';
+import { Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import styles from './ProductDetailsPage.module.css';
 
@@ -83,7 +83,7 @@ const Reviews = ({ reviews }) => {
   );
 };
 
-export const ProductDetailsPage = () => {
+const ProductDetailsPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
@@ -119,12 +119,7 @@ export const ProductDetailsPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-        <p>{t('common.loading')}</p>
-      </div>
-    );
+    return <Loader fullPage />;
   }
 
   if (error || !product) {
@@ -195,3 +190,5 @@ export const ProductDetailsPage = () => {
     </div>
   );
 };
+
+export default ProductDetailsPage;

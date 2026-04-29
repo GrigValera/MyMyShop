@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery } from '../api/productsApi';
 import styles from './Sidebar.module.css';
 
-export const Sidebar = ({ selectedCategory, onCategoryChange, sortBy, onSortChange, searchQuery, onSearchChange }) => {
+const Sidebar = ({ selectedCategory, onCategoryChange, sortBy, onSortChange, searchQuery, onSearchChange }) => {
   const { t } = useTranslation();
   const { data: categories = [] } = useGetCategoriesQuery();
 
@@ -66,3 +66,5 @@ export const Sidebar = ({ selectedCategory, onCategoryChange, sortBy, onSortChan
     </aside>
   );
 };
+
+export default Sidebar;

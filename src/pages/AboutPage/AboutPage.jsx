@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './AboutPage.module.css';
 
-export const AboutPage = () => {
+const AboutPage = () => {
   const { t } = useTranslation();
 
   return (
@@ -29,3 +29,5 @@ export const AboutPage = () => {
     </div>
   );
 };
+
+export default AboutPage;

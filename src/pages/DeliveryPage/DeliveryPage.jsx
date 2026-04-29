@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './DeliveryPage.module.css';
 
-export const DeliveryPage = () => {
+const DeliveryPage = () => {
   const { t } = useTranslation();
 
   const deliverySteps = [
@@ -54,3 +54,5 @@ export const DeliveryPage = () => {
     </div>
   );
 };
+
+export default DeliveryPage;

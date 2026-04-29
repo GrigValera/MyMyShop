@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../store/themeSlice';
-import { ToggleSwitch } from '../../../shared/ui/ToggleSwitch/ToggleSwitch';
+import { ToggleSwitch } from '../../../shared/ui';
 
-export const ThemeToggle = () => {
+const ThemeToggle = () => {
   const dispatch = useDispatch();
   const { mode } = useSelector((state) => state.theme);
 
@@ -15,3 +15,5 @@ export const ThemeToggle = () => {
     />
   );
 };
+
+export default ThemeToggle;

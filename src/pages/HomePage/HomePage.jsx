@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { fetchSaleItems } from '../../features/sale/saleSlice';
-import { Card, Button } from '../../shared/ui';
+import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import styles from './HomePage.module.css';
 
@@ -13,7 +13,7 @@ const normalizeRating = (rating) => {
   return 0;
 };
 
-export const HomePage = () => {
+const HomePage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { items: saleItems, loading, error } = useSelector((state) => state.sale);
@@ -42,12 +42,7 @@ export const HomePage = () => {
   };
 
   if (loading && saleItems.length === 0) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-        <p>{t('common.loading')}</p>
-      </div>
-    );
+    return <Loader fullPage />;
   }
 
   if (error) {
@@ -124,3 +119,5 @@ export const HomePage = () => {
     </div>
   );
 };
+
+export default HomePage;

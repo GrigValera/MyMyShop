@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-export const SortSelect = ({ sortBy, onSortChange }) => {
+const SortSelect = ({ sortBy, onSortChange }) => {
   const { t } = useTranslation();
 
   return (
@@ -26,3 +26,5 @@ export const SortSelect = ({ sortBy, onSortChange }) => {
     </div>
   );
 };
+
+export default SortSelect;

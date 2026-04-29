@@ -4,7 +4,7 @@ import { Button, Card } from '../../shared/ui';
 import { removeFromCart, updateQuantity, clearCart } from '../../features/cart/store/cartSlice';
 import styles from './CartPage.module.css';
 
-export const CartPage = () => {
+const CartPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
@@ -110,3 +110,5 @@ export const CartPage = () => {
     </div>
   );
 };
+
+export default CartPage;

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Button, Input } from "../../shared/ui";
-import styles from "./ContactPage.module.css";
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Input } from '../../shared/ui';
+import styles from './ContactPage.module.css';
 
-export const ContactPage = () => {
+const ContactPage = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
@@ -82,3 +82,5 @@ export const ContactPage = () => {
     </div>
   );
 };
+
+export default ContactPage;

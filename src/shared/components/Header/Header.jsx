@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../features/auth/store/authSlice';
-import { ThemeToggle } from '../../../features/theme/components/ThemeToggle';
-import { LanguageSwitcher } from '../../../features/language/LanguageSwitcher';
+import ThemeToggle from '../../../features/theme/components/ThemeToggle';
+import LanguageSwitcher from '../../../features/language/LanguageSwitcher';
 import { Button } from '../../ui';
 import styles from './Header.module.css';
 
-export const Header = () => {
+const Header = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -129,3 +129,5 @@ export const Header = () => {
     </header>
   );
 };
+
+export default Header;

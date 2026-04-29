@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ChatBot.module.css';
 
-export const ChatBot = () => {
+const ChatBot = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -80,3 +80,5 @@ export const ChatBot = () => {
     </div>
   );
 };
+
+export default ChatBot;

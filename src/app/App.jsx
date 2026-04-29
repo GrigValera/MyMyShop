@@ -1,17 +1,20 @@
-import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { MainLayout } from "../shared/layouts/MainLayout/MainLayout";
-import { HomePage } from "../pages/HomePage/HomePage";
-import { ProductsPage } from "../pages/ProductsPage/ProductsPage";
-import { CartPage } from "../pages/CartPage/CartPage";
-import { LoginPage } from "../pages/LoginPage/LoginPage";
-import { ProtectedRoute } from "../shared/components/ProtectedRoute";
-import { restoreAuth } from "../features/auth/store/authSlice";
-import { AboutPage } from "../pages/AboutPage/AboutPage";
-import { DeliveryPage } from "../pages/DeliveryPage/DeliveryPage";
-import { ContactPage } from "../pages/ContactPage/ContactPage";
-import { ProductDetailsPage } from "../pages/ProductDetailsPage/ProductDetailsPage";
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import MainLayout from '../shared/layouts/MainLayout/MainLayout';
+import HomePage from '../pages/HomePage/HomePage';
+import LoginPage from '../pages/LoginPage/LoginPage';
+import ProtectedRoute from '../shared/components/ProtectedRoute';
+import { restoreAuth } from '../features/auth/store/authSlice';
+import { Loader } from '../shared/ui';
+
+// Lazy loaded pages
+const ProductsPage = lazy(() => import('../pages/ProductsPage/ProductsPage'));
+const ProductDetailsPage = lazy(() => import('../pages/ProductDetailsPage/ProductDetailsPage'));
+const CartPage = lazy(() => import('../pages/CartPage/CartPage'));
+const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'));
+const DeliveryPage = lazy(() => import('../pages/DeliveryPage/DeliveryPage'));
+const ContactPage = lazy(() => import('../pages/ContactPage/ContactPage'));
 
 function App() {
   const dispatch = useDispatch();
@@ -25,52 +28,64 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="products" element={<ProductsPage />} />
-        <Route path="product/:id" element={<ProductDetailsPage />} />
-        <Route path="about" element={<AboutPage />} />
-        <Route path="delivery" element={<DeliveryPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="cart" element={<CartPage />} />
-        <Route
-          path="admin"
+        <Route 
+          path="products" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <ProductsPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="product/:id" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <ProductDetailsPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="cart" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <CartPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="about" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <AboutPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="delivery" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <DeliveryPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="contact" 
+          element={
+            <Suspense fallback={<Loader fullPage />}>
+              <ContactPage />
+            </Suspense>
+          } 
+        />
+        <Route 
+          path="admin" 
           element={
             <ProtectedRoute requiredRole="admin">
               <div>
-                <span style={{ display: "flex", alignItems: "center", gap: "10px", margin: '20px' }}>
-                  <img
-                    src="/icons/filled/ad.svg"
-                    alt="Admin"
-                    width="54"
-                    height="54"
-                    style={{
-                      color: "red",
-                      backgroundColor: "#f6e826",
-                      borderRadius: "50%",
-                      padding: "4px",
-                    }}
-                  />
-                  Здесь будет реализована Админ-панель
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: "10px", margin: "20px" }}>
-                  <img
-                    src="/icons/filled/blender.svg"
-                    alt="Admin"
-                    width="54"
-                    height="54"
-                    style={{
-                      color: "red",
-                      backgroundColor: "#f9ec39",
-                      borderRadius: "50%",
-                      padding: "4px",
-                    }}
-                  />
-                  Временно кофе-брейк...
-                </span>
-                <h3>Admin Panel</h3>
+                <h1>Admin Panel</h1>
                 <p>Only for administrators</p>
               </div>
             </ProtectedRoute>
-          }
+          } 
         />
       </Route>
     </Routes>

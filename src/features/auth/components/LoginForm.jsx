@@ -6,7 +6,7 @@ import { Button, Input, Card } from '../../../shared/ui';
 import { login } from '../store/authSlice';
 import styles from './LoginForm.module.css';
 
-export const LoginForm = () => {
+const LoginForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,3 +60,5 @@ export const LoginForm = () => {
     </Card>
   );
 };
+
+export default LoginForm;
