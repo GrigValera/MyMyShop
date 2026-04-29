@@ -16,7 +16,6 @@
   margin: 0 auto;
   padding: 0 var(--spacing-5);
   gap: var(--spacing-4);
-  flex-wrap: wrap;
 }
 
 /* Logo */
@@ -52,7 +51,6 @@
   display: flex;
   align-items: center;
   gap: clamp(12px, 2vw, 32px);
-  flex-wrap: wrap;
   flex: 1;
   justify-content: center;
 }
@@ -164,7 +162,7 @@
   display: inline;
 }
 
-/* Menu button - hidden by default */
+/* Menu button */
 .menuBtn {
   display: none;
   flex-direction: column;
@@ -180,6 +178,7 @@
   z-index: 200;
   border-radius: var(--radius-md);
   flex-shrink: 0;
+  margin-right: 0;
 }
 
 .menuBtn:hover {
@@ -260,33 +259,32 @@
    RESPONSIVE BREAKPOINTS
    ============================================ */
 
-/* До 1200px */
-@media (max-width: 1200px) {
+/* До 1100px */
+@media (max-width: 1100px) {
   .headerContainer {
     padding: 0 var(--spacing-4);
+    gap: var(--spacing-3);
   }
   
   .desktopNav {
-    gap: clamp(8px, 1.5vw, 24px);
-  }
-}
-
-/* До 1000px */
-@media (max-width: 1000px) {
-  .navLink {
-    font-size: 13px;
+    gap: clamp(8px, 1.5vw, 20px);
   }
   
   .togglesGroup {
-    padding: var(--spacing-1);
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2);
   }
   
-  .cartLink {
-    padding: var(--spacing-1) var(--spacing-2);
+  .divider {
+    height: 20px;
+  }
+  
+  .actions {
+    gap: var(--spacing-2);
   }
 }
 
-/* До 900px - переносим навигацию на новую строку */
+/* До 900px - перенос навигации */
 @media (max-width: 900px) {
   .headerContainer {
     flex-wrap: wrap;
@@ -299,7 +297,11 @@
   
   .desktopNav {
     order: 3;
-    width: 100%;
+    width: calc(100% + var(--spacing-8));
+    margin-left: calc(-1 * var(--spacing-4));
+    margin-right: calc(-1 * var(--spacing-4));
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
     justify-content: center;
     gap: clamp(16px, 3vw, 32px);
     margin-top: var(--spacing-2);
@@ -307,13 +309,23 @@
     border-top: 1px solid var(--border-light);
   }
   
+  .navLink {
+    font-size: 14px;
+  }
+  
   .actions {
     gap: var(--spacing-3);
   }
 }
 
-/* До 768px - переходим на бургер-меню */
+/* До 768px - бургер-меню */
 @media (max-width: 768px) {
+  .headerContainer {
+    flex-wrap: nowrap;
+    padding: 0 var(--spacing-4);
+    min-height: 64px;
+  }
+  
   .desktopNav {
     display: none;
   }
@@ -334,21 +346,15 @@
     display: flex;
   }
   
-  .headerContainer {
-    flex-wrap: nowrap;
-    padding: 0 var(--spacing-4);
-    min-height: 64px;
-  }
-  
   .logo {
     font-size: 20px;
   }
 }
 
-/* Small mobile */
+/* Small mobile - фикс обрезания кнопки */
 @media (max-width: 576px) {
   .headerContainer {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-4);
   }
   
   .logo {
@@ -372,8 +378,10 @@
   }
   
   .menuBtn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    margin-right: 0;
   }
   
   .menuBtn span {
@@ -381,33 +389,47 @@
   }
   
   .menuBtn.active span:nth-child(1) {
-    transform: rotate(45deg) translate(4px, 4px);
+    transform: rotate(45deg) translate(5px, 5px);
   }
   
   .menuBtn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(4px, -4px);
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+  
+  .desktopNav {
+    width: calc(100% + var(--spacing-8));
+    margin-left: calc(-1 * var(--spacing-4));
+    margin-right: calc(-1 * var(--spacing-4));
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
   }
 }
 
-/* Extra small mobile */
+/* Extra small mobile - дополнительный фикс для очень маленьких экранов */
 @media (max-width: 480px) {
+  .headerContainer {
+    padding: 0 var(--spacing-3);
+  }
+  
   .cartText {
-    display: none;
+    font-size: var(--font-size-xs);
   }
   
   .cartLink {
-    width: 36px;
-    height: 36px;
-    justify-content: center;
-    padding: 0;
+    padding: var(--spacing-1) var(--spacing-2);
   }
   
-  .cartLink::before {
-    content: '🛒';
-    font-size: 16px;
+  .menuBtn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
   }
   
   .logo {
     font-size: 16px;
+  }
+  
+  .actions {
+    gap: var(--spacing-2);
   }
 }

@@ -395,6 +395,9 @@ select {
   }
 }
 
+/* ============================================
+   DARK THEME - PRODUCT IMAGE BACKGROUND
+   ============================================ */
 body.dark [class*="productImage"] {
   background: #1a1a2e;
 }

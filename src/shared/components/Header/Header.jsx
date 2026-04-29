@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,17 @@ export const Header = () => {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMenuOpen]);
+
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
@@ -25,14 +36,14 @@ export const Header = () => {
   };
 
   const navLinks = [
-  { path: '/', label: t('nav.home') },
-  { path: '/products', label: t('nav.products') },
-  { path: '/cart', label: t('nav.cart') },
-  { path: '/about', label: t('nav.about') },
-  { path: '/delivery', label: t('nav.delivery') },
-  { path: '/contact', label: t('nav.contact') },
-  ...(isAuthenticated && role === 'admin' ? [{ path: '/admin', label: 'Admin Panel' }] : []),
-];
+    { path: '/', label: t('nav.home') },
+    { path: '/products', label: t('nav.products') },
+    { path: '/cart', label: t('nav.cart') },
+    { path: '/about', label: t('nav.about') },
+    { path: '/delivery', label: t('nav.delivery') },
+    { path: '/contact', label: t('nav.contact') },
+    ...(isAuthenticated && role === 'admin' ? [{ path: '/admin', label: 'Admin Panel' }] : []),
+  ];
 
   return (
     <header className={styles.header}>
