@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../features/auth/store/authSlice";
 import ThemeToggle from "../../../features/theme/components/ThemeToggle";
 import LanguageSwitcher from "../../../features/language/LanguageSwitcher";
-import { Button } from "../../ui";
+import ProfileDrawer from "../ProfileDrawer/ProfileDrawer";
+import CartDrawer from "../CartDrawer/CartDrawer";
+import { UserIcon } from '../../../shared/icons/UserIcon';
+import { CartIcon } from '../../../shared/icons/CartIcon';
 import styles from "./Header.module.css";
 
 const Header = () => {
@@ -15,6 +18,8 @@ const Header = () => {
   const { isAuthenticated, role } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -33,16 +38,15 @@ const Header = () => {
     dispatch(logout());
     navigate("/");
     setIsMenuOpen(false);
+    setIsProfileDrawerOpen(false);
   };
 
   const navLinks = [
     { path: "/", label: t("nav.home") },
     { path: "/products", label: t("nav.products") },
-    { path: "/cart", label: t("nav.cart") },
     { path: "/about", label: t("nav.about") },
     { path: "/delivery", label: t("nav.delivery") },
     { path: "/contact", label: t("nav.contact") },
-    ...(isAuthenticated ? [{ path: "/profile", label: t("nav.profile") }] : []),
     ...(isAuthenticated && role === "admin"
       ? [{ path: "/admin", label: "Admin Panel" }]
       : []),
@@ -71,33 +75,33 @@ const Header = () => {
             <LanguageSwitcher />
           </div>
 
-          <div className={styles.authGroup}>
-            {isAuthenticated ? (
-              <>
-                <span className={styles.userBadge}>
-                  {role === "admin" ? "Admin" : "User"}
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  {t("nav.logout")}
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => navigate("/login")}
-              >
-                {t("nav.login")}
-              </Button>
-            )}
-          </div>
+          {/* Профиль - открывает дровер */}
+          {isAuthenticated ? (
+            <button
+              className={styles.iconBtn}
+              onClick={() => setIsProfileDrawerOpen(true)}
+              aria-label="Profile"
+            >
+              <UserIcon className={styles.icon} />
+            </button>
+          ) : (
+            <button
+              className={styles.loginBtn}
+              onClick={() => navigate("/login")}
+            >
+              {t("nav.login")}
+            </button>
+          )}
 
-          <Link to="/cart" className={styles.cartLink}>
-            <span className={styles.cartText}>Cart</span>
-            {cartCount > 0 && (
-              <span className={styles.cartBadge}>{cartCount}</span>
-            )}
-          </Link>
+          {/* Корзина - открывает дровер */}
+          <button
+            className={styles.iconBtn}
+            onClick={() => setIsCartDrawerOpen(true)}
+            aria-label="Cart"
+          >
+            <CartIcon className={styles.icon} />
+            {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
+          </button>
 
           <button
             className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
@@ -123,6 +127,28 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
+          {isAuthenticated && (
+            <Link
+              to="/profile"
+              className={styles.mobileNavLink}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t("nav.profile")}
+            </Link>
+          )}
+          <button
+            onClick={() => {
+              if (isAuthenticated) {
+                handleLogout();
+              } else {
+                navigate("/login");
+              }
+              setIsMenuOpen(false);
+            }}
+            className={styles.mobileLogoutBtn}
+          >
+            {isAuthenticated ? t("nav.logout") : t("nav.login")}
+          </button>
         </nav>
         <div className={styles.mobileToggles}>
           <div className={styles.mobileToggleItem}>
@@ -135,6 +161,15 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <ProfileDrawer
+        isOpen={isProfileDrawerOpen}
+        onClose={() => setIsProfileDrawerOpen(false)}
+      />
+      <CartDrawer
+        isOpen={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+      />
     </header>
   );
 };

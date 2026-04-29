@@ -1,6 +1,6 @@
 {
   "nav": {
-    "home": "Today's Deals",
+    "home": "SALE",
     "products": "All Products",
     "cart": "Cart",
     "login": "Login",
@@ -38,7 +38,8 @@
     "free": "Free",
     "orderSummary": "Order Summary",
     "deliveryMethod": "Delivery Method",
-    "deliveryPrice": "Delivery Price"
+    "deliveryPrice": "Delivery Price",
+    "viewCart": "View Cart"
   },
   "product": {
     "addToCart": "Add to Cart",
@@ -153,10 +154,12 @@
   "responseDefault": "Thank you for your message! Our support team will contact you soon."
 },
 "profile": {
-  "title": "Profile",
-  "personalInfo": "Personal Information",
+  "drawerTitle": "Profile",
+  "myProfile": "My Profile",
+  "myOrders": "My Orders",
   "orderHistory": "Order History",
   "noOrders": "You have no orders yet",
+  "personalInfo": "Personal Information",
   "role": "Role",
   "memberSince": "Member since",
   "edit": "Edit",
