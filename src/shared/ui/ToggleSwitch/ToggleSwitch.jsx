@@ -1,6 +1,6 @@
 import styles from './ToggleSwitch.module.css';
 
-export const ToggleSwitch = ({ checked, onChange, labelLeft, labelRight }) => {
+const ToggleSwitch = ({ checked, onChange, labelLeft, labelRight }) => {
   return (
     <label className={styles.switch}>
       <input
@@ -21,3 +21,5 @@ export const ToggleSwitch = ({ checked, onChange, labelLeft, labelRight }) => {
     </label>
   );
 };
+
+export default ToggleSwitch;

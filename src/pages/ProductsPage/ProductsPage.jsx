@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery, useSearchProductsInfiniteQuery } from '../../features/products/api/productsApi';
-import { Card, Button } from '../../shared/ui';
+import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import { useIntersectionObserver } from '../../shared/hooks/useIntersectionObserver';
 import styles from './ProductsPage.module.css';
@@ -14,7 +14,7 @@ const normalizeRating = (rating) => {
   return 0;
 };
 
-export const ProductsPage = () => {
+const ProductsPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   
@@ -85,12 +85,7 @@ export const ProductsPage = () => {
   };
 
   if (isLoading && allProducts.length === 0) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-        <p>{t('products.loading')}</p>
-      </div>
-    );
+    return <Loader fullPage />;
   }
 
   if (error && allProducts.length === 0) {
@@ -271,3 +266,5 @@ export const ProductsPage = () => {
     </div>
   );
 };
+
+export default ProductsPage;

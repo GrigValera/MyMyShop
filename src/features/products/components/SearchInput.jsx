@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../shared/ui';
 
-export const SearchInput = ({ value, onChange }) => {
+const SearchInput = ({ value, onChange }) => {
   const { t } = useTranslation();
   
   return (
@@ -13,3 +13,5 @@ export const SearchInput = ({ value, onChange }) => {
     />
   );
 };
+
+export default SearchInput;

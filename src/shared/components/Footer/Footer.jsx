@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './Footer.module.css';
 
-export const Footer = () => {
+const Footer = () => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -60,3 +60,5 @@ export const Footer = () => {
     </footer>
   );
 };
+
+export default Footer;

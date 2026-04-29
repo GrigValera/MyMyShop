@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { LoginForm } from '../../features/auth/components/LoginForm';
+import LoginForm from '../../features/auth/components/LoginForm';
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   if (isAuthenticated) {
@@ -21,3 +21,5 @@ export const LoginPage = () => {
     </div>
   );
 };
+
+export default LoginPage;

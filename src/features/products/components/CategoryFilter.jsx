@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery } from '../api/productsApi';
 
-export const CategoryFilter = ({ selectedCategory, onCategoryChange }) => {
+const CategoryFilter = ({ selectedCategory, onCategoryChange }) => {
   const { t } = useTranslation();
   const { data: categories = [] } = useGetCategoriesQuery();
 
@@ -44,3 +44,5 @@ export const CategoryFilter = ({ selectedCategory, onCategoryChange }) => {
     </div>
   );
 };
+
+export default CategoryFilter;
