@@ -8,11 +8,10 @@ import { CartPage } from "../pages/CartPage/CartPage";
 import { LoginPage } from "../pages/LoginPage/LoginPage";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import { restoreAuth } from "../features/auth/store/authSlice";
-import { AboutPage } from '../pages/AboutPage/AboutPage';
-import { DeliveryPage } from '../pages/DeliveryPage/DeliveryPage';
-import { ContactPage } from '../pages/ContactPage/ContactPage';
-import { ProductDetailsPage } from '../pages/ProductDetailsPage/ProductDetailsPage';
-
+import { AboutPage } from "../pages/AboutPage/AboutPage";
+import { DeliveryPage } from "../pages/DeliveryPage/DeliveryPage";
+import { ContactPage } from "../pages/ContactPage/ContactPage";
+import { ProductDetailsPage } from "../pages/ProductDetailsPage/ProductDetailsPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,7 +36,37 @@ function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <div>
-                <h1>Admin Panel</h1>
+                <span style={{ display: "flex", alignItems: "center", gap: "10px", margin: '20px' }}>
+                  <img
+                    src="/icons/filled/ad.svg"
+                    alt="Admin"
+                    width="54"
+                    height="54"
+                    style={{
+                      color: "red",
+                      backgroundColor: "#f6e826",
+                      borderRadius: "50%",
+                      padding: "4px",
+                    }}
+                  />
+                  Здесь будет реализована Админ-панель
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: "10px", margin: "20px" }}>
+                  <img
+                    src="/icons/filled/blender.svg"
+                    alt="Admin"
+                    width="54"
+                    height="54"
+                    style={{
+                      color: "red",
+                      backgroundColor: "#f9ec39",
+                      borderRadius: "50%",
+                      padding: "4px",
+                    }}
+                  />
+                  Временно кофе-брейк...
+                </span>
+                <h3>Admin Panel</h3>
                 <p>Only for administrators</p>
               </div>
             </ProtectedRoute>
