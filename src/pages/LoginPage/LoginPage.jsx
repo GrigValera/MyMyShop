@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LoginForm from '../../features/auth/components/LoginForm';
+import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -10,13 +11,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'var(--bg-secondary)'
-    }}>
+    <div className={styles.loginPage}>
       <LoginForm />
     </div>
   );

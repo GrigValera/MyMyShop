@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Card } from '../../../shared/ui';
-import { login } from '../store/authSlice';
+import { loginUser } from '../api/authService';
+import { setUser } from '../store/authSlice';
 import styles from './LoginForm.module.css';
 
 const LoginForm = () => {
@@ -13,21 +14,23 @@ const LoginForm = () => {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoadingState] = useState(false);
+  const [error, setErrorState] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (email === 'admin@example.com' && password === 'admin123') {
-      dispatch(login({ email, role: 'admin' }));
+    setErrorState('');
+    setLoadingState(true);
+    
+    const { user, error } = await loginUser(email, password);
+    
+    if (error) {
+      setErrorState(t('auth.error'));
+    } else if (user) {
+      dispatch(setUser(user));
       navigate('/');
-    } else if (email === 'user@example.com' && password === 'user123') {
-      dispatch(login({ email, role: 'user' }));
-      navigate('/');
-    } else {
-      setError(t('auth.error'));
     }
+    setLoadingState(false);
   };
 
   return (
@@ -40,6 +43,7 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
         <Input
           label={t('auth.password')}
@@ -47,10 +51,11 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
         {error && <p className={styles.error}>{error}</p>}
-        <Button type="submit" variant="primary" size="lg" className={styles.submitBtn}>
-          {t('auth.submit')}
+        <Button type="submit" variant="primary" size="lg" className={styles.submitBtn} disabled={loading}>
+          {loading ? t('common.loading') : t('auth.submit')}
         </Button>
       </form>
       <div className={styles.demoInfo}>

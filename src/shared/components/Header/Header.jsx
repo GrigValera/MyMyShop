@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../features/auth/store/authSlice';
-import ThemeToggle from '../../../features/theme/components/ThemeToggle';
-import LanguageSwitcher from '../../../features/language/LanguageSwitcher';
-import { Button } from '../../ui';
-import styles from './Header.module.css';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../features/auth/store/authSlice";
+import ThemeToggle from "../../../features/theme/components/ThemeToggle";
+import LanguageSwitcher from "../../../features/language/LanguageSwitcher";
+import { Button } from "../../ui";
+import styles from "./Header.module.css";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -24,25 +24,28 @@ const Header = () => {
         setIsMenuOpen(false);
       }
     };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMenuOpen]);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/');
+    navigate("/");
     setIsMenuOpen(false);
   };
 
   const navLinks = [
-    { path: '/', label: t('nav.home') },
-    { path: '/products', label: t('nav.products') },
-    { path: '/cart', label: t('nav.cart') },
-    { path: '/about', label: t('nav.about') },
-    { path: '/delivery', label: t('nav.delivery') },
-    { path: '/contact', label: t('nav.contact') },
-    ...(isAuthenticated && role === 'admin' ? [{ path: '/admin', label: 'Admin Panel' }] : []),
+    { path: "/", label: t("nav.home") },
+    { path: "/products", label: t("nav.products") },
+    { path: "/cart", label: t("nav.cart") },
+    { path: "/about", label: t("nav.about") },
+    { path: "/delivery", label: t("nav.delivery") },
+    { path: "/contact", label: t("nav.contact") },
+    ...(isAuthenticated ? [{ path: "/profile", label: t("nav.profile") }] : []),
+    ...(isAuthenticated && role === "admin"
+      ? [{ path: "/admin", label: "Admin Panel" }]
+      : []),
   ];
 
   return (
@@ -72,26 +75,32 @@ const Header = () => {
             {isAuthenticated ? (
               <>
                 <span className={styles.userBadge}>
-                  {role === 'admin' ? 'Admin' : 'User'}
+                  {role === "admin" ? "Admin" : "User"}
                 </span>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  {t('nav.logout')}
+                  {t("nav.logout")}
                 </Button>
               </>
             ) : (
-              <Button variant="primary" size="sm" onClick={() => navigate('/login')}>
-                {t('nav.login')}
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => navigate("/login")}
+              >
+                {t("nav.login")}
               </Button>
             )}
           </div>
 
           <Link to="/cart" className={styles.cartLink}>
             <span className={styles.cartText}>Cart</span>
-            {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
+            {cartCount > 0 && (
+              <span className={styles.cartBadge}>{cartCount}</span>
+            )}
           </Link>
 
-          <button 
-            className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ''}`}
+          <button
+            className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
           >
@@ -102,12 +111,12 @@ const Header = () => {
         </div>
       </div>
 
-      <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+      <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ""}`}>
         <nav className={styles.mobileNav}>
           {navLinks.map((link) => (
-            <Link 
-              key={link.path} 
-              to={link.path} 
+            <Link
+              key={link.path}
+              to={link.path}
               className={styles.mobileNavLink}
               onClick={() => setIsMenuOpen(false)}
             >

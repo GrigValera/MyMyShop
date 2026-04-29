@@ -5,6 +5,7 @@ const Input = React.forwardRef(({
   label, 
   error, 
   className = '', 
+  autoComplete,
   ...props 
 }, ref) => {
   const inputClasses = `${styles.input} ${error ? styles.error : ''} ${className}`;
@@ -15,6 +16,7 @@ const Input = React.forwardRef(({
       <input
         ref={ref}
         className={inputClasses}
+        autoComplete={autoComplete}
         {...props}
       />
       {error && <span className={styles.errorMessage}>{error}</span>}

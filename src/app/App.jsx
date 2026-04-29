@@ -6,6 +6,7 @@ import HomePage from '../pages/HomePage/HomePage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import ProtectedRoute from '../shared/components/ProtectedRoute';
 import { restoreAuth } from '../features/auth/store/authSlice';
+import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import { Loader } from '../shared/ui';
 
 // Lazy loaded pages
@@ -76,6 +77,7 @@ function App() {
             </Suspense>
           } 
         />
+        <Route path="profile" element={<ProfilePage />} />
         <Route 
           path="admin" 
           element={

@@ -7,7 +7,8 @@
     "logout": "Logout",
     "about": "About Us",
     "delivery": "Delivery",
-    "contact": "Contact"
+    "contact": "Contact",
+    "profile": "Profile"
   },
   "home": {
     "title": "Welcome to MyMy Shop!",
@@ -150,5 +151,15 @@
   "responseReturn": "You can return items within 14 days of purchase.",
   "responsePayment": "We accept credit cards, PayPal, and cash on delivery.",
   "responseDefault": "Thank you for your message! Our support team will contact you soon."
+},
+"profile": {
+  "title": "Profile",
+  "personalInfo": "Personal Information",
+  "orderHistory": "Order History",
+  "noOrders": "You have no orders yet",
+  "role": "Role",
+  "memberSince": "Member since",
+  "edit": "Edit",
+  "save": "Save"
 }
 }
