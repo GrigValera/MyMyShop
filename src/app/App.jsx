@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import MainLayout from '../shared/layouts/MainLayout/MainLayout';
 import HomePage from '../pages/HomePage/HomePage';
 import LoginPage from '../pages/LoginPage/LoginPage';
+import RegisterPage from '../pages/RegisterPage/RegisterPage';
 import ProtectedRoute from '../shared/components/ProtectedRoute';
 import { restoreAuth } from '../features/auth/store/authSlice';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
@@ -27,6 +28,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route 

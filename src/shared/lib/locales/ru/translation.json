@@ -66,14 +66,18 @@
     "apply": "Применить"
   },
   "auth": {
-    "login": "Вход",
-    "email": "Email",
-    "password": "Пароль",
-    "submit": "Войти",
-    "error": "Неверный email или пароль",
-    "demoUser": "Демо пользователь: user@example.com / user123",
-    "demoAdmin": "Демо админ: admin@example.com / admin123"
-  },
+  "register": "Регистрация",
+  "registerBtn": "Зарегистрироваться",
+  "name": "Имя",
+  "email": "Email",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердите пароль",
+  "passwordMismatch": "Пароли не совпадают",
+  "haveAccount": "Уже есть аккаунт?",
+  "createAccount": "Создать аккаунт",
+  "login": "Войти",
+  "submit": "Войти"
+},
   "footer": {
     "links": "Разделы",
     "contact": "Контакты",
@@ -88,7 +92,8 @@
     "retry": "Повторить",
     "close": "Закрыть",
     "back": "Назад",
-    "continue": "Продолжить покупки"
+    "continue": "Продолжить покупки",
+    "cancel": "Отмена"
   },
   "about": {
     "title": "О нас",
