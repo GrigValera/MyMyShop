@@ -14,23 +14,24 @@ const LoginForm = () => {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoadingState] = useState(false);
-  const [error, setErrorState] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorState('');
-    setLoadingState(true);
+    setError('');
+    setLoading(true);
     
     const { user, error } = await loginUser(email, password);
     
+    setLoading(false);
+    
     if (error) {
-      setErrorState(t('auth.error'));
+      setError(t('auth.error'));
     } else if (user) {
       dispatch(setUser(user));
       navigate('/');
     }
-    setLoadingState(false);
   };
 
   return (
