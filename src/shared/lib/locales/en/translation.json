@@ -1,13 +1,14 @@
 {
   "nav": {
-    "home": "Today's Deals",
+    "home": "SALE",
     "products": "All Products",
     "cart": "Cart",
     "login": "Login",
     "logout": "Logout",
     "about": "About Us",
     "delivery": "Delivery",
-    "contact": "Contact"
+    "contact": "Contact",
+    "profile": "Profile"
   },
   "home": {
     "title": "Welcome to MyMy Shop!",
@@ -37,7 +38,8 @@
     "free": "Free",
     "orderSummary": "Order Summary",
     "deliveryMethod": "Delivery Method",
-    "deliveryPrice": "Delivery Price"
+    "deliveryPrice": "Delivery Price",
+    "viewCart": "View Cart"
   },
   "product": {
     "addToCart": "Add to Cart",
@@ -150,5 +152,17 @@
   "responseReturn": "You can return items within 14 days of purchase.",
   "responsePayment": "We accept credit cards, PayPal, and cash on delivery.",
   "responseDefault": "Thank you for your message! Our support team will contact you soon."
+},
+"profile": {
+  "drawerTitle": "Profile",
+  "myProfile": "My Profile",
+  "myOrders": "My Orders",
+  "orderHistory": "Order History",
+  "noOrders": "You have no orders yet",
+  "personalInfo": "Personal Information",
+  "role": "Role",
+  "memberSince": "Member since",
+  "edit": "Edit",
+  "save": "Save"
 }
 }

@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../features/auth/store/authSlice';
-import ThemeToggle from '../../../features/theme/components/ThemeToggle';
-import LanguageSwitcher from '../../../features/language/LanguageSwitcher';
-import { Button } from '../../ui';
-import styles from './Header.module.css';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../features/auth/store/authSlice";
+import ThemeToggle from "../../../features/theme/components/ThemeToggle";
+import LanguageSwitcher from "../../../features/language/LanguageSwitcher";
+import ProfileDrawer from "../ProfileDrawer/ProfileDrawer";
+import CartDrawer from "../CartDrawer/CartDrawer";
+import { UserIcon } from '../../../shared/icons/UserIcon';
+import { CartIcon } from '../../../shared/icons/CartIcon';
+import styles from "./Header.module.css";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -15,6 +18,8 @@ const Header = () => {
   const { isAuthenticated, role } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -24,25 +29,27 @@ const Header = () => {
         setIsMenuOpen(false);
       }
     };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMenuOpen]);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/');
+    navigate("/");
     setIsMenuOpen(false);
+    setIsProfileDrawerOpen(false);
   };
 
   const navLinks = [
-    { path: '/', label: t('nav.home') },
-    { path: '/products', label: t('nav.products') },
-    { path: '/cart', label: t('nav.cart') },
-    { path: '/about', label: t('nav.about') },
-    { path: '/delivery', label: t('nav.delivery') },
-    { path: '/contact', label: t('nav.contact') },
-    ...(isAuthenticated && role === 'admin' ? [{ path: '/admin', label: 'Admin Panel' }] : []),
+    { path: "/", label: t("nav.home") },
+    { path: "/products", label: t("nav.products") },
+    { path: "/about", label: t("nav.about") },
+    { path: "/delivery", label: t("nav.delivery") },
+    { path: "/contact", label: t("nav.contact") },
+    ...(isAuthenticated && role === "admin"
+      ? [{ path: "/admin", label: "Admin Panel" }]
+      : []),
   ];
 
   return (
@@ -68,30 +75,36 @@ const Header = () => {
             <LanguageSwitcher />
           </div>
 
-          <div className={styles.authGroup}>
-            {isAuthenticated ? (
-              <>
-                <span className={styles.userBadge}>
-                  {role === 'admin' ? 'Admin' : 'User'}
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  {t('nav.logout')}
-                </Button>
-              </>
-            ) : (
-              <Button variant="primary" size="sm" onClick={() => navigate('/login')}>
-                {t('nav.login')}
-              </Button>
-            )}
-          </div>
+          {/* Профиль - открывает дровер */}
+          {isAuthenticated ? (
+            <button
+              className={styles.iconBtn}
+              onClick={() => setIsProfileDrawerOpen(true)}
+              aria-label="Profile"
+            >
+              <UserIcon className={styles.icon} />
+            </button>
+          ) : (
+            <button
+              className={styles.loginBtn}
+              onClick={() => navigate("/login")}
+            >
+              {t("nav.login")}
+            </button>
+          )}
 
-          <Link to="/cart" className={styles.cartLink}>
-            <span className={styles.cartText}>Cart</span>
-            {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
-          </Link>
+          {/* Корзина - открывает дровер */}
+          <button
+            className={styles.iconBtn}
+            onClick={() => setIsCartDrawerOpen(true)}
+            aria-label="Cart"
+          >
+            <CartIcon className={styles.icon} />
+            {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
+          </button>
 
-          <button 
-            className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ''}`}
+          <button
+            className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
           >
@@ -102,18 +115,40 @@ const Header = () => {
         </div>
       </div>
 
-      <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ''}`}>
+      <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ""}`}>
         <nav className={styles.mobileNav}>
           {navLinks.map((link) => (
-            <Link 
-              key={link.path} 
-              to={link.path} 
+            <Link
+              key={link.path}
+              to={link.path}
               className={styles.mobileNavLink}
               onClick={() => setIsMenuOpen(false)}
             >
               {link.label}
             </Link>
           ))}
+          {isAuthenticated && (
+            <Link
+              to="/profile"
+              className={styles.mobileNavLink}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t("nav.profile")}
+            </Link>
+          )}
+          <button
+            onClick={() => {
+              if (isAuthenticated) {
+                handleLogout();
+              } else {
+                navigate("/login");
+              }
+              setIsMenuOpen(false);
+            }}
+            className={styles.mobileLogoutBtn}
+          >
+            {isAuthenticated ? t("nav.logout") : t("nav.login")}
+          </button>
         </nav>
         <div className={styles.mobileToggles}>
           <div className={styles.mobileToggleItem}>
@@ -126,6 +161,15 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <ProfileDrawer
+        isOpen={isProfileDrawerOpen}
+        onClose={() => setIsProfileDrawerOpen(false)}
+      />
+      <CartDrawer
+        isOpen={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+      />
     </header>
   );
 };
