@@ -1,18 +1,20 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../features/auth/store/authSlice';
-import {UserIcon} from '../../icons/UserIcon';
+import { UserIcon } from '../../icons/UserIcon';
 import styles from './ProfileDrawer.module.css';
 
 const ProfileDrawer = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, role } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
     onClose();
+    navigate('/');
   };
 
   if (!isOpen) return null;
