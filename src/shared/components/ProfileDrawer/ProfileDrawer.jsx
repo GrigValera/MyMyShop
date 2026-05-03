@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../features/auth/store/authSlice';
+import {UserIcon} from '../../icons/UserIcon';
 import styles from './ProfileDrawer.module.css';
 
 const ProfileDrawer = ({ isOpen, onClose }) => {
@@ -26,11 +27,7 @@ const ProfileDrawer = ({ isOpen, onClose }) => {
         </div>
         <div className={styles.content}>
           <div className={styles.userInfo}>
-            <img
-              src="/icons/filled/man.svg"
-              alt="avatar"
-              className={styles.avatar}
-            />
+            <UserIcon className={styles.avatar} />
             <div>
               <p className={styles.userName}>{user?.name || user?.email || 'User'}</p>
               <p className={styles.userEmail}>{user?.email}</p>

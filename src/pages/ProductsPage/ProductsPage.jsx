@@ -113,9 +113,9 @@ const ProductsPage = () => {
       <div className={styles.productsContent}>
         <div className={styles.productsHeader}>
           <h1>{t('products.title')}</h1>
-          <p className={styles.resultsCount}>
+          {(searchQuery || selectedCategory) &&  <p className={styles.resultsCount}>
             {sortedProducts.length} {t('products.filtered')}
-          </p>
+          </p>}
         </div>
 
         <div className={styles.productsGrid}>
