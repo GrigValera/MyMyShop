@@ -22,7 +22,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(restoreAuth());
+    dispatch(restoreAuth()); // Теперь это асинхронный thunk
   }, [dispatch]);
 
   return (
