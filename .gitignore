@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 node_modules/
 public/icons/
+test-results/
+playwright-report/
