@@ -30,7 +30,7 @@ git diff --check
 - `npm run dev` — development server.
 - `npm run lint` — ESLint всего проекта.
 - `npm run build` — production build в `dist/`.
-- `npm test` — новый production build, затем два Playwright-теста Chromium.
+- `npm test` — новый production build, затем unit и browser integration/E2E tests через Playwright Chromium.
 - `npm run preview -- --host 127.0.0.1 --port 4173 --strictPort` — просмотр `dist/`.
 
 Production preview: http://127.0.0.1:4173/ . Сначала выполните `npm run build`.
@@ -54,7 +54,7 @@ commit/push и PR; локальный запуск не подтверждает
 
 ## Известные дефекты
 
-- SHOP-01: plaintext-пароли, Base64-токены и доверие localStorage. Только demo-данные.
+- SHOP-01: demo-session только в памяти; refresh завершает её. Защищённой авторизации нет.
 - SHOP-02: поиск/категория читают параметры вне queryArg.
 - SHOP-03: фильтры работают лишь по загруженным страницам; зависимость от DummyJSON.
   При недоступном API главная может оставаться пустой/повторять загрузку.
@@ -81,7 +81,7 @@ commit/push и PR; локальный запуск не подтверждает
 - [ ] Открыть «О нас», вернуться; переключить язык и тему, проверить консоль.
 - [ ] Повторить основной сценарий при ширине 390 и 1280 px: controls доступны.
 - [ ] Refresh `/cart`: пустая корзина — известное ограничение.
-- [ ] README-команды и diff соответствуют SHOP-00; src не менялся.
+- [ ] README-команды и diff соответствуют текущему ticket.
 
 Сбой живого API фиксируйте отдельно от тестов с mock API.
 Реальные платежи/заказ: NOT APPLICABLE, backend отсутствует.
@@ -92,3 +92,32 @@ commit/push и PR; локальный запуск не подтверждает
 Нет миграций данных и публикации. До commit базу можно изучить в отдельном checkout,
 сохранив текущие изменения. После разрешённого commit — согласованный revert SHOP-00,
 затем npm ci, применимые проверки, build и manual QA. Автоматического reset нет.
+
+## SHOP-01: demo-session
+
+«Войти как демо-пользователь» включает только интерфейс фиксированного Demo User.
+Пароль, email и другие персональные данные не запрашиваются. Регистрация и
+редактирование профиля удалены. Нет токенов, ролей, защищённых возможностей,
+backend или запросов авторизации. `/register` перенаправляет на `/login`,
+`/admin` всегда перенаправляет на главную. Профиль — публичная demo-страница.
+
+Сессия существует только в Redux в памяти: refresh/reload и новая вкладка начинают
+состояние без входа. Storage не восстанавливает сессию и не предоставляет прав.
+При запуске, входе и выходе из localStorage и sessionStorage удаляются только
+`mock_users`, `mock_current_user`, `mock_token`, `auth_user`, `auth_token`.
+Остальные ключи (включая cart/theme/language) не удаляются. Старые mock-профили
+намеренно не восстанавливаются. Если storage недоступен, UI сообщает об ошибке
+cleanup и не включает demo-session; уже активная сессия при выходе завершается.
+Корзина по-прежнему живёт в памяти и теряется при refresh (SHOP-05), но вход/выход
+её не очищают. При запрете всего storage остаются прежние ограничения темы/языка.
+
+`tests/demo-session.spec.js`: unit cleanup с сохранением чужих ключей;
+browser integration/E2E вход/выход, завершение при refresh, подмена storage,
+отсутствие credentials в storage, console и запросах, viewport 390/1280.
+Baseline catalog/cart остаётся в `tests/baseline.spec.js`. Отдельный unit runner
+не нужен: чистый unit test выполняется существующим Playwright runner.
+
+Откат SHOP-01: исходный HEAD `77933d996e14ab0651a8bfe379093258bdb18f93`.
+Возвращать старый auth-код и credential-записи нельзя. При регрессии — корректирующее
+исправление или отключение demo-входа с сохранением cleanup, затем повторные
+checks/build/manual QA. Удалённые legacy credentials не восстанавливаются.

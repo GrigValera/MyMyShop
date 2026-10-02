@@ -15,7 +15,7 @@ const Header = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, role } = useSelector((state) => state.auth);
+  const { isDemoSession } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
@@ -47,9 +47,6 @@ const Header = () => {
     { path: "/about", label: t("nav.about") },
     { path: "/delivery", label: t("nav.delivery") },
     { path: "/contact", label: t("nav.contact") },
-    ...(isAuthenticated && role === "admin"
-      ? [{ path: "/admin", label: "Admin Panel" }]
-      : []),
   ];
 
   return (
@@ -76,7 +73,7 @@ const Header = () => {
           </div>
 
           {/* Профиль - открывает дровер */}
-          {isAuthenticated ? (
+          {isDemoSession ? (
             <button
               className={styles.iconBtn}
               onClick={() => setIsProfileDrawerOpen(true)}
@@ -127,7 +124,7 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
-          {isAuthenticated && (
+          {isDemoSession && (
             <Link
               to="/profile"
               className={styles.mobileNavLink}
@@ -138,7 +135,7 @@ const Header = () => {
           )}
           <button
             onClick={() => {
-              if (isAuthenticated) {
+              if (isDemoSession) {
                 handleLogout();
               } else {
                 navigate("/login");
@@ -147,7 +144,7 @@ const Header = () => {
             }}
             className={styles.mobileLogoutBtn}
           >
-            {isAuthenticated ? t("nav.logout") : t("nav.login")}
+            {isDemoSession ? t("nav.logout") : t("nav.login")}
           </button>
         </nav>
         <div className={styles.mobileToggles}>

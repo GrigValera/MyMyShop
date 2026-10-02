@@ -66,14 +66,12 @@
     "apply": "Apply"
   },
   "auth": {
-    "login": "Login",
-    "email": "Email",
-    "password": "Password",
-    "submit": "Sign In",
-    "error": "Invalid email or password",
-    "demoUser": "Demo User: user@example.com / user123",
-    "demoAdmin": "Demo Admin: admin@example.com / admin123"
-  },
+    "demoTitle": "Demo-session",
+    "demoLogin": "Continue as demo user",
+    "demoNotice": "Demonstration session only. This is not secure authentication: there is no account, personal data or administrator access.",
+    "demoRefresh": "The session lives only in memory and ends on page reload.",
+    "cleanupFailed": "Could not remove legacy sign-in data. Allow storage access and try again."
+},
   "footer": {
     "links": "Links",
     "contact": "Contact",
