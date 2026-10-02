@@ -1,11 +1,10 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import MainLayout from '../shared/layouts/MainLayout/MainLayout';
 import HomePage from '../pages/HomePage/HomePage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
-import ProtectedRoute from '../shared/components/ProtectedRoute';
 import { restoreAuth } from '../features/auth/store/authSlice';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import { Loader } from '../shared/ui';
@@ -22,7 +21,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(restoreAuth()); // Теперь это асинхронный thunk
+    dispatch(restoreAuth());
   }, [dispatch]);
 
   return (
@@ -80,17 +79,7 @@ function App() {
           } 
         />
         <Route path="profile" element={<ProfilePage />} />
-        <Route 
-          path="admin" 
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <div>
-                <h1>Admin Panel</h1>
-                <p>Only for administrators</p>
-              </div>
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="admin" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
   );

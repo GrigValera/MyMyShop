@@ -1,70 +1,23 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Card } from '../../../shared/ui';
-import { loginUser } from '../api/authService';
-import { setUser } from '../store/authSlice';
+import { Button, Card } from '../../../shared/ui';
+import { loginDemo } from '../store/authSlice';
 import styles from './LoginForm.module.css';
 
 const LoginForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    
-    const { user, error } = await loginUser(email, password);
-    
-    setLoading(false);
-    
-    if (error) {
-      setError(t('auth.error'));
-    } else if (user) {
-      dispatch(setUser(user));
-      navigate('/');
-    }
-  };
-
+  const cleanupFailed = useSelector((state) => state.auth.cleanupFailed);
   return (
     <Card className={styles.loginCard}>
-      <h2 className={styles.title}>{t('auth.login')}</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <Input
-          label={t('auth.email')}
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-        />
-        <Input
-          label={t('auth.password')}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-        />
-        {error && <p className={styles.error}>{error}</p>}
-        <Button type="submit" variant="primary" size="lg" className={styles.submitBtn} disabled={loading}>
-          {loading ? t('common.loading') : t('auth.submit')}
-        </Button>
-      </form>
-      <div className={styles.demoInfo}>
-        <p>Demo: user@example.com / user123</p>
-        <p>Admin: admin@example.com / admin123</p>
-      </div>
+      <h2 className={styles.title}>{t('auth.demoTitle')}</h2>
+      <p>{t('auth.demoNotice')}</p>
+      <p>{t('auth.demoRefresh')}</p>
+      {cleanupFailed && <p role="alert">{t('auth.cleanupFailed')}</p>}
+      <Button onClick={() => dispatch(loginDemo())} variant="primary" size="lg" className={styles.submitBtn}>
+        {t('auth.demoLogin')}
+      </Button>
     </Card>
   );
 };
-
 export default LoginForm;
