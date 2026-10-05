@@ -84,7 +84,7 @@ test('integration: demo login and logout preserve the in-memory cart and theme',
       images: ['data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"/%3E'] }], total: 1, skip: 0, limit: 100,
   } }));
   await page.goto('/');
-  await page.getByRole('button', { name: 'В корзину', exact: true }).click();
+  await page.getByRole('button', { name: 'В корзину', exact: true }).first().click();
   await page.evaluate(() => localStorage.setItem('theme', 'dark'));
   await page.getByRole('button', { name: 'Войти', exact: true }).first().click();
   await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card } from '../../shared/ui';
 import { removeFromCart, updateQuantity, clearCart } from '../../features/cart/store/cartSlice';
+import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
 import styles from './CartPage.module.css';
 
 const CartPage = () => {
@@ -45,12 +46,13 @@ const CartPage = () => {
       <div className={styles.cartContent}>
         <div className={styles.cartItems}>
           {cartItems.map((item) => {
-            const imageUrl = item.image || 'https://placehold.co/80x80?text=No+Image';
+            const imageUrl = item.image || unavailableProductImage;
             return (
               <Card key={`${item.id}-${item.hasDiscount}-${item.price}`} className={styles.cartItem}>
                 <div className={styles.cartItemImage}>
                   <img 
                     src={imageUrl}
+                    onError={showUnavailableProductImage}
                     alt={item.title}
                     loading="lazy"
                     width="80"

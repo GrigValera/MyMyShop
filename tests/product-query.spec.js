@@ -30,7 +30,7 @@ test('E2E: fast typing waits 400 ms, a pause starts a new search, and clearing r
     const title = query ? `${query} Result` : 'Catalog Result';
     return route.fulfill({ json: { products: [product(query ? query.length + 10 : 1, title)], total: 1, limit: 10, skip: 0 } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByRole('heading', { name: 'Catalog Result' })).toBeVisible();
   await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 60_000);
   const search = page.getByRole('textbox', { name: 'Поиск' });
@@ -77,7 +77,7 @@ test('E2E: category change during debounce never requests the stale search', asy
         : product(1, 'Catalog Result');
     return route.fulfill({ json: { products: [item], total: 1, limit: 10, skip: 0 } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByRole('heading', { name: 'Catalog Result' })).toBeVisible();
   await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 60_000);
   const search = page.getByRole('textbox', { name: 'Поиск' });
@@ -112,7 +112,7 @@ test('integration: search pages render and category changes keep separate result
     const category = title === 'Fragrance Result' ? 'fragrances' : 'beauty';
     await route.fulfill({ json: { products: [product(id + skip, `${title} ${skip}`, category)], total: 11, limit: 10, skip } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByRole('heading', { name: 'Catalog Result 0' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Поиск' }).fill('lip');
   await expect(page.getByRole('heading', { name: 'Search Result 0' })).toBeVisible();
@@ -126,10 +126,12 @@ test('integration: search pages render and category changes keep separate result
   await page.getByRole('button', { name: 'Beauty' }).click();
   await expect(page.getByRole('heading', { name: 'Beauty Result 0' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Beauty Result 10' })).toBeVisible();
+  await page.getByRole('button', { name: 'Beauty' }).click();
   await page.getByRole('button', { name: 'Fragrances' }).click();
   await expect(page.getByRole('heading', { name: 'Fragrance Result 0' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Beauty Result 0' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Fragrance Result 10' })).toBeVisible();
+  await page.getByRole('button', { name: 'Fragrances' }).click();
   await page.getByRole('button', { name: 'Beauty' }).click();
   await expect(page.getByRole('heading', { name: 'Beauty Result 0' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Fragrance Result 0' })).toHaveCount(0);
@@ -158,7 +160,7 @@ test('E2E: late search response cannot replace the current search', async ({ pag
     await route.fulfill({ json: { products: [product(q === 'new' ? 2 : 1, title)], total: 1, limit: 10, skip: 0 } });
     if (q === 'old') markOldDelivered();
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByRole('heading', { name: 'Catalog' })).toBeVisible();
   const search = page.getByRole('textbox', { name: 'Поиск' });
   await search.fill('old');
@@ -184,7 +186,7 @@ test('E2E: empty results and retry after an API error', async ({ page }) => {
     }
     return route.fulfill({ json: { products: [], total: 0, limit: 10, skip: 0 } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByText('Товары не найдены')).toBeVisible();
   await page.getByRole('textbox', { name: 'Поиск' }).fill('retry');
   await expect(page.getByRole('status', { name: 'Загрузка товаров...' })).toBeVisible();
@@ -209,7 +211,7 @@ test('E2E: failed next page keeps current products and retries that page', async
       products: [product(skip + 1, `Page Item ${skip}`)], total: 11, limit: 10, skip,
     } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await expect(page.getByRole('heading', { name: 'Page Item 0' })).toBeVisible();
   await expect(page.getByRole('alert')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Page Item 0' })).toBeVisible();
@@ -230,7 +232,7 @@ test('E2E: cart still works after search and category changes', async ({ page })
     const item = searched ? product(101, 'Search Item') : selected ? product(202, 'Fragrance Item', 'fragrances') : product(1, 'Catalog Item');
     return route.fulfill({ json: { products: [item], total: 1, limit: 10, skip: 0 } });
   });
-  await page.goto('/products');
+  await page.goto('/products?source=api');
   await page.getByRole('textbox', { name: 'Поиск' }).fill('item');
   await expect(page.getByRole('heading', { name: 'Search Item' })).toBeVisible();
   await page.getByRole('button', { name: 'В корзину' }).click();

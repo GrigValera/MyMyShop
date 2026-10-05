@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetProductByIdQuery } from '../../features/products/api/productsApi';
+import { getDemoProductById } from '../../features/products/data/demoProducts';
+import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
 import { Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import styles from './ProductDetailsPage.module.css';
@@ -12,7 +14,7 @@ const ImageCarousel = ({ images, title }) => {
   
   let displayImages = [...images];
   if (!displayImages || displayImages.length === 0) {
-    displayImages = ['https://placehold.co/400x400?text=No+Image'];
+    displayImages = [unavailableProductImage];
   }
 
   const nextSlide = () => {
@@ -29,6 +31,7 @@ const ImageCarousel = ({ images, title }) => {
       <img 
         src={displayImages[currentIndex]} 
         alt={`${title} - ${currentIndex + 1}`}
+        onError={showUnavailableProductImage}
       />
       <button className={styles.carouselBtn} onClick={nextSlide}>❯</button>
       <div className={styles.carouselDots}>
@@ -89,7 +92,9 @@ const ProductDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data: product, isLoading, error } = useGetProductByIdQuery(id);
+  const isApiMode = new URLSearchParams(location.search).get('source') === 'api';
+  const { data: apiProduct, isLoading, error } = useGetProductByIdQuery(id, { skip: !isApiMode });
+  const product = isApiMode ? apiProduct : getDemoProductById(id);
 
   const saleInfo = location.state || {};
   const hasDiscount = saleInfo.fromSale || false;
