@@ -71,7 +71,9 @@ commit/push и PR; локальный запуск не подтверждает
 Он снят **2026-10-05 09:49:49 UTC** с `https://dummyjson.com/products?limit=0`.
 Исходные ID и поля товара сохранены. `snapshot.metadata.json` фиксирует источник,
 дату, total, все 24 категории, версию формата и SHA-256 файла snapshot
-(`31a018b5acf86a06881d30d12de461794c23dfb864af5007969b1a1c9de2e5d6`).
+(`61d98d729b8795b99f42e42a8bbbcb78fde53debe0108b9caf7fe0b8482152f2`).
+Для этого snapshot `.gitattributes` фиксирует LF при checkout, чтобы checksum
+сырых байтов совпадал на Windows и Linux.
 Тест проверяет checksum, количество, уникальность ID и обязательные поля.
 Синтетические товары применяются только внутри tests для точных unit-сценариев.
 Для потребителей `discountPercent` однозначно отображается из исходного
