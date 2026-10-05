@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -19,26 +19,38 @@ const ProductsPage = () => {
   const dispatch = useDispatch();
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const isSearchPending = searchQuery.trim() !== debouncedSearchQuery;
+
   const { data: categories = [] } = useGetCategoriesQuery();
 
   const {
-    data: productsData,
-    isLoading,
+    currentData: productsData,
+    isFetching,
     isFetchingNextPage,
+    isFetchNextPageError,
     hasNextPage,
     fetchNextPage,
+    refetch,
     error,
   } = useSearchProductsInfiniteQuery({
-    searchQuery: searchQuery,
-  });
+    searchQuery: debouncedSearchQuery,
+    category: selectedCategory,
+  }, { skip: isSearchPending });
 
   const allProducts = useMemo(() => {
-    return productsData?.pages?.flatMap(page => page.products) || [];
-  }, [productsData]);
+    return !isSearchPending ? productsData?.pages?.flatMap(page => page.products) || [] : [];
+  }, [productsData, isSearchPending]);
+  const isInitialLoading = isSearchPending || (isFetching && !productsData);
 
   const sortedProducts = useMemo(() => {
     let filtered = [...allProducts];
@@ -57,10 +69,10 @@ const ProductsPage = () => {
   }, [allProducts, selectedCategory, sortBy]);
 
   const loadMoreRef = useIntersectionObserver(() => {
-    if (hasNextPage && !isFetchingNextPage) {
+    if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
       fetchNextPage();
     }
-  }, { enabled: hasNextPage && !isFetchingNextPage });
+  }, { enabled: hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading });
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -80,23 +92,17 @@ const ProductsPage = () => {
   };
 
   const handleResetFilters = () => {
+    setSearchQuery('');
     setSelectedCategory('');
     setSortBy('default');
   };
-
-  if (isLoading && allProducts.length === 0) {
-    return <Loader fullPage />;
-  }
-
-  if (error && allProducts.length === 0) {
-    return <div className={styles.error}>{t('common.error')}</div>;
-  }
 
   return (
     <div className={styles.productsPage}>
       <div className={styles.searchBar}>
         <input
           type="text"
+          aria-label={t('filter.search')}
           className={styles.searchInput}
           placeholder={t('filter.searchPlaceholder')}
           value={searchQuery}
@@ -117,6 +123,15 @@ const ProductsPage = () => {
             {sortedProducts.length} {t('products.filtered')}
           </p>}
         </div>
+
+        {isInitialLoading && <div role="status" aria-label={t('products.loading')}><Loader /></div>}
+
+        {!isSearchPending && error && !isFetchNextPageError && (
+          <div className={styles.error} role="alert">
+            <p>{t('common.error')}</p>
+            <Button variant="outline" size="sm" onClick={refetch}>{t('common.retry')}</Button>
+          </div>
+        )}
 
         <div className={styles.productsGrid}>
           {sortedProducts.map((product) => {
@@ -163,12 +178,19 @@ const ProductsPage = () => {
           })}
         </div>
 
-        {hasNextPage && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
+        {hasNextPage && !isFetchNextPageError && !isInitialLoading && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
 
         {isFetchingNextPage && (
           <div className={styles.loadingMore}>
             <div className={styles.spinnerSmall}></div>
             <p>{t('products.loading')}</p>
+          </div>
+        )}
+
+        {isFetchNextPageError && (
+          <div className={styles.error} role="alert">
+            <p>{t('common.error')}</p>
+            <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>{t('common.retry')}</Button>
           </div>
         )}
 
@@ -178,7 +200,7 @@ const ProductsPage = () => {
           </div>
         )}
 
-        {sortedProducts.length === 0 && !isLoading && (
+        {sortedProducts.length === 0 && !isInitialLoading && !error && (
           <div className={styles.noResults}>
             <p>{t('products.empty')}</p>
             <Button variant="outline" size="sm" onClick={handleResetFilters}>

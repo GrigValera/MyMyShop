@@ -1,86 +1,50 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const PRODUCT_FIELDS = 'id,title,price,description,category,images,thumbnail,rating,brand,stock';
+const PAGE_SIZE = 10;
+
+export const buildProductsQuery = ({ searchQuery = '', category = '' } = {}, pageParam = 0) => {
+  const search = searchQuery.trim();
+  const path = search
+    ? 'products/search'
+    : category ? `products/category/${encodeURIComponent(category)}` : 'products';
+  const params = new URLSearchParams({
+    ...(search ? { q: search } : {}),
+    limit: String(PAGE_SIZE),
+    skip: String(pageParam * PAGE_SIZE),
+    select: PRODUCT_FIELDS,
+  });
+  return `${path}?${params}`;
+};
+
+const infiniteQueryOptions = {
+  initialPageParam: 0,
+  getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+    if (!lastPage || lastPage.skip + lastPage.limit >= lastPage.total) return undefined;
+    return lastPageParam + 1;
+  },
+};
+
+const normalizePage = (response) => ({
+  products: response.products || [],
+  total: response.total ?? 0,
+  limit: response.limit ?? PAGE_SIZE,
+  skip: response.skip ?? 0,
+});
+
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://dummyjson.com/' }),
   endpoints: (builder) => ({
     getProductsInfinite: builder.infiniteQuery({
-      query: ({ pageParam = 0 }) => {
-        const skip = pageParam * 10;
-        return `products?limit=10&skip=${skip}&select=id,title,price,description,category,images,thumbnail,rating,brand,stock`;
-      },
-      infiniteQueryOptions: {
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages, lastPageParam) => {
-          const { total, limit, skip } = lastPage;
-          const hasMore = skip + limit < total;
-          if (!hasMore) return undefined;
-          return lastPageParam + 1;
-        },
-      },
-      transformResponse: (response) => {
-        return {
-          products: response.products || [],
-          total: response.total || 0,
-          limit: response.limit || 10,
-          skip: response.skip || 0,
-        };
-      },
-      merge: (currentCache, newItems, { pageParam }) => {
-        if (!currentCache || pageParam === 0) {
-          return {
-            products: newItems.products || [],
-            total: newItems.total || 0,
-            limit: newItems.limit || 10,
-            skip: newItems.skip || 0,
-          };
-        }
-        return {
-          ...newItems,
-          products: [...(currentCache.products || []), ...(newItems.products || [])],
-        };
-      },
+      query: ({ pageParam }) => buildProductsQuery({}, pageParam),
+      infiniteQueryOptions,
+      transformResponse: normalizePage,
     }),
     searchProducts: builder.infiniteQuery({
-      query: ({ pageParam = 0, searchQuery = '' }) => {
-        const skip = pageParam * 10;
-        if (searchQuery) {
-          return `products/search?q=${searchQuery}&limit=10&skip=${skip}&select=id,title,price,description,category,images,thumbnail,rating,brand,stock`;
-        }
-        return `products?limit=10&skip=${skip}&select=id,title,price,description,category,images,thumbnail,rating,brand,stock`;
-      },
-      infiniteQueryOptions: {
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages, lastPageParam) => {
-          if (!lastPage || !lastPage.products) return undefined;
-          const { total, limit, skip } = lastPage;
-          const hasMore = skip + limit < total;
-          if (!hasMore) return undefined;
-          return lastPageParam + 1;
-        },
-      },
-      transformResponse: (response) => {
-        return {
-          products: response.products || [],
-          total: response.total || 0,
-          limit: response.limit || 10,
-          skip: response.skip || 0,
-        };
-      },
-      merge: (currentCache, newItems, { pageParam }) => {
-        if (!currentCache || pageParam === 0) {
-          return {
-            products: newItems.products || [],
-            total: newItems.total || 0,
-            limit: newItems.limit || 10,
-            skip: newItems.skip || 0,
-          };
-        }
-        return {
-          ...newItems,
-          products: [...(currentCache.products || []), ...(newItems.products || [])],
-        };
-      },
+      query: ({ queryArg, pageParam }) => buildProductsQuery(queryArg, pageParam),
+      infiniteQueryOptions,
+      transformResponse: normalizePage,
     }),
     getProductById: builder.query({
       query: (id) => `products/${id}?select=id,title,price,description,category,images,thumbnail,rating,brand,stock,reviews`,
@@ -89,42 +53,9 @@ export const productsApi = createApi({
       query: () => 'products/categories',
     }),
     getProductsByCategory: builder.infiniteQuery({
-      query: ({ pageParam = 0, category = '' }) => {
-        const skip = pageParam * 10;
-        return `products/category/${category}?limit=10&skip=${skip}&select=id,title,price,description,category,images,thumbnail,rating,brand,stock`;
-      },
-      infiniteQueryOptions: {
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages, lastPageParam) => {
-          if (!lastPage || !lastPage.products) return undefined;
-          const { total, limit, skip } = lastPage;
-          const hasMore = skip + limit < total;
-          if (!hasMore) return undefined;
-          return lastPageParam + 1;
-        },
-      },
-      transformResponse: (response) => {
-        return {
-          products: response.products || [],
-          total: response.total || 0,
-          limit: response.limit || 10,
-          skip: response.skip || 0,
-        };
-      },
-      merge: (currentCache, newItems, { pageParam }) => {
-        if (!currentCache || pageParam === 0) {
-          return {
-            products: newItems.products || [],
-            total: newItems.total || 0,
-            limit: newItems.limit || 10,
-            skip: newItems.skip || 0,
-          };
-        }
-        return {
-          ...newItems,
-          products: [...(currentCache.products || []), ...(newItems.products || [])],
-        };
-      },
+      query: ({ queryArg, pageParam }) => buildProductsQuery({ category: queryArg }, pageParam),
+      infiniteQueryOptions,
+      transformResponse: normalizePage,
     }),
   }),
 });
