@@ -1,11 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery, useSearchProductsInfiniteQuery } from '../../features/products/api/productsApi';
 import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import { useIntersectionObserver } from '../../shared/hooks/useIntersectionObserver';
+import { demoProducts, demoCategories } from '../../features/products/data/demoProducts';
+import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
+import { applyCatalogPipeline, normalizePriceRange } from '../../features/products/model/catalogPipeline';
 import styles from './ProductsPage.module.css';
 
 const normalizeRating = (rating) => {
@@ -17,10 +20,14 @@ const normalizeRating = (rating) => {
 const ProductsPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const isApiMode = new URLSearchParams(location.search).get('source') === 'api';
   
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -31,7 +38,8 @@ const ProductsPage = () => {
 
   const isSearchPending = searchQuery.trim() !== debouncedSearchQuery;
 
-  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: apiCategories = [] } = useGetCategoriesQuery(undefined, { skip: !isApiMode });
+  const categories = isApiMode ? apiCategories : demoCategories;
 
   const {
     currentData: productsData,
@@ -44,35 +52,36 @@ const ProductsPage = () => {
     error,
   } = useSearchProductsInfiniteQuery({
     searchQuery: debouncedSearchQuery,
-    category: selectedCategory,
-  }, { skip: isSearchPending });
+    category: selectedCategories.length === 1 ? selectedCategories[0] : '',
+  }, { skip: !isApiMode || isSearchPending });
 
   const allProducts = useMemo(() => {
-    return !isSearchPending ? productsData?.pages?.flatMap(page => page.products) || [] : [];
-  }, [productsData, isSearchPending]);
-  const isInitialLoading = isSearchPending || (isFetching && !productsData);
+    if (isSearchPending) return [];
+    return isApiMode ? productsData?.pages?.flatMap(page => page.products) || [] : demoProducts;
+  }, [productsData, isSearchPending, isApiMode]);
+  const isInitialLoading = isSearchPending || (isApiMode && isFetching && !productsData);
 
-  const sortedProducts = useMemo(() => {
-    let filtered = [...allProducts];
-
-    if (selectedCategory) {
-      filtered = filtered.filter(product => product.category === selectedCategory);
-    }
-
-    if (sortBy === 'asc') {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'desc') {
-      filtered.sort((a, b) => b.price - a.price);
-    }
-
-    return filtered;
-  }, [allProducts, selectedCategory, sortBy]);
+  const { products: sortedProducts, count } = useMemo(() => applyCatalogPipeline(allProducts, {
+    search: isApiMode ? '' : debouncedSearchQuery,
+    categories: selectedCategories,
+    minPrice,
+    maxPrice,
+    sort: sortBy,
+  }), [allProducts, debouncedSearchQuery, selectedCategories, minPrice, maxPrice, sortBy, isApiMode]);
+  const normalizedPrice = normalizePriceRange(minPrice, maxPrice);
+  const activeFilters = [
+    ...(searchQuery.trim() ? [`${t('filter.search')}: ${searchQuery.trim()}`] : []),
+    ...selectedCategories,
+    ...(normalizedPrice.min !== null ? [`${t('filter.minPrice')}: $${normalizedPrice.min}`] : []),
+    ...(normalizedPrice.max !== null ? [`${t('filter.maxPrice')}: $${normalizedPrice.max}`] : []),
+    ...(sortBy !== 'default' ? [t(`filter.${sortBy}`)] : []),
+  ];
 
   const loadMoreRef = useIntersectionObserver(() => {
-    if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
+    if (isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
       fetchNextPage();
     }
-  }, { enabled: hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading });
+  }, { enabled: isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading });
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -81,7 +90,7 @@ const ProductsPage = () => {
       product: {
         id: product.id,
         title: product.title,
-        image: product.images?.[0] || product.thumbnail || '',
+        image: product.thumbnail || product.images?.[0] || '',
         category: product.category,
       },
       price: product.price,
@@ -93,8 +102,15 @@ const ProductsPage = () => {
 
   const handleResetFilters = () => {
     setSearchQuery('');
-    setSelectedCategory('');
+    setSelectedCategories([]);
+    setMinPrice('');
+    setMaxPrice('');
     setSortBy('default');
+  };
+
+  const toggleCategory = (category) => {
+    setSelectedCategories(current => current.includes(category)
+      ? current.filter(item => item !== category) : [...current, category]);
   };
 
   return (
@@ -119,14 +135,19 @@ const ProductsPage = () => {
       <div className={styles.productsContent}>
         <div className={styles.productsHeader}>
           <h1>{t('products.title')}</h1>
-          {(searchQuery || selectedCategory) &&  <p className={styles.resultsCount}>
-            {sortedProducts.length} {t('products.filtered')}
-          </p>}
+          <p className={styles.resultsCount} aria-live="polite">
+            {count} {isApiMode ? t('products.loadedResults') : t('products.filtered')}
+          </p>
         </div>
+
+        <p className={styles.resultsCount}>{t(isApiMode ? 'products.apiSource' : 'products.demoSource')}</p>
+        <p className={styles.resultsCount} data-testid="active-filters">
+          {t('filter.active')}: {activeFilters.length ? activeFilters.join(', ') : t('filter.none')}
+        </p>
 
         {isInitialLoading && <div role="status" aria-label={t('products.loading')}><Loader /></div>}
 
-        {!isSearchPending && error && !isFetchNextPageError && (
+        {isApiMode && !isSearchPending && error && !isFetchNextPageError && (
           <div className={styles.error} role="alert">
             <p>{t('common.error')}</p>
             <Button variant="outline" size="sm" onClick={refetch}>{t('common.retry')}</Button>
@@ -139,15 +160,16 @@ const ProductsPage = () => {
             const uniqueKey = `product-${product.id}`;
             return (
               <Link 
-                to={`/product/${product.id}`} 
+                to={`/product/${product.id}${isApiMode ? '?source=api' : ''}`}
                 key={uniqueKey} 
                 className={styles.productLink}
               >
                 <Card className={styles.cardInner}>
                   <div className={styles.productImage}>
                     <img 
-                      src={product.images?.[0] || product.thumbnail || 'https://placehold.co/280x200?text=No+Image'} 
+                      src={product.thumbnail || product.images?.[0] || unavailableProductImage}
                       alt={product.title}
+                      onError={showUnavailableProductImage}
                     />
                   </div>
                   <div className={styles.productInfo}>
@@ -178,29 +200,29 @@ const ProductsPage = () => {
           })}
         </div>
 
-        {hasNextPage && !isFetchNextPageError && !isInitialLoading && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
+        {isApiMode && hasNextPage && !isFetchNextPageError && !isInitialLoading && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
 
-        {isFetchingNextPage && (
+        {isApiMode && isFetchingNextPage && (
           <div className={styles.loadingMore}>
             <div className={styles.spinnerSmall}></div>
             <p>{t('products.loading')}</p>
           </div>
         )}
 
-        {isFetchNextPageError && (
+        {isApiMode && isFetchNextPageError && (
           <div className={styles.error} role="alert">
             <p>{t('common.error')}</p>
             <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>{t('common.retry')}</Button>
           </div>
         )}
 
-        {!hasNextPage && allProducts.length > 0 && (
+        {isApiMode && !hasNextPage && allProducts.length > 0 && (
           <div className={styles.endMessage}>
             <p>{t('products.endMessage')}</p>
           </div>
         )}
 
-        {sortedProducts.length === 0 && !isInitialLoading && !error && (
+        {count === 0 && !isInitialLoading && (!isApiMode || !error) && (
           <div className={styles.noResults}>
             <p>{t('products.empty')}</p>
             <Button variant="outline" size="sm" onClick={handleResetFilters}>
@@ -220,21 +242,32 @@ const ProductsPage = () => {
             <h4>{t('filter.category')}</h4>
             <div className={styles.categoryList}>
               <button
-                className={`${styles.categoryBtn} ${selectedCategory === '' ? styles.active : ''}`}
-                onClick={() => setSelectedCategory('')}
+                className={`${styles.categoryBtn} ${selectedCategories.length === 0 ? styles.active : ''}`}
+                aria-pressed={selectedCategories.length === 0}
+                onClick={() => setSelectedCategories([])}
               >
                 {t('filter.all')}
               </button>
               {categories.map((category) => (
                 <button
                   key={category.slug || category}
-                  className={`${styles.categoryBtn} ${selectedCategory === (category.slug || category) ? styles.active : ''}`}
-                  onClick={() => setSelectedCategory(category.slug || category)}
+                  className={`${styles.categoryBtn} ${selectedCategories.includes(category.slug || category) ? styles.active : ''}`}
+                  aria-pressed={selectedCategories.includes(category.slug || category)}
+                  onClick={() => toggleCategory(category.slug || category)}
                 >
                   {category.name || category}
                 </button>
               ))}
             </div>
+          </div>
+          <div className={styles.filterSection}>
+            <h4>{t('filter.priceRange')}</h4>
+            <label>{t('filter.minPrice')}
+              <input type="number" min="0" step="any" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+            </label>
+            <label>{t('filter.maxPrice')}
+              <input type="number" min="0" step="any" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+            </label>
           </div>
           <div className={styles.filterSection}>
             <h4>{t('filter.sort')}</h4>

@@ -1,4 +1,6 @@
-const SALE_STORAGE_KEY = 'sale_session';
+import { demoProducts } from '../products/data/demoProducts';
+
+const SALE_STORAGE_KEY = 'sale_session_shop03_snapshot_v1';
 const SALE_ITEMS_COUNT = 8;
 
 const discountOptions = [15, 20, 25, 30, 40, 50];
@@ -37,9 +39,7 @@ export const loadSaleItems = async () => {
   }
   
   try {
-    const response = await fetch('https://dummyjson.com/products?limit=100&select=id,title,price,images,thumbnail,category,rating');
-    const data = await response.json();
-    const allProducts = data.products || [];
+    const allProducts = demoProducts;
     
     if (!allProducts.length) {
       return [];

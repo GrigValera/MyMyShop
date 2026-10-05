@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchSaleItems } from '../../features/sale/saleSlice';
 import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
+import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
 import styles from './HomePage.module.css';
 
 const normalizeRating = (rating) => {
@@ -31,7 +32,7 @@ const HomePage = () => {
       product: {
         id: product.id,
         title: product.title,
-        image: product.images?.[0] || product.thumbnail || '',
+        image: product.thumbnail || product.images?.[0] || '',
         category: product.category,
       },
       price: salePrice,
@@ -81,8 +82,9 @@ const HomePage = () => {
                   <div className={styles.discountBadge}>-{product.discountPercent}%</div>
                   <div className={styles.productImage}>
                     <img 
-                      src={product.images?.[0] || product.thumbnail || 'https://placehold.co/280x200?text=No+Image'} 
+                      src={product.thumbnail || product.images?.[0] || unavailableProductImage}
                       alt={product.title || 'Product image'} 
+                      onError={showUnavailableProductImage}
                     />
                   </div>
                   <div className={styles.productInfo}>

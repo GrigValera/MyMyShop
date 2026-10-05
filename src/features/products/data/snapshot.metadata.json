@@ -1,0 +1,33 @@
+{
+  "formatVersion": 1,
+  "capturedAtUtc": "2026-10-05T09:49:49Z",
+  "source": "https://dummyjson.com/products?limit=0",
+  "total": 194,
+  "categories": [
+    "beauty",
+    "fragrances",
+    "furniture",
+    "groceries",
+    "home-decoration",
+    "kitchen-accessories",
+    "laptops",
+    "mens-shirts",
+    "mens-shoes",
+    "mens-watches",
+    "mobile-accessories",
+    "motorcycle",
+    "skin-care",
+    "smartphones",
+    "sports-accessories",
+    "sunglasses",
+    "tablets",
+    "tops",
+    "vehicle",
+    "womens-bags",
+    "womens-dresses",
+    "womens-jewellery",
+    "womens-shoes",
+    "womens-watches"
+  ],
+  "sha256": "61d98d729b8795b99f42e42a8bbbcb78fde53debe0108b9caf7fe0b8482152f2"
+}

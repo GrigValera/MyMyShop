@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateQuantity } from '../../../features/cart/store/cartSlice';
+import { showUnavailableProductImage, unavailableProductImage } from '../../../features/products/components/productImageFallback';
 import styles from './CartDrawer.module.css';
 
 const CartDrawer = ({ isOpen, onClose }) => {
@@ -42,10 +43,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
             <>
               <div className={styles.cartItems}>
                 {cartItems.map((item) => {
-                  const imageUrl = item.image || 'https://placehold.co/40x40?text=No+Image';
+                  const imageUrl = item.image || unavailableProductImage;
                   return (
                     <div key={`${item.id}-${item.hasDiscount}-${item.price}`} className={styles.cartItem}>
-                      <img src={imageUrl} alt={item.title} className={styles.cartItemImage} />
+                      <img src={imageUrl} alt={item.title} className={styles.cartItemImage} onError={showUnavailableProductImage} />
                       <div className={styles.cartItemInfo}>
                         <p className={styles.cartItemTitle}>
                           {item.title?.length > 30 ? item.title.slice(0, 30) + '...' : item.title}

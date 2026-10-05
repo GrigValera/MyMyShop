@@ -24,7 +24,10 @@
     "filtered": "products found",
     "loading": "Loading products...",
     "shown": "shown of",
-    "endMessage": "You've seen all products!"
+    "endMessage": "You've seen all products!",
+    "demoSource": "Source: local demo catalog",
+    "apiSource": "Source: DummyJSON (loaded pages only)",
+    "loadedResults": "products in loaded pages"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -63,7 +66,12 @@
     "desc": "Price: High to Low",
     "filters": "Filters",
     "resetAll": "Reset all",
-    "apply": "Apply"
+    "apply": "Apply",
+    "priceRange": "Price range ($)",
+    "minPrice": "Minimum price",
+    "maxPrice": "Maximum price",
+    "active": "Active filters",
+    "none": "none"
   },
   "auth": {
     "demoTitle": "Demo-session",
