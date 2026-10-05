@@ -32,15 +32,68 @@ MyMyShop должен стать основным React/TypeScript-кейсом 
 
 ## Основание и порядок работы
 
-Источник: утверждённый пользователем Master Development Plan для MyMyShop. Ниже описано планируемое состояние, а не уже реализованные возможности. Все tickets имеют статус NOT STARTED; создание этого roadmap не начинает SHOP-00 или любой следующий ticket.
+Источник: утверждённый пользователем Master Development Plan для MyMyShop и утверждённый Backlog Reconciliation Audit для исходных T-001…T-039. Статусы отражают состояние после merge SHOP-00, SHOP-01 и SHOP-02 в main; остальные этапы остаются планом. Этот roadmap сам по себе не начинает следующий ticket.
 
-Рекомендуемые branch и commit message сохранены из плана. Поля «Проблема» для SHOP-90/91/92 и tests для SHOP-90 сформулированы из их целей, изменений и acceptance criteria, поскольку отдельных полей в источнике нет. Это не дополнительные требования.
+Рекомендуемые branch и commit message исходных SHOP-tickets сохранены из плана. Поля «Проблема» для SHOP-90/91/92 и tests для SHOP-90 сформулированы из их целей, изменений и acceptance criteria, поскольку отдельных полей в источнике нет. Это не дополнительные требования.
 
 Каждый ticket начинается только после явного подтверждения пользователя и выполняется по [CODEX_WORKFLOW.md](CODEX_WORKFLOW.md). Зависимости перечислены в каждом ticket.
 
+Порядок основных этапов: SHOP-00 → SHOP-01/SHOP-02 → SHOP-03/SHOP-04 → SHOP-05 → SHOP-06 → SHOP-07 → SHOP-08 → SHOP-CATALOG-POLISH/SHOP-COMMERCE-CONTENT/SHOP-UI → SHOP-90 → SHOP-91 → SHOP-92. Параллельность допустима только с учётом зависимостей конкретного этапа.
+
+## Traceability / Reconciliation — исходный backlog T-001…T-039
+
+Матрица основана на утверждённом Backlog Reconciliation Audit из постановки SHOP-GOV-02, уточнениях аудита и текущем состоянии main. Исходный полный текст backlog в репозитории отсутствует, но формулировки T-001…T-039 предоставлены в аудите. `SOURCE UNAVAILABLE` применяется только к записям без спецификации: назначение, критерии и реализацию нельзя придумывать. `PARTIALLY IMPLEMENTED` фиксирует видимый задел, но не закрывает требование целиком. `PLANNED` означает roadmap mapping, а не начатую работу. `REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE` означает сознательно изменённый контракт, который нельзя считать исходным `IMPLEMENTED`.
+
+| Original requirement | Судьба | Roadmap mapping / ограничение |
+| --- | --- | --- |
+| T-001 — прежний mock-auth / ProtectedRoute | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | SHOP-01 demo-session уже merged; старую модель credentials и ложную защищённость не восстанавливать. |
+| T-002 — исправить категории, убрать дубли фильтров | PARTIALLY IMPLEMENTED | SHOP-02 исправил работу категорий; устранение дублей фильтров и согласованное состояние в SHOP-03. |
+| T-003 — единая скидка для badge и цены | PLANNED | SHOP-CATALOG-POLISH. |
+| T-004 — убрать `console.log` / `alert` из продуктовых сценариев | PLANNED | SHOP-CATALOG-POLISH, заменить на согласованные пользовательские уведомления при необходимости. |
+| T-005 — корректная прокрутка Product Details | PLANNED | SHOP-CATALOG-POLISH. |
+| T-006 — слой entities для Product/User/Cart/Order | PLANNED | SHOP-06, типизированные domain entities и границы. |
+| T-007 — вынести нормализацию товаров из страниц и sale | PLANNED | SHOP-06, единая нормализация на domain/API границе. |
+| T-008 — дублирующие hooks прокрутки | PLANNED | SHOP-CATALOG-POLISH. |
+| T-009 — пересмотр `forwardRef` для React 19 | PLANNED | SHOP-07, проверить необходимость при текущей версии React 19 и совместимость компонентов. |
+| T-010 — порядок `variables.css`/`global.css` | PLANNED | SHOP-UI. |
+| T-011 — Vite aliases | PLANNED | SHOP-06, в рамках миграции domain/API модулей. |
+| T-012 — hardcoded strings/i18n | PARTIALLY IMPLEMENTED | RU/EN инфраструктура есть; аудит оставшихся строк в SHOP-UI. |
+| T-013 — Error Boundary / уведомления / общий error handling | PLANNED | SHOP-CATALOG-POLISH. |
+| T-014 — не показывать поисковую подсказку до ввода | PLANNED | SHOP-CATALOG-POLISH, поведение подсказки в продуктовых сценариях. |
+| T-015 — согласовать поиск и фильтры, debounce, убрать мигание состояний | PARTIALLY IMPLEMENTED | Debounce уже реализован SHOP-02; согласование комбинаций в SHOP-03, отсутствие мигания в SHOP-UI и regression checks SHOP-90. |
+| T-016 — +/- и изображения корзины | PLANNED | SHOP-UI. |
+| T-017 — единая система иконок | PLANNED | SHOP-UI. |
+| T-018 — Price abstraction | PLANNED | SHOP-06, единый domain contract. |
+| T-019 — Currency abstraction | PLANNED | SHOP-06, форматирование и границы валюты. |
+| T-020 — общий EmptyState | PLANNED | SHOP-CATALOG-POLISH. |
+| T-021 — 404 route | PLANNED | SHOP-CATALOG-POLISH. |
+| T-022 — mobile cart/profile pages | PARTIALLY IMPLEMENTED | Страницы существуют; mobile UX вместо drawers уточнить и реализовать в SHOP-UI, если он остаётся утверждённым. |
+| T-023 — cart icon in drawer | PLANNED | SHOP-UI, в контексте единой системы иконок и решения по mobile drawers. |
+| T-024 — delivery details / promo | PARTIALLY IMPLEMENTED | Базовая delivery page есть; детали и promo в SHOP-COMMERCE-CONTENT. |
+| T-025 — pickup points / map | PLANNED | SHOP-COMMERCE-CONTENT; конкретный источник данных согласовать перед реализацией. |
+| T-026 — реальная/ложная оплата | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | SHOP-04 допускает только явно обозначенный локальный demo-checkout без реальных платёжных данных. |
+| T-027 — quiz «Не знаю чего хочу» | PLANNED | SHOP-COMMERCE-CONTENT. |
+| T-028 — полноценная contact form | PARTIALLY IMPLEMENTED | Форма есть, но сейчас только локально логирует ввод; поведение и ограничения согласовать в SHOP-COMMERCE-CONTENT. |
+| T-029 — chatbot | PARTIALLY IMPLEMENTED | Простой локальный chatbot есть; границы и ожидаемый сценарий уточнить в SHOP-COMMERCE-CONTENT. |
+| T-030 — полный responsive-аудит 320–1440 px | PLANNED | Исправления в SHOP-UI; итоговая проверка 320/390/768/1280/1440 в SHOP-90. |
+| T-031 — CSS audit | PLANNED | SHOP-UI. |
+| T-032 — microanimations | PLANNED | SHOP-UI, с учётом доступности и reduced motion. |
+| T-033 — lazy/preload | PARTIALLY IMPLEMENTED | Route-level lazy loading есть; недостающие preload/loading решения в SHOP-CATALOG-POLISH и SHOP-UI. |
+| T-034 — image optimization | PLANNED | SHOP-CATALOG-POLISH и SHOP-UI. |
+| T-035 — bundle analysis/code splitting | PARTIALLY IMPLEMENTED | Route-level splitting есть; bundle analysis и обоснованное дальнейшее splitting в SHOP-CATALOG-POLISH. |
+| T-036 — unit/component tests | PARTIALLY IMPLEMENTED | Отдельные unit-проверки добавлены SHOP-00…02; component coverage ещё требуется на implementation stages и к SHOP-90. |
+| T-037 — integration tests | PARTIALLY IMPLEMENTED | Базовые проверки добавлены SHOP-00…02; сценарии новых контрактов на каждом stage и итоговая проверка в SHOP-90. |
+| T-038 — architecture documentation | PLANNED | SHOP-92, сверить с фактическими контрактами и release commit. |
+| T-039 — cart persistence / server sync | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | Локальное versioned persistence в SHOP-05; server sync исключена из текущей demo-архитектуры без backend. |
+
+Отдельная запись исходного материала «Названание 1-1-7»: `SOURCE UNAVAILABLE / NEEDS CLARIFICATION`. Смысл не установлен; implementation ticket не создаётся.
+
+Перед SHOP-92 необходимо уточнить спецификацию «Названание 1-1-7» либо явно подтвердить её исключение/отсрочку. SHOP-92 переводит эту рабочую матрицу в итоговую таблицу с колонками `original requirement`, `implemented`, `replaced`, `deferred`, `excluded`, `known limitation` и фактическими доказательствами.
+
 ## SHOP-00 — Foundation
 
-Статус: NOT STARTED.
+Статус: DONE. Implementation: `f0f2a867dbd5ddfeb124030a7f289e462031592a`; merge: `77933d996e14ab0651a8bfe379093258bdb18f93`. Automated checks и manual QA пройдены при закрытии ticket.
+
 Цель:
 получить воспроизводимую исходную точку и ранний CI.
 
@@ -91,7 +144,7 @@ chore(shop): establish reproducible checks
 
 ## SHOP-01 — Безопасная демонстрационная сессия
 
-Статус: NOT STARTED.
+Статус: DONE. Implementation: `0158ec2467882dc8c191338b858c274056538ca0`; merge: `774b5bd00a59a04e48cdd90912c72c8f54ed4057`. Automated checks и manual QA пройдены при закрытии ticket.
 
 Цель:
 убрать небезопасную имитацию авторизации.
@@ -143,7 +196,7 @@ SHOP-00
 
 ## SHOP-02 — Корректный поиск и категории
 
-Статус: NOT STARTED.
+Статус: DONE. Implementation: `de94848132bd5f4667079debc3db719b2d4e95b6`; merge: `de7beb5943381d80dbce77fecf4ba34f61fd2f30`. Automated checks и manual QA пройдены при закрытии ticket.
 
 Цель:
 восстановить контракт infinite query.
@@ -193,21 +246,29 @@ SHOP-00
 
 ---
 
-## SHOP-03 — Честная фильтрация и сортировка
+## SHOP-03 — Catalog semantics & advanced filtering
 
 Статус: NOT STARTED.
 
 Цель:
-сделать результаты понятными и воспроизводимыми.
+сделать поиск, категории, диапазон цен и сортировку единым, понятным и воспроизводимым сценарием.
 
 Проблема:
 фильтры работают только по уже загруженным страницам.
 
 Основные изменения:
 
-- для основного demo использовать полный фиксированный набор товаров;
+- для основного demo использовать полный фиксированный набор товаров, доступный без внешнего API;
 
-- вынести pipeline поиска/фильтрации/сортировки;
+- построить единый pipeline поиска, фильтрации и сортировки по полному набору;
+
+- поддержать несколько одновременно выбранных категорий и диапазон цен;
+
+- устранить дубли фильтров и согласовать состояние категорий, поиска и остальных фильтров (T-002/T-015);
+
+- хранить и явно показывать активные фильтры; визуальный счётчик и summary уточнены в SHOP-UI;
+
+- сохранить уже реализованный в SHOP-02 debounce поиска, без повторной реализации;
 
 - сохранить внешний API за adapter как дополнительный режим;
 
@@ -217,19 +278,23 @@ Acceptance criteria:
 
 - результат не зависит от прокрутки;
 
-- счётчик совпадает с выборкой;
+- точный count совпадает с полной выборкой после поиска и фильтров;
 
-- комбинации фильтров дают стабильный результат;
+- комбинации строки поиска, нескольких категорий, диапазона цен и сортировки дают согласованный стабильный результат;
+
+- сброс и изменение любого фильтра обновляют явное состояние активных фильтров и результат;
+
+- debounce поиска из SHOP-02 сохраняется;
 
 - основной demo работает без DummyJSON.
 
 Необходимые tests:
 
-- unit: комбинации и стабильность сортировки;
+- unit: комбинации поиска, нескольких категорий и диапазона цен, точный count и стабильность сортировки;
 
-- integration: adapter и пагинация результата;
+- integration: fixture/API adapter, сброс состояния при смене фильтров и пагинация результата;
 
-- E2E: одинаковая выдача до и после прокрутки.
+- E2E: одинаковая выдача и count до и после прокрутки; regression для существующего debounce поиска.
 
 Рекомендуемая branch:
 fix/shop-03-catalog-semantics
@@ -264,6 +329,8 @@ checkout сообщает об оформлении и очищает корзи
 - показать сообщение «Демо-заказ сохранён на этом устройстве, продавцу не отправлен»;
 
 - исключить реальные платёжные данные.
+
+- не восстанавливать реальную или имитирующую реальную оплату из T-026: допустим только явно обозначенный demo-checkout.
 
 Acceptance criteria:
 
@@ -317,6 +384,8 @@ storage quota и дублирование заказа; demo-история не
 
 - согласовать хранение demo-order.
 
+- реализовать только локальное cart persistence: server sync из T-039 требует backend и не входит в текущую demo-архитектуру.
+
 Acceptance criteria:
 
 - корзина восстанавливается;
@@ -363,7 +432,13 @@ SHOP-04
 
 - добавить TS с постепенным сосуществованием JS;
 
-- типизировать Product, CartItem, DemoOrder, query args, store hooks и adapters;
+- создать слой entities для Product/User/Cart/Order и типизировать Product, CartItem, DemoOrder, query args, store hooks и adapters (T-006);
+
+- вынести нормализацию товаров из страниц и sale на общую domain/API границу (T-007);
+
+- определить общую Price/Currency abstraction для расчётов, отображения и форматирования (T-018/T-019);
+
+- проверить Vite aliases для мигрируемых модулей (T-011);
 
 - включить strict для мигрируемых модулей.
 
@@ -417,6 +492,8 @@ SHOP-03, SHOP-05
 
 - документировать временные исключения с причиной и сроком.
 
+- при текущей версии React 19 проверить необходимость `forwardRef` и совместимость компонентов (T-009), без механического удаления;
+
 Acceptance criteria:
 
 - lock согласован;
@@ -445,12 +522,108 @@ SHOP-06
 
 ---
 
+## SHOP-08 — Typed Client Authentication Architecture / Mock API
+
+Статус: NOT STARTED.
+
+Цель:
+определить типизированную клиентскую архитектуру авторизации с тестовым HTTP-режимом без реального backend.
+
+Roadmap-level scope:
+
+- публичным режимом остаётся SHOP-01 demo-session;
+- AuthService abstraction с Demo Adapter и HTTP Adapter;
+- typed contracts для login/register/logout/getSession;
+- runtime validation ответов HTTP;
+- mock HTTP server для tests;
+- mock-api login UI доступен только в непубличном режиме; public build не собирает mock-login flow;
+- реальный backend вне scope.
+
+Зависимости:
+SHOP-01, SHOP-06, SHOP-07.
+
+---
+
+## SHOP-CATALOG-POLISH — Catalog resilience & navigation
+
+Статус: NOT STARTED.
+
+Цель:
+закрыть небольшие функциональные и технические пробелы каталога, не смешивая их с визуальной стабилизацией.
+
+Scope:
+
+- единая скидка как источник для badge и цены (T-003);
+- убрать `console.log` / `alert` из продуктовых сценариев, согласовать пользовательские уведомления (T-004);
+- корректная прокрутка Product Details и устранение дублирующих hooks прокрутки (T-005/T-008);
+- не показывать поисковую подсказку до ввода (T-014);
+- общий EmptyState, маршрут 404, Error Boundary и согласованные уведомления об ошибках (T-013/T-020/T-021);
+- lazy loading, preload и качество загрузки изображений, где это улучшает каталог (T-033/T-034); согласовать с visual/layout работой SHOP-UI;
+- bundle analysis и обоснованное code splitting для каталога (T-035).
+
+Перед реализацией разделить на небольшие PR, если единый diff станет слишком широким. Regression tests покрывают скидку, навигацию, пустые и ошибочные состояния и загрузку изображений.
+
+Зависимости:
+SHOP-03, SHOP-06.
+
+---
+
+## SHOP-COMMERCE-CONTENT — Delivery & engagement
+
+Статус: NOT STARTED.
+
+Цель:
+довести информационные и демонстрационные сценарии магазина до явно описанного поведения.
+
+Scope:
+
+- детали доставки, промокод и пункты выдачи/карта (T-024/T-025);
+- quiz «Не знаю чего хочу» (T-027);
+- полноценная contact form (T-028);
+- chatbot с явно ограниченным demo-поведением (T-029).
+
+Никаких реальных платежей, отправки заказа продавцу или backend-интеграции эта группа сама по себе не обещает. Конкретные данные, поведение и tests утверждаются перед реализацией; крупную группу разделить на небольшие PR.
+
+Зависимости:
+SHOP-04, SHOP-05.
+
+---
+
+## SHOP-UI — Visual and Layout Stabilization
+
+Статус: NOT STARTED. Implementation stage до финального SHOP-90.
+
+Цель:
+стабилизировать layout и привести основные состояния интерфейса к единой визуальной системе.
+
+Scope:
+
+- стабильные размеры карточек и изображений, устранение layout shifts;
+- более ранняя и равномерная подгрузка карточек, placeholders/skeleton при необходимости;
+- сетки, размеры, отступы, центрирование и responsive layout;
+- полный responsive-аудит 320–1440 px (T-030) с исправлением выявленных дефектов;
+- качество миниатюр корзины и +/- controls количества (T-016);
+- единая система иконок, включая иконку корзины в drawer (T-017/T-023);
+- mobile cart/profile pages вместо drawers, если этот UX остаётся утверждённым (T-022);
+- порядок `variables.css`/`global.css`, CSS audit/cleanup (T-010/T-031);
+- согласованные кнопки и состояния, microanimations (T-032);
+- устранение hardcoded strings и согласованность RU/EN (T-012);
+- счётчик активных фильтров и tooltip/summary их состояния после SHOP-03;
+- убрать мигание состояний при совместной работе поиска и фильтров (T-015).
+
+Перед реализацией разбить этап на SHOP-UI-01, SHOP-UI-02 и последующие небольшие PR с собственными критериями и проверками. Основные визуальные исправления реализуются здесь; SHOP-90 проверяет итоговое качество.
+
+Зависимости:
+SHOP-03, SHOP-05, SHOP-08; согласовать пересечения по загрузке изображений с SHOP-CATALOG-POLISH.
+
+---
+
 ## SHOP-90 — Interface Quality
 
 Статус: NOT STARTED.
 
 Цель:
-доказать доступность и устойчивость интерфейса.
+провести финальный QA gate для доступности, адаптивности и визуальной устойчивости после implementation stages.
 
 Проблема (сформулирована из цели и критериев плана):
 доступность, responsive-поведение и визуальная устойчивость интерфейса требуют подтверждения проверками.
@@ -465,7 +638,7 @@ SHOP-06
 
 - loading/empty/error состояния, где применимо;
 
-- responsive проверки 320/390/768/1280;
+- responsive проверки 320/390/768/1280/1440;
 
 - keyboard accessibility;
 
@@ -473,7 +646,9 @@ SHOP-06
 
 - длинные названия товаров;
 
-- основные локали.
+- RU/EN и mobile cart/profile flows;
+
+- фильтры и их активные состояния после SHOP-03/SHOP-UI.
 
 Acceptance criteria:
 
@@ -487,6 +662,8 @@ Acceptance criteria:
 
 - нет горизонтального скролла страницы;
 
+- нет существенных layout shifts;
+
 - ключевые визуальные состояния покрыты baseline.
 
 Необходимые tests (из изменений и acceptance criteria плана):
@@ -495,11 +672,11 @@ Acceptance criteria:
 
 - axe и ручная проверка клавиатуры, видимого фокуса и accessible names;
 
-- visual regression ключевых состояний, light/dark, длинных названий и основных локалей;
+- visual regression ключевых состояний, light/dark, RU/EN, длинных названий и mobile flows;
 
-- responsive verification на 320/390/768/1280, включая отсутствие горизонтального скролла;
+- responsive verification на 320/390/768/1280/1440, включая отсутствие горизонтального скролла и существенных layout shifts;
 
-- проверки loading/empty/error состояний, где применимо.
+- проверки loading/empty/error состояний и комбинаций фильтров, где применимо.
 
 Рекомендуемая branch:
 test/shop-90-interface
@@ -508,7 +685,7 @@ test/shop-90-interface
 test(shop): cover accessible responsive journeys
 
 Зависимости:
-SHOP-07
+SHOP-08, SHOP-CATALOG-POLISH, SHOP-COMMERCE-CONTENT, SHOP-UI.
 
 Риски:
 flaky screenshots и слишком широкий scope; крупные независимые дефекты выносить отдельно.
@@ -611,6 +788,8 @@ README с:
 - known limitations;
 
 - rollback/release notes.
+
+- итоговая traceability table по каждому исходному требованию: original requirement, implemented, replaced, deferred, excluded, known limitation; сверить её с матрицей выше и фактическим release commit.
 
 Acceptance criteria:
 
