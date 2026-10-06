@@ -106,9 +106,6 @@
 }
 
 .productImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   transition: transform var(--transition-base);
 }
 
@@ -459,7 +456,7 @@ body.dark [class*="productImage"] {
   background: #1a1a2e;
 }
 
-body.dark [class*="productImage"] img {
+body.dark [class*="productImage"][data-image-state="loaded"] img {
   mix-blend-mode: luminosity;
   opacity: 0.95;
 }

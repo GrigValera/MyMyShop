@@ -409,15 +409,6 @@ img {
   background: var(--bg-image-placeholder);
 }
 
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-}
-
-img[loading="lazy"].loaded {
-  opacity: 1;
-}
-
 /* Анимация для карточек при загрузке */
 .product-card {
   opacity: 0;

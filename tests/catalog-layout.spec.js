@@ -49,8 +49,8 @@ test('long title and failed image keep card geometry and controls usable', async
   const slotBefore = await imageSlot.boundingBox();
 
   await first.locator('h3').evaluate(title => { title.textContent = 'Очень длинное название товара '.repeat(20); });
-  await first.locator('img').evaluate(image => { image.src = 'https://cdn.dummyjson.com/missing-layout-test.jpg'; });
-  await expect.poll(() => first.locator('img').evaluate(image => image.src.startsWith('data:image/svg+xml'))).toBe(true);
+  await expect(imageSlot).toHaveAttribute('data-image-state', 'fallback');
+  await expect(imageSlot.locator('img')).toHaveCount(0);
 
   const after = await first.boundingBox();
   const slotAfter = await imageSlot.boundingBox();
@@ -98,7 +98,7 @@ test('opening a product from a scrolled catalog starts at the product top', asyn
   await expect(page).toHaveURL(/\/product\/\d+/);
   const mainImage = page.getByRole('img', { name: / - 1$/ });
   await expect(mainImage).toBeVisible();
-  await expect.poll(() => mainImage.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+  await expect(mainImage.locator('svg')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(5);
   const bounds = await mainImage.boundingBox();
   expect(bounds.y).toBeGreaterThanOrEqual(0);

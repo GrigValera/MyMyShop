@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card } from '../../shared/ui';
 import { removeFromCart, updateQuantity, clearCart } from '../../features/cart/store/cartSlice';
-import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
+import ProductImage from '../../features/products/components/ProductImage';
 import styles from './CartPage.module.css';
 
 const CartPage = () => {
@@ -46,20 +46,9 @@ const CartPage = () => {
       <div className={styles.cartContent}>
         <div className={styles.cartItems}>
           {cartItems.map((item) => {
-            const imageUrl = item.image || unavailableProductImage;
             return (
               <Card key={`${item.id}-${item.hasDiscount}-${item.price}`} className={styles.cartItem}>
-                <div className={styles.cartItemImage}>
-                  <img 
-                    src={imageUrl}
-                    onError={showUnavailableProductImage}
-                    alt={item.title}
-                    loading="lazy"
-                    width="80"
-                    height="80"
-                    style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-                  />
-                </div>
+                <ProductImage className={styles.cartItemImage} src={item.image} alt={item.title} width={80} height={80} />
                 <div className={styles.cartItemDetails}>
                   <h3>{item.title?.length > 50 ? item.title.slice(0, 50) + '...' : item.title}</h3>
                   <p className={styles.cartItemPrice}>${item.price}</p>

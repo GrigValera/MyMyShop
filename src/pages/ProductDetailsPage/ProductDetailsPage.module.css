@@ -43,32 +43,38 @@
   min-height: 400px;
 }
 
-.carousel img {
-  max-width: 100%;
-  max-height: 400px;
-  object-fit: contain;
+.imageSlot {
+  width: 100%;
+  height: 368px;
+  border-radius: var(--radius-md);
 }
 
 .carouselBtn {
   position: absolute;
+  z-index: 1;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: white;
   font-size: 24px;
   cursor: pointer;
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: 0;
   border-radius: var(--radius-full);
   transition: background var(--transition-fast);
 }
 
 .carouselBtn:first-of-type {
-  left: var(--spacing-2);
+  left: var(--spacing-4);
 }
 
 .carouselBtn:last-of-type {
-  right: var(--spacing-2);
+  right: var(--spacing-4);
 }
 
 .carouselBtn:hover {
@@ -290,6 +296,10 @@
   .carousel {
     min-height: 300px;
   }
+
+  .imageSlot {
+    height: 268px;
+  }
   
   .productPrice, .salePrice {
     font-size: var(--font-size-2xl);
@@ -322,10 +332,13 @@
   .carousel {
     min-height: 250px;
   }
+
+  .imageSlot {
+    height: 218px;
+  }
   
   .carouselBtn {
     font-size: 18px;
-    padding: var(--spacing-1) var(--spacing-2);
   }
   
   .priceContainer {

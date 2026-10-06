@@ -92,7 +92,7 @@
 .cartItemImage {
   width: 48px;
   height: 48px;
-  object-fit: contain;
+  flex-shrink: 0;
   border-radius: var(--radius-sm);
   background: var(--bg-primary);
 }
