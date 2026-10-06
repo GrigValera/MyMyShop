@@ -27,7 +27,10 @@
     "endMessage": "Вы просмотрели все товары!",
     "demoSource": "Источник: локальный demo-каталог",
     "apiSource": "Источник: DummyJSON (показаны загруженные страницы)",
-    "loadedResults": "товаров среди загруженных страниц"
+    "loadedResults": "товаров среди загруженных страниц",
+    "ofCatalog": "из {{count}} в каталоге",
+    "catalogEmpty": "Каталог пока пуст",
+    "emptyHint": "Попробуйте изменить запрос или сбросить фильтры."
   },
   "cart": {
     "title": "Корзина",
@@ -71,7 +74,8 @@
     "minPrice": "Цена от",
     "maxPrice": "Цена до",
     "active": "Активные фильтры",
-    "none": "нет"
+    "none": "нет",
+    "activeCount": "Активных фильтров: {{count}}"
   },
   "auth": {
     "demoTitle": "Demo-session",

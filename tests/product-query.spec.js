@@ -187,7 +187,7 @@ test('E2E: empty results and retry after an API error', async ({ page }) => {
     return route.fulfill({ json: { products: [], total: 0, limit: 10, skip: 0 } });
   });
   await page.goto('/products?source=api');
-  await expect(page.getByText('Товары не найдены')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Каталог пока пуст' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Поиск' }).fill('retry');
   await expect(page.getByRole('status', { name: 'Загрузка товаров...' })).toBeVisible();
   releaseInitial();

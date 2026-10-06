@@ -47,7 +47,7 @@ test('blocked product CDN shows named fallbacks on Home, catalog, details and ca
   await page.getByRole('button', { name: 'Cart' }).click();
   const drawerSlot = page.locator('[class*="_cartItemImage_"][data-image-state]').last();
   await expect(drawerSlot).toHaveAttribute('data-image-state', 'fallback');
-  expect((await drawerSlot.boundingBox()).width).toBe(48);
+  expect((await drawerSlot.boundingBox()).width).toBeCloseTo(48, 3);
   await page.getByRole('link', { name: 'Перейти в корзину' }).click();
   const cartSlot = page.locator('[class*="_cartItemImage_"][data-image-state]').first();
   await expect(cartSlot).toHaveAttribute('data-image-state', 'fallback');

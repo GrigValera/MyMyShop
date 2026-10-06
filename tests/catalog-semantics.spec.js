@@ -142,7 +142,7 @@ test('E2E: multiple categories, price, combined filters and reset', async ({ pag
   await page.getByRole('button', { name: 'Фильтры' }).click();
   await page.getByRole('button', { name: 'Сбросить все' }).click();
   await expect(page.getByText('194 товаров найдено')).toBeVisible();
-  await expect(page.getByTestId('active-filters')).toContainText('нет');
+  await expect(page.getByTestId('active-filters')).toHaveCount(0);
 });
 
 test('regression: existing 400 ms debounce is preserved in local mode', async ({ page }) => {
