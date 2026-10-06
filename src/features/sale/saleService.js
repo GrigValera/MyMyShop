@@ -58,7 +58,7 @@ export const loadSaleItems = async () => {
       return {
         id: product.id,
         title: product.title || 'Product',
-        thumbnail: product.thumbnail || 'https://placehold.co/200x200?text=No+Image',
+        thumbnail: product.thumbnail || '',
         images: product.images || [],
         category: normalizedCategory,
         rating: normalizedRating,

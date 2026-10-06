@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchSaleItems } from '../../features/sale/saleSlice';
 import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
-import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
+import ProductImage from '../../features/products/components/ProductImage';
 import styles from './HomePage.module.css';
 
 const normalizeRating = (rating) => {
@@ -64,7 +64,7 @@ const HomePage = () => {
       <section className={styles.saleSection}>
         <h2 className={styles.sectionTitle}>{t('home.saleTitle')}</h2>
         <div className={styles.productsGrid}>
-          {saleItems.map((product) => {
+          {saleItems.map((product, index) => {
             const ratingValue = normalizeRating(product.rating);
             return (
               <Card className={styles.productCard} key={`sale-${product.id}`}>
@@ -79,13 +79,12 @@ const HomePage = () => {
                   }}
                   className={styles.productLink}
                 >
-                  <div className={styles.productImage}>
-                    <img 
-                      src={product.thumbnail || product.images?.[0] || unavailableProductImage}
-                      alt={product.title || 'Product image'} 
-                      onError={showUnavailableProductImage}
-                    />
-                  </div>
+                  <ProductImage
+                    className={styles.productImage}
+                    src={product.thumbnail || product.images?.[0]}
+                    alt={product.title}
+                    loading={index < 2 ? 'eager' : 'lazy'}
+                  />
                   <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>
                       {product.title}

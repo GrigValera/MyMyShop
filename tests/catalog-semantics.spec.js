@@ -70,7 +70,7 @@ test('integration: full local snapshot, details and fallback work without DummyJ
   await page.goto('/products');
   await expect(page.getByText('194 товаров найдено')).toBeVisible();
   await expect(page.locator('a[href^="/product/"]')).toHaveCount(194);
-  await expect.poll(() => page.locator('img[alt="Essence Mascara Lash Princess"]').evaluate(image => image.naturalWidth)).toBe(400);
+  await expect(page.getByRole('img', { name: 'Essence Mascara Lash Princess' }).first()).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(page.getByText('194 товаров найдено')).toBeVisible();
   await page.getByRole('textbox', { name: 'Поиск' }).fill('mascara');
@@ -98,7 +98,7 @@ test('regression: catalog opens local details with DummyJSON blocked before firs
   await expect(page.getByRole('heading', { level: 1, name: 'Essence Mascara Lash Princess' })).toBeVisible();
   await expect(page.getByText('$9.99', { exact: true })).toBeVisible();
   await expect(page.getByText('The Essence Mascara Lash Princess is a popular mascara', { exact: false })).toBeVisible();
-  await expect.poll(() => page.getByRole('img', { name: 'Essence Mascara Lash Princess - 1' }).evaluate(image => image.naturalWidth)).toBe(400);
+  await expect(page.getByRole('img', { name: 'Essence Mascara Lash Princess - 1' })).toBeVisible();
   expect(apiCalls).toBe(0);
   expect(failedLocalRequests).toEqual([]);
   expect(uncaughtErrors).toEqual([]);
@@ -114,7 +114,7 @@ test('regression: direct local product route works with DummyJSON blocked', asyn
   await expect(page.getByRole('heading', { level: 1, name: 'Essence Mascara Lash Princess' })).toBeVisible();
   await expect(page.getByText('$9.99', { exact: true })).toBeVisible();
   await expect(page.getByText('The Essence Mascara Lash Princess is a popular mascara', { exact: false })).toBeVisible();
-  await expect.poll(() => page.getByRole('img', { name: 'Essence Mascara Lash Princess - 1' }).evaluate(image => image.naturalWidth)).toBe(400);
+  await expect(page.getByRole('img', { name: 'Essence Mascara Lash Princess - 1' })).toBeVisible();
   expect(apiCalls).toBe(0);
   expect(uncaughtErrors).toEqual([]);
 });

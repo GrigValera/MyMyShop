@@ -7,7 +7,7 @@ import { Card, Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import { useIntersectionObserver } from '../../shared/hooks/useIntersectionObserver';
 import { demoProducts, demoCategories } from '../../features/products/data/demoProducts';
-import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
+import ProductImage from '../../features/products/components/ProductImage';
 import { applyCatalogPipeline, normalizePriceRange } from '../../features/products/model/catalogPipeline';
 import styles from './ProductsPage.module.css';
 
@@ -155,7 +155,7 @@ const ProductsPage = () => {
         )}
 
         <div className={styles.productsGrid}>
-          {sortedProducts.map((product) => {
+          {sortedProducts.map((product, index) => {
             const ratingValue = normalizeRating(product.rating);
             const uniqueKey = `product-${product.id}`;
             return (
@@ -164,13 +164,12 @@ const ProductsPage = () => {
                   to={`/product/${product.id}${isApiMode ? '?source=api' : ''}`}
                   className={styles.productLink}
                 >
-                  <div className={styles.productImage}>
-                    <img 
-                      src={product.thumbnail || product.images?.[0] || unavailableProductImage}
-                      alt={product.title}
-                      onError={showUnavailableProductImage}
-                    />
-                  </div>
+                  <ProductImage
+                    className={styles.productImage}
+                    src={product.thumbnail || product.images?.[0]}
+                    alt={product.title}
+                    loading={index < 4 ? 'eager' : 'lazy'}
+                  />
                   <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>
                       {product.title}

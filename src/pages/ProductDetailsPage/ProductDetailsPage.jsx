@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetProductByIdQuery } from '../../features/products/api/productsApi';
 import { getDemoProductById } from '../../features/products/data/demoProducts';
-import { showUnavailableProductImage, unavailableProductImage } from '../../features/products/components/productImageFallback';
+import ProductImage from '../../features/products/components/ProductImage';
 import { Button, Loader } from '../../shared/ui';
 import { addToCart } from '../../features/cart/store/cartSlice';
 import styles from './ProductDetailsPage.module.css';
@@ -12,10 +12,7 @@ import styles from './ProductDetailsPage.module.css';
 const ImageCarousel = ({ images, title }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  let displayImages = [...images];
-  if (!displayImages || displayImages.length === 0) {
-    displayImages = [unavailableProductImage];
-  }
+  const displayImages = images.length ? images : [''];
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % displayImages.length);
@@ -28,10 +25,14 @@ const ImageCarousel = ({ images, title }) => {
   return (
     <div className={styles.carousel}>
       <button className={styles.carouselBtn} onClick={prevSlide}>❮</button>
-      <img 
-        src={displayImages[currentIndex]} 
+      <ProductImage
+        key={displayImages[currentIndex]}
+        className={styles.imageSlot}
+        src={displayImages[currentIndex]}
         alt={`${title} - ${currentIndex + 1}`}
-        onError={showUnavailableProductImage}
+        width={400}
+        height={400}
+        loading="eager"
       />
       <button className={styles.carouselBtn} onClick={nextSlide}>❯</button>
       <div className={styles.carouselDots}>
