@@ -43,7 +43,6 @@ const ProductsPage = () => {
 
   const {
     currentData: productsData,
-    isFetching,
     isFetchingNextPage,
     isFetchNextPageError,
     hasNextPage,
@@ -59,7 +58,8 @@ const ProductsPage = () => {
     if (isSearchPending) return [];
     return isApiMode ? productsData?.pages?.flatMap(page => page.products) || [] : demoProducts;
   }, [productsData, isSearchPending, isApiMode]);
-  const isInitialLoading = isSearchPending || (isApiMode && isFetching && !productsData);
+  const isInitialLoading = isSearchPending || (isApiMode && !productsData && !error);
+  const hasInitialError = isApiMode && !isSearchPending && error && !productsData && !isFetchNextPageError;
 
   const { products: sortedProducts, count } = useMemo(() => applyCatalogPipeline(allProducts, {
     search: isApiMode ? '' : debouncedSearchQuery,
@@ -76,12 +76,16 @@ const ProductsPage = () => {
     ...(normalizedPrice.max !== null ? [`${t('filter.maxPrice')}: $${normalizedPrice.max}`] : []),
     ...(sortBy !== 'default' ? [t(`filter.${sortBy}`)] : []),
   ];
+  const hasQueryFilters = Boolean(searchQuery.trim() || selectedCategories.length || normalizedPrice.min !== null || normalizedPrice.max !== null);
+  const showResults = !isInitialLoading && !hasInitialError;
+  const showEmpty = showResults && count === 0 && (!isApiMode || !hasNextPage) && !isFetchNextPageError;
+  const showEnd = showResults && isApiMode && count > 0 && !hasNextPage && !isFetchNextPageError;
 
   const loadMoreRef = useIntersectionObserver(() => {
     if (isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
       fetchNextPage();
     }
-  }, { enabled: isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading });
+  }, { enabled: isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading, rootMargin: '300px' });
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -128,33 +132,35 @@ const ProductsPage = () => {
           className={styles.filterBtn}
           onClick={() => setIsDrawerOpen(true)}
         >
-          {t('filter.filters')}
+          {t('filter.filters')}{activeFilters.length > 0 && <><span aria-hidden="true">·</span><span className={styles.filterCount} aria-label={t('filter.activeCount', { count: activeFilters.length })}>{activeFilters.length}</span></>}
         </button>
       </div>
 
       <div className={styles.productsContent}>
         <div className={styles.productsHeader}>
           <h1>{t('products.title')}</h1>
-          <p className={styles.resultsCount} aria-live="polite">
+          {showResults && <p className={styles.resultsCount} data-testid="results-summary">
             {count} {isApiMode ? t('products.loadedResults') : t('products.filtered')}
-          </p>
+            {!isApiMode && hasQueryFilters && <span className={styles.resultsTotal}> {t('products.ofCatalog', { count: demoProducts.length })}</span>}
+          </p>}
         </div>
 
-        <p className={styles.resultsCount}>{t(isApiMode ? 'products.apiSource' : 'products.demoSource')}</p>
-        <p className={styles.resultsCount} data-testid="active-filters">
-          {t('filter.active')}: {activeFilters.length ? activeFilters.join(', ') : t('filter.none')}
-        </p>
+        {activeFilters.length > 0 && <div className={styles.activeFilters} data-testid="active-filters">
+          <span className={styles.activeLabel}>{t('filter.active')}:</span>
+          <ul className={styles.activeList}>{activeFilters.map((filter, index) => <li className={styles.activeChip} key={`${filter}-${index}`}>{filter}</li>)}</ul>
+          {!isDrawerOpen && !showEmpty && <button className={styles.clearFilters} onClick={handleResetFilters}>{t('filter.resetAll')}</button>}
+        </div>}
 
         {isInitialLoading && <div role="status" aria-label={t('products.loading')}><Loader /></div>}
 
-        {isApiMode && !isSearchPending && error && !isFetchNextPageError && (
+        {hasInitialError && (
           <div className={styles.error} role="alert">
             <p>{t('common.error')}</p>
             <Button variant="outline" size="sm" onClick={refetch}>{t('common.retry')}</Button>
           </div>
         )}
 
-        <div className={styles.productsGrid}>
+        {showResults && <div className={styles.productsGrid}>
           {sortedProducts.map((product, index) => {
             const ratingValue = normalizeRating(product.rating);
             const uniqueKey = `product-${product.id}`;
@@ -196,36 +202,37 @@ const ProductsPage = () => {
               </Card>
             );
           })}
-        </div>
+        </div>}
 
-        {isApiMode && hasNextPage && !isFetchNextPageError && !isInitialLoading && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
+        {showResults && isApiMode && hasNextPage && !isFetchNextPageError && <div ref={loadMoreRef} className={styles.triggerElement}></div>}
 
-        {isApiMode && isFetchingNextPage && (
+        {showResults && isApiMode && isFetchingNextPage && (
           <div className={styles.loadingMore}>
             <div className={styles.spinnerSmall}></div>
             <p>{t('products.loading')}</p>
           </div>
         )}
 
-        {isApiMode && isFetchNextPageError && (
+        {showResults && isApiMode && isFetchNextPageError && (
           <div className={styles.error} role="alert">
             <p>{t('common.error')}</p>
             <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>{t('common.retry')}</Button>
           </div>
         )}
 
-        {isApiMode && !hasNextPage && allProducts.length > 0 && (
+        {showEnd && (
           <div className={styles.endMessage}>
             <p>{t('products.endMessage')}</p>
           </div>
         )}
 
-        {count === 0 && !isInitialLoading && (!isApiMode || !error) && (
+        {showEmpty && (
           <div className={styles.noResults}>
-            <p>{t('products.empty')}</p>
-            <Button variant="outline" size="sm" onClick={handleResetFilters}>
-              {t('filter.resetAll')}
-            </Button>
+            <h2>{t(hasQueryFilters ? 'products.empty' : 'products.catalogEmpty')}</h2>
+            {hasQueryFilters && <>
+              <p>{t('products.emptyHint')}</p>
+              <Button variant="outline" size="sm" onClick={handleResetFilters}>{t('filter.resetAll')}</Button>
+            </>}
           </div>
         )}
       </div>
@@ -236,6 +243,10 @@ const ProductsPage = () => {
           <button className={styles.closeBtn} aria-label={t('common.close')} onClick={() => setIsDrawerOpen(false)}>✕</button>
         </div>
         <div className={styles.drawerContent}>
+          {activeFilters.length > 0 && <div className={styles.drawerSelection} data-testid="drawer-active-filters">
+            <p className={styles.drawerSelectionTitle}>{t('filter.active')} ({activeFilters.length})</p>
+            <ul className={styles.activeList}>{activeFilters.map((filter, index) => <li className={styles.activeChip} key={`${filter}-${index}`}>{filter}</li>)}</ul>
+          </div>}
           <div className={styles.filterSection}>
             <h4>{t('filter.category')}</h4>
             <div className={styles.categoryList}>
@@ -260,12 +271,14 @@ const ProductsPage = () => {
           </div>
           <div className={styles.filterSection}>
             <h4>{t('filter.priceRange')}</h4>
-            <label>{t('filter.minPrice')}
-              <input type="number" min="0" step="any" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-            </label>
-            <label>{t('filter.maxPrice')}
-              <input type="number" min="0" step="any" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-            </label>
+            <div className={styles.priceFields}>
+              <label className={styles.priceField}>{t('filter.minPrice')}
+                <input type="number" inputMode="decimal" min="0" step="any" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+              </label>
+              <label className={styles.priceField}>{t('filter.maxPrice')}
+                <input type="number" inputMode="decimal" min="0" step="any" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+              </label>
+            </div>
           </div>
           <div className={styles.filterSection}>
             <h4>{t('filter.sort')}</h4>

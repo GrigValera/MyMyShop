@@ -20,6 +20,7 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: var(--font-size-base);
+  min-height: 44px;
   transition: box-shadow var(--transition-fast);
 }
 
@@ -30,6 +31,11 @@
 }
 
 .filterBtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
   padding: var(--spacing-3) var(--spacing-5);
   background: var(--color-primary);
   color: white;
@@ -38,6 +44,19 @@
   cursor: pointer;
   font-weight: var(--font-weight-medium);
   transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.filterCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 var(--spacing-1);
+  border-radius: var(--radius-full);
+  background: white;
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
 }
 
 .filterBtn:hover {
@@ -67,6 +86,51 @@
 .resultsCount {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.resultsTotal { white-space: nowrap; }
+
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: calc(-1 * var(--spacing-3)) 0 var(--spacing-6);
+  min-width: 0;
+}
+
+.activeLabel { font-weight: var(--font-weight-semibold); }
+.activeList { display: flex; flex-wrap: wrap; gap: var(--spacing-2); list-style: none; padding: 0; margin: 0; min-width: 0; }
+.activeChip {
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+.drawerSelection {
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+.drawerSelectionTitle {
+  margin: 0 0 var(--spacing-3);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.clearFilters {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .productsGrid {
@@ -219,6 +283,9 @@
   gap: var(--spacing-4);
 }
 
+.noResults h2 { margin: 0; color: var(--text-primary); }
+.noResults button { min-height: 44px; }
+
 .error {
   text-align: center;
   padding: var(--spacing-8);
@@ -233,6 +300,8 @@
   top: 0;
   right: 0;
   width: min(380px, 100vw);
+  max-width: 100%;
+  box-sizing: border-box;
   height: 100vh;
   background: var(--bg-primary);
   box-shadow: var(--shadow-xl);
@@ -290,6 +359,7 @@
 .drawerContent {
   flex: 1;
   padding: var(--spacing-5);
+  min-width: 0;
 }
 
 .filterSection {
@@ -310,6 +380,7 @@
 }
 
 .categoryBtn {
+  min-height: 44px;
   text-align: left;
   padding: var(--spacing-2) var(--spacing-3);
   background: none;
@@ -319,6 +390,36 @@
   cursor: pointer;
   font-size: var(--font-size-sm);
   transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.categoryBtn.active::before { content: '✓ '; font-weight: var(--font-weight-bold); }
+
+.priceFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-4);
+}
+.priceField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+.priceField input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
 }
 
 .categoryBtn:hover {
@@ -338,6 +439,7 @@
 }
 
 .sortLabel {
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
@@ -358,6 +460,12 @@
   accent-color: var(--color-primary);
 }
 
+.sortLabel:has(input:checked) { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+.priceField input:focus-visible, .categoryBtn:focus-visible, .sortLabel:focus-within, .clearFilters:focus-visible, .closeBtn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .drawerFooter {
   display: flex;
   gap: var(--spacing-3);
@@ -370,6 +478,7 @@
 
 .drawerFooter button {
   flex: 1;
+  min-height: 44px;
 }
 
 /* Overlay */
@@ -416,6 +525,7 @@
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
+  .activeFilters { display: none; }
   .productsGrid {
     gap: var(--spacing-4);
   }
