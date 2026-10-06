@@ -159,12 +159,11 @@ const ProductsPage = () => {
             const ratingValue = normalizeRating(product.rating);
             const uniqueKey = `product-${product.id}`;
             return (
-              <Link 
-                to={`/product/${product.id}${isApiMode ? '?source=api' : ''}`}
-                key={uniqueKey} 
-                className={styles.productLink}
-              >
-                <Card className={styles.cardInner}>
+              <Card className={styles.cardInner} key={uniqueKey}>
+                <Link
+                  to={`/product/${product.id}${isApiMode ? '?source=api' : ''}`}
+                  className={styles.productLink}
+                >
                   <div className={styles.productImage}>
                     <img 
                       src={product.thumbnail || product.images?.[0] || unavailableProductImage}
@@ -174,7 +173,7 @@ const ProductsPage = () => {
                   </div>
                   <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>
-                      {product.title?.length > 50 ? product.title.slice(0, 50) + '...' : product.title}
+                      {product.title}
                     </h3>
                     <p className={styles.productCategory}>{product.category}</p>
                     <div className={styles.rating}>
@@ -182,20 +181,20 @@ const ProductsPage = () => {
                       {'☆'.repeat(5 - Math.floor(ratingValue))}
                       <span className={styles.ratingValue}>({ratingValue.toFixed(1)})</span>
                     </div>
-                    <div className={styles.productFooter}>
-                      <span className={styles.productPrice}>${product.price}</span>
-                      <Button 
-                        variant="primary" 
-                        size="sm"
-                        onClick={(e) => handleAddToCart(product, e)}
-                        className={`${styles.addToCartBtn} add-to-cart-btn`}
-                      >
-                        {t('product.addToCart')}
-                      </Button>
-                    </div>
                   </div>
-                </Card>
-              </Link>
+                </Link>
+                <div className={styles.productFooter}>
+                  <span className={styles.productPrice}>${product.price}</span>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={(e) => handleAddToCart(product, e)}
+                    className={`${styles.addToCartBtn} add-to-cart-btn`}
+                  >
+                    {t('product.addToCart')}
+                  </Button>
+                </div>
+              </Card>
             );
           })}
         </div>
@@ -235,7 +234,7 @@ const ProductsPage = () => {
       <div className={`${styles.drawer} ${isDrawerOpen ? styles.open : ''}`}>
         <div className={styles.drawerHeader}>
           <h3>{t('filter.filters')}</h3>
-          <button className={styles.closeBtn} onClick={() => setIsDrawerOpen(false)}>✕</button>
+          <button className={styles.closeBtn} aria-label={t('common.close')} onClick={() => setIsDrawerOpen(false)}>✕</button>
         </div>
         <div className={styles.drawerContent}>
           <div className={styles.filterSection}>

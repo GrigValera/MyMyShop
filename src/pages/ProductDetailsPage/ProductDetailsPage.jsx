@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -93,6 +93,11 @@ const ProductDetailsPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isApiMode = new URLSearchParams(location.search).get('source') === 'api';
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [id, isApiMode]);
+
   const { data: apiProduct, isLoading, error } = useGetProductByIdQuery(id, { skip: !isApiMode });
   const product = isApiMode ? apiProduct : getDemoProductById(id);
 

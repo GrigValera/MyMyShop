@@ -67,19 +67,18 @@ const HomePage = () => {
           {saleItems.map((product) => {
             const ratingValue = normalizeRating(product.rating);
             return (
-              <Link 
-                to={`/product/${product.id}`} 
-                state={{ 
-                  fromSale: true, 
-                  salePrice: product.salePrice, 
-                  originalPrice: product.originalPrice, 
-                  discountPercent: product.discountPercent 
-                }}
-                key={`sale-${product.id}`} 
-                className={styles.productLink}
-              >
-                <Card className={styles.productCard}>
+              <Card className={styles.productCard} key={`sale-${product.id}`}>
                   <div className={styles.discountBadge}>-{product.discountPercent}%</div>
+                <Link
+                  to={`/product/${product.id}`}
+                  state={{
+                    fromSale: true,
+                    salePrice: product.salePrice,
+                    originalPrice: product.originalPrice,
+                    discountPercent: product.discountPercent
+                  }}
+                  className={styles.productLink}
+                >
                   <div className={styles.productImage}>
                     <img 
                       src={product.thumbnail || product.images?.[0] || unavailableProductImage}
@@ -89,7 +88,7 @@ const HomePage = () => {
                   </div>
                   <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>
-                      {product.title?.length > 50 ? product.title.slice(0, 50) + '...' : product.title}
+                      {product.title}
                     </h3>
                     <p className={styles.productCategory}>{product.category}</p>
                     <div className={styles.rating}>
@@ -101,19 +100,19 @@ const HomePage = () => {
                       <span className={styles.originalPrice}>${product.originalPrice}</span>
                       <span className={styles.salePrice}>${product.salePrice}</span>
                     </div>
-                    <div className={styles.productFooter}>
-                      <Button 
-                        variant="primary" 
-                        size="sm"
-                        onClick={(e) => handleAddToCart(product, product.salePrice, product.originalPrice, product.discountPercent, e)}
-                        className={`${styles.addToCartBtn} add-to-cart-btn`}
-                      >
-                        {t('product.addToCart')}
-                      </Button>
-                    </div>
                   </div>
-                </Card>
-              </Link>
+                </Link>
+                <div className={styles.productFooter}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={(e) => handleAddToCart(product, product.salePrice, product.originalPrice, product.discountPercent, e)}
+                    className={`${styles.addToCartBtn} add-to-cart-btn`}
+                  >
+                    {t('product.addToCart')}
+                  </Button>
+                </div>
+              </Card>
             );
           })}
         </div>
