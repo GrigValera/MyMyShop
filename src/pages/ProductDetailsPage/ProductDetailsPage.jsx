@@ -25,7 +25,9 @@ const ImageCarousel = ({ images, title }) => {
 
   return (
     <div className={styles.carousel}>
-      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={prevSlide} aria-label={t('product.previousImage')}>❮</button>}
+      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={prevSlide} aria-label={t('product.previousImage')}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+      </button>}
       <ProductImage
         key={displayImages[currentIndex]}
         className={styles.imageSlot}
@@ -35,7 +37,9 @@ const ImageCarousel = ({ images, title }) => {
         height={400}
         loading="eager"
       />
-      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={nextSlide} aria-label={t('product.nextImage')}>❯</button>}
+      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={nextSlide} aria-label={t('product.nextImage')}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
+      </button>}
       {displayImages.length > 1 && <div className={styles.carouselDots}>
         {displayImages.map((_, idx) => (
           <button
@@ -151,8 +155,12 @@ const ProductDetailsPage = () => {
 
   return (
     <div className={styles.productDetailsPage}>
-      <button className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← {t('button.back')}
+      <button type="button" className={styles.backBtn} onClick={() => navigate(-1)}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m12 19-7-7 7-7" />
+          <path d="M5 12h14" />
+        </svg>
+        <span>{t('button.back')}</span>
       </button>
       
       <div className={styles.productContent}>
