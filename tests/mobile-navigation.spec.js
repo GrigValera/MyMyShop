@@ -86,6 +86,36 @@ test('mobile labels, focus and chat clear the navigation in English dark mode', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 
+test('product actions remain clickable after Back below fixed mobile controls', async ({ page }) => {
+  for (const width of [320, 390, 400, 480]) {
+    await page.setViewportSize({ width, height: 640 });
+    await page.goto('/products');
+    const product = page.locator('[class*="_productsGrid_"] a[href^="/product/"]').first();
+    await product.click();
+    await expect(page).toHaveURL(/\/product\//);
+    await page.goBack();
+    await expect(page).toHaveURL('/products');
+
+    const button = page.getByRole('button', { name: 'В корзину' }).first();
+    await expect(button).toBeVisible();
+    await button.evaluate((element) => element.scrollIntoView({ block: 'end' }));
+    const hitTest = await button.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const target = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      const nav = document.querySelector('nav[aria-label="Основная навигация"]');
+      const chat = document.querySelector('[class*="_chatToggle_"]');
+      return {
+        buttonHit: element === target || element.contains(target),
+        aboveNav: box.bottom <= nav.getBoundingClientRect().top,
+        aboveChat: box.bottom <= chat.getBoundingClientRect().top,
+      };
+    });
+    expect(hitTest).toEqual({ buttonHit: true, aboveNav: true, aboveChat: true });
+    await button.click();
+    await expect(page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).locator('[class*="_badge_"]')).toHaveText('1');
+  }
+});
+
 test('mobile PUSH starts at top while Back restores catalog scroll', async ({ page }) => {
   test.setTimeout(180_000);
   const top = () => page.evaluate(() => window.scrollY);
@@ -95,7 +125,7 @@ test('mobile PUSH starts at top while Back restores catalog scroll', async ({ pa
     await expect(page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first()).toBeVisible();
     const nav = page.getByRole('navigation', { name: 'Основная навигация' });
     for (let cycle = 0; cycle < 2; cycle += 1) {
-      await page.evaluate(() => window.scrollTo(0, 900));
+      await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' }));
       await expect.poll(top).toBeGreaterThan(300);
       const catalogScroll = await top();
 

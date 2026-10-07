@@ -17,6 +17,14 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: auto;
+    scroll-padding-top: 65px;
+    scroll-padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
