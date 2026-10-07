@@ -350,6 +350,7 @@ body.dark .icon {
 
 /* До 768px - бургер-меню */
 @media (max-width: 768px) {
+  .desktopAction { display: none; }
   .headerContainer {
     flex-wrap: nowrap;
     padding: 0 var(--spacing-4);

@@ -122,6 +122,7 @@ body {
 }
 
 @media (max-width: 768px) {
+  .footer { position: static; }
   .footerContent {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-4);
@@ -131,9 +132,7 @@ body {
     max-height: 400px;
   }
   
-  body {
-    padding-bottom: 48px;
-  }
+  body { padding-bottom: 0; }
 }
 
 @media (max-width: 480px) {

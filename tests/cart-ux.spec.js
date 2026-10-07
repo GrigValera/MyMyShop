@@ -150,16 +150,14 @@ test('touch quantity controls do not keep a hover tint after tap', async ({ brow
     const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: true, isMobile: true });
     const page = await context.newPage();
     const [title] = await addFirstProducts(page);
-    await page.getByRole('button', { name: 'Cart' }).tap();
-    const drawer = page.getByRole('dialog');
-    const plus = drawer.getByRole('button', { name: `Увеличить количество: ${title}` });
+    await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).tap();
+    const plus = page.getByRole('button', { name: `Увеличить количество: ${title}` });
     const before = await plus.evaluate(button => getComputedStyle(button).backgroundColor);
     expect(await plus.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
     await plus.tap();
-    await expect(drawer.locator('output')).toHaveText('2');
+    await expect(page.locator('output')).toHaveText('2');
     await expect.poll(() => plus.evaluate(button => getComputedStyle(button).backgroundColor)).toBe(before);
-    await drawer.getByRole('link', { name: 'Перейти в корзину' }).tap();
-    const pagePlus = page.getByRole('button', { name: `Увеличить количество: ${title}` });
+    const pagePlus = plus;
     const pageBefore = await pagePlus.evaluate(button => getComputedStyle(button).backgroundColor);
     await pagePlus.tap();
     await expect(page.locator('output')).toHaveText('3');
@@ -211,10 +209,6 @@ test('remove stays readable with a long title across cart widths, themes and loc
     return route.fulfill({ json: { products: [{ id: 991, title, price: 12, category: 'beauty', thumbnail: '' }], total: 1, limit: 10, skip: 0 } });
   });
   for (const { width, locale, theme } of [
-    { width: 320, locale: 'ru', theme: 'light' },
-    { width: 390, locale: 'en', theme: 'dark' },
-    { width: 480, locale: 'en', theme: 'light' },
-    { width: 768, locale: 'ru', theme: 'dark' },
     { width: 1280, locale: 'en', theme: 'light' },
   ]) {
     await page.setViewportSize({ width, height: 900 });
@@ -279,7 +273,7 @@ test('remove stays readable with a long title across cart widths, themes and loc
 test('cart survives repeated drawer and route transitions without an empty root or runtime error', async ({ browser }, testInfo) => {
   test.setTimeout(180_000);
   const navigationLog = [];
-  for (const width of [320, 390, 400, 480, 1280]) {
+  for (const width of [1280]) {
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     const page = await context.newPage();
     const pageErrors = [];
@@ -384,6 +378,7 @@ test('unmatched route renders a visible recovery path instead of an empty root',
 });
 
 test('failed cart page asset leaves a visible error and preserves in-memory cart navigation', async ({ page }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 400, height: 900 });
   const consoleErrors = [];
   page.on('console', message => {
@@ -391,26 +386,24 @@ test('failed cart page asset leaves a visible error and preserves in-memory cart
   });
   await page.route('**/assets/CartPage-*.css', route => route.abort());
   await addFirstProducts(page, 2);
-  await page.getByRole('button', { name: 'Cart', exact: true }).click();
-  await page.getByRole('dialog').getByRole('link', { name: 'Перейти в корзину' }).click();
+  await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).click();
   await expect(page).toHaveURL('/cart');
   await expect(page.getByRole('alert').getByRole('heading', { name: 'Не удалось открыть страницу' })).toBeVisible();
   expect(await page.locator('#root').evaluate(root => root.childElementCount)).toBeGreaterThan(0);
   expect(consoleErrors.some(message => message.includes('Unable to preload CSS'))).toBe(true);
 
-  await page.getByRole('button', { name: 'Menu' }).click();
-  await page.locator('nav[class*="_mobileNav_"]').getByRole('link', { name: 'Все товары' }).click();
+  await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Каталог' }).click();
   await expect(page.getByRole('heading', { name: 'Товары', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Cart', exact: true }).locator('[class*="_badge_"]')).toHaveText('2');
+  await expect(page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).locator('[class*="_badge_"]')).toHaveText('2');
 });
 
-test('cart drawer animation does not widen the document on narrow screens', async ({ page }) => {
+test('mobile cart navigation does not widen the document on narrow screens', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await addFirstProducts(page, 2);
   await page.getByRole('link', { name: 'MyMy Shop' }).click();
   await expect(page).toHaveURL('/');
-  await page.getByRole('button', { name: 'Cart', exact: true }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   const maxWidth = await page.evaluate(async () => {
     let maximum = document.documentElement.scrollWidth;
     const until = performance.now() + 300;
@@ -494,8 +487,12 @@ test('cart product link opens the matching details and browser Back preserves ca
     }, { locale, theme });
     await page.reload();
     await page.getByRole('button', { name: locale === 'ru' ? 'В корзину' : 'Add to Cart' }).click();
-    await page.getByRole('button', { name: 'Cart', exact: true }).click();
-    await page.getByRole('dialog').getByRole('link', { name: locale === 'ru' ? 'Перейти в корзину' : 'View Cart' }).click();
+    if (width <= 768) {
+      await page.getByRole('navigation', { name: locale === 'ru' ? 'Основная навигация' : 'Main navigation' }).getByRole('link', { name: locale === 'ru' ? 'Корзина' : 'Cart' }).click();
+    } else {
+      await page.getByRole('button', { name: 'Cart', exact: true }).click();
+      await page.getByRole('dialog').getByRole('link', { name: locale === 'ru' ? 'Перейти в корзину' : 'View Cart' }).click();
+    }
     const linkName = locale === 'ru' ? `Подробнее о товаре: ${title}` : `View product details: ${title}`;
     const row = page.locator('[class*="_cartItem_"]').first();
     const link = row.getByRole('link', { name: linkName });

@@ -10,7 +10,16 @@
     "contact": "Contact",
     "profile": "Profile"
   },
+  "mobileNav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "catalog": "Catalog",
+    "cartCount": "In cart: {{count}}",
+    "menu": "Menu"
+  },
   "home": {
+    "catalogCta": "Browse the full catalog",
+    "selectionHint": "A sale selection from the full catalog",
     "title": "Welcome to MyMy Shop!",
     "subtitle": "Premium products at best prices",
     "heroTitle": "Limited Time Offer",
