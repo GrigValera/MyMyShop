@@ -87,7 +87,7 @@ test('Product Details gallery controls stay above the image and inside its slot'
           return {
             inside: buttonRect.left >= slotRect.left - 1 && buttonRect.right <= slotRect.right + 1
               && buttonRect.top >= slotRect.top - 1 && buttonRect.bottom <= slotRect.bottom + 1,
-            onTop: document.elementFromPoint(centerX, centerY) === button,
+            onTop: button.contains(document.elementFromPoint(centerX, centerY)),
             touchSize: buttonRect.width >= 44 && buttonRect.height >= 44,
             fallbackOverlap: fallbackRect && buttonRect.left < fallbackRect.right
               && buttonRect.right > fallbackRect.left && buttonRect.top < fallbackRect.bottom

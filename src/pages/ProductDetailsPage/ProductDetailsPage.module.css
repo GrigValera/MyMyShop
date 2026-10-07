@@ -9,19 +9,29 @@
   border: none;
   cursor: pointer;
   font-size: var(--font-size-base);
+  font-family: inherit;
+  line-height: 1.25;
   color: var(--text-secondary);
   margin-bottom: var(--spacing-4);
   padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2);
 }
 
-.backBtn:hover {
-  background: var(--bg-tertiary);
-  color: var(--color-primary);
+.backBtn svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .backBtn:hover {
+    background: var(--bg-tertiary);
+    color: var(--color-primary);
+  }
 }
 
 .productContent {
@@ -32,6 +42,10 @@
 }
 
 /* Carousel */
+.productGallery {
+  padding-bottom: var(--spacing-7);
+}
+
 .carousel {
   position: relative;
   display: flex;
@@ -54,19 +68,31 @@
   z-index: 1;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
-  background: rgba(0, 0, 0, 0.5);
+  background: transparent;
   border: none;
   color: white;
-  font-size: 24px;
   cursor: pointer;
   padding: 0;
   border-radius: var(--radius-full);
+}
+
+.carouselBtn::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.5);
   transition: background var(--transition-fast);
+}
+
+.carouselBtn svg {
+  position: relative;
+  width: 18px;
+  height: 18px;
 }
 
 .carouselBtn:first-of-type {
@@ -78,9 +104,9 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .carouselBtn:hover:not(:active) { background: rgba(0, 0, 0, 0.7); }
+  .carouselBtn:hover:not(:active)::before { background: rgba(0, 0, 0, 0.7); }
 }
-.carouselBtn:active { background: rgba(0, 0, 0, 0.85); }
+.carouselBtn:active::before { background: rgba(0, 0, 0, 0.85); }
 .carouselBtn:focus-visible, .dot:focus-visible, .backBtn:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 3px;
@@ -88,7 +114,7 @@
 
 .carouselDots {
   position: absolute;
-  bottom: var(--spacing-2);
+  bottom: calc(-1 * var(--spacing-6));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -112,7 +138,8 @@
   width: 10px;
   height: 10px;
   border-radius: var(--radius-full);
-  background: var(--border-light);
+  background: var(--text-secondary);
+  box-shadow: 0 0 0 1px var(--bg-primary);
 }
 .dot.active::before {
   background: var(--color-primary);
@@ -274,27 +301,13 @@
   padding: var(--spacing-4);
 }
 
-.loading, .error {
+.error {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 400px;
   gap: var(--spacing-4);
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: rotate 1s linear infinite;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 /* Responsive */
@@ -350,10 +363,6 @@
 
   .imageSlot {
     height: 218px;
-  }
-  
-  .carouselBtn {
-    font-size: 18px;
   }
   
   .priceContainer {
