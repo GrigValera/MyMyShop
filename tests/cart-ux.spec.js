@@ -18,7 +18,7 @@ test('empty page and drawer lead to the catalog in both locales', async ({ page 
   await expect(page.getByText('Сводка заказа')).toHaveCount(0);
   await page.getByRole('link', { name: 'Продолжить покупки' }).click();
   await expect(page).toHaveURL('/products');
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog', { name: 'Корзина' });
   await expect(drawer.getByRole('heading', { name: 'Корзина пока пуста' })).toBeVisible();
   await drawer.getByRole('link', { name: 'Продолжить покупки' }).click();
@@ -33,7 +33,7 @@ test('quantity minimum, totals, drawer consistency and last-item removal', async
   const [title] = await addFirstProducts(page);
   const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
   await card.getByRole('button', { name: 'В корзину' }).click();
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog');
   const minus = drawer.getByRole('button', { name: `Уменьшить количество: ${title}` });
   const plus = drawer.getByRole('button', { name: `Увеличить количество: ${title}` });
@@ -48,7 +48,7 @@ test('quantity minimum, totals, drawer consistency and last-item removal', async
   await drawer.getByRole('link', { name: 'Перейти в корзину' }).click();
   await expect(page.locator('output')).toHaveText('1');
   await expect(page.getByRole('button', { name: `Уменьшить количество: ${title}` })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Cart' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^(Корзина|Cart)$/ })).toHaveCount(0);
   await page.getByRole('button', { name: `Увеличить количество: ${title}` }).click();
   await expect(page.locator('output')).toHaveText('2');
   await page.getByRole('button', { name: `Удалить из корзины: ${title}` }).click();
@@ -58,7 +58,7 @@ test('quantity minimum, totals, drawer consistency and last-item removal', async
 
 test('multiple products keep totals and layout at cart widths', async ({ page }) => {
   const titles = await addFirstProducts(page, 3);
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog');
   await expect(drawer.locator('output')).toHaveCount(3);
   await drawer.getByRole('button', { name: `Удалить из корзины: ${titles[1]}` }).click();
@@ -81,7 +81,7 @@ test('multiple products keep totals and layout at cart widths', async ({ page })
 
 test('cart containers and actions stay inside narrow viewports', async ({ page }) => {
   await addFirstProducts(page, 3);
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   await page.getByRole('dialog').getByRole('link', { name: 'Перейти в корзину' }).click();
   await expect(page.getByRole('heading', { name: 'Корзина', exact: true })).toBeVisible();
 
@@ -112,7 +112,7 @@ test('cart containers and actions stay inside narrow viewports', async ({ page }
 test('drawer controls are keyboard reachable and blocked images retain fallback', async ({ page }) => {
   await page.route('https://cdn.dummyjson.com/**', route => route.abort());
   const [title] = await addFirstProducts(page);
-  await page.getByRole('button', { name: 'Cart' }).focus();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).focus();
   await page.keyboard.press('Enter');
   const drawer = page.getByRole('dialog');
   await expect(drawer.getByRole('button', { name: 'Закрыть' })).toBeFocused();
@@ -125,7 +125,7 @@ test('drawer controls are keyboard reachable and blocked images retain fallback'
   expect(await drawer.locator('[class*="_totalRow_"] span').last().textContent()).not.toBe(totalBefore);
   await page.keyboard.press('Escape');
   await expect(drawer).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Cart' })).toBeFocused();
+  await expect(page.getByRole('button', { name: /^(Корзина|Cart)$/ })).toBeFocused();
   await page.keyboard.press('Enter');
   await page.getByRole('dialog').getByRole('button', { name: `Удалить из корзины: ${title}` }).click();
   await expect(page.getByRole('dialog').getByRole('heading', { name: 'Корзина пока пуста' })).toBeVisible();
@@ -136,7 +136,7 @@ test('opening cart from a scrolled catalog shows its heading below the header', 
   await addFirstProducts(page);
   await page.evaluate(() => window.scrollTo(0, 500));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'Cart', exact: true }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
   await page.getByRole('dialog').getByRole('link', { name: 'Перейти в корзину' }).click();
   await expect(page).toHaveURL('/cart');
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
@@ -168,7 +168,7 @@ test('touch quantity controls do not keep a hover tint after tap', async ({ brow
 
 test('mouse hover, pressed and keyboard focus remain distinct; remove is consistent', async ({ page }) => {
   const [title] = await addFirstProducts(page);
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog');
   const plus = drawer.getByRole('button', { name: `Увеличить количество: ${title}` });
   const normal = await plus.evaluate(button => getComputedStyle(button).backgroundColor);
@@ -220,7 +220,7 @@ test('remove stays readable with a long title across cart widths, themes and loc
     await page.reload();
     const add = page.getByRole('button', { name: locale === 'ru' ? 'В корзину' : 'Add to Cart' });
     await add.click();
-    await page.getByRole('button', { name: 'Cart', exact: true }).click();
+    await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
     const drawer = page.getByRole('dialog');
     await drawer.evaluate(async node => Promise.all(node.getAnimations().map(animation => animation.finished)));
     const removeName = locale === 'ru' ? `Удалить из корзины: ${title}` : `Remove from cart: ${title}`;
@@ -301,7 +301,7 @@ test('cart survives repeated drawer and route transitions without an empty root 
         rootChildren: document.querySelector('#root')?.childElementCount ?? 0,
         routeRendered: !!document.querySelector('[class*="_cartPage_"]') || !!document.querySelector('[class*="_productsPage_"]'),
         drawerOpen: !!document.querySelector('[role="dialog"]'),
-        cartControlAvailable: !!document.querySelector('header button[aria-label="Cart"]'),
+        cartControlAvailable: !!document.querySelector('header button[aria-label="Корзина"], header button[aria-label="Cart"]'),
         cartCount: document.querySelector('header [class*="_badge_"]')?.textContent ?? '0',
         activeElement: document.activeElement?.getAttribute('aria-label') ?? document.activeElement?.tagName,
         bodyClass: document.body.className,
@@ -322,20 +322,20 @@ test('cart survives repeated drawer and route transitions without an empty root 
     await expect(page.getByRole('heading', { name: 'Товары', exact: true })).toBeVisible();
     await inspect(-1, 'catalog', '/products', false);
     for (let iteration = 0; iteration < (width === 400 ? 10 : 5); iteration += 1) {
-      await page.getByRole('button', { name: 'Cart', exact: true }).click();
+      await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
       await expect(drawer.locator('[class*="_cartItem_"]')).toHaveCount(3);
       await inspect(iteration, 'drawer', '/products', true);
       if (iteration === 0) {
         await page.keyboard.press('Escape');
         await expect(drawer).toHaveCount(0);
-        await page.getByRole('button', { name: 'Cart', exact: true }).click();
+        await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
       }
       await expect(drawer.getByRole('link', { name: 'Оформить заказ' })).toHaveCount(0);
       await drawer.getByRole('link', { name: 'Перейти в корзину' }).click();
       await expect(page).toHaveURL('/cart');
       await expect(page.getByRole('heading', { name: 'Корзина', exact: true })).toBeVisible();
       await expect(page.locator('[class*="_cartItem_"]')).toHaveCount(3);
-      await expect(page.getByRole('button', { name: 'Cart' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /^(Корзина|Cart)$/ })).toHaveCount(0);
       await inspect(iteration, 'cart', '/cart', false);
 
       if (iteration % 2 === 0) {
@@ -351,7 +351,7 @@ test('cart survives repeated drawer and route transitions without an empty root 
       await inspect(iteration, 'returned', '/products', false);
     }
 
-    await page.getByRole('button', { name: 'Cart', exact: true }).click();
+    await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
     await expect(drawer.locator('[class*="_cartItem_"]')).toHaveCount(3);
     expect(await page.evaluate(() => window.__unhandledRejections)).toEqual([]);
     expect(pageErrors).toEqual([]);
@@ -490,7 +490,7 @@ test('cart product link opens the matching details and browser Back preserves ca
     if (width <= 768) {
       await page.getByRole('navigation', { name: locale === 'ru' ? 'Основная навигация' : 'Main navigation' }).getByRole('link', { name: locale === 'ru' ? 'Корзина' : 'Cart' }).click();
     } else {
-      await page.getByRole('button', { name: 'Cart', exact: true }).click();
+      await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
       await page.getByRole('dialog').getByRole('link', { name: locale === 'ru' ? 'Перейти в корзину' : 'View Cart' }).click();
     }
     const linkName = locale === 'ru' ? `Подробнее о товаре: ${title}` : `View product details: ${title}`;

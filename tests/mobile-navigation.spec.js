@@ -57,7 +57,7 @@ test('navigation boundary, spacing and overflow', async ({ page }) => {
 test('desktop quick cart remains available', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 800 });
   await page.goto('/products');
-  await page.getByRole('button', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: 'Корзина' }).click();
   const drawer = page.getByRole('dialog', { name: 'Корзина' });
   await expect(drawer).toBeVisible();
   await expect(drawer.getByRole('button', { name: 'Закрыть' })).toBeFocused();

@@ -242,7 +242,7 @@ test('E2E: cart still works after search and category changes', async ({ page })
   await page.getByRole('button', { name: 'Применить' }).click();
   await expect(page.getByRole('heading', { name: 'Fragrance Item' })).toBeVisible();
   await page.getByRole('button', { name: 'В корзину' }).click();
-  await page.getByRole('button', { name: 'Cart', exact: true }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
   await expect(page.getByRole('banner').getByText('Search Item', { exact: true })).toBeVisible();
   await expect(page.getByRole('banner').getByText('Fragrance Item', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Перейти в корзину' }).click();

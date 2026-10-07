@@ -10,6 +10,7 @@ import { addToCart } from '../../features/cart/store/cartSlice';
 import styles from './ProductDetailsPage.module.css';
 
 const ImageCarousel = ({ images, title }) => {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   
   const displayImages = images.length ? images : [''];
@@ -24,7 +25,7 @@ const ImageCarousel = ({ images, title }) => {
 
   return (
     <div className={styles.carousel}>
-      <button className={styles.carouselBtn} onClick={prevSlide}>❮</button>
+      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={prevSlide} aria-label={t('product.previousImage')}>❮</button>}
       <ProductImage
         key={displayImages[currentIndex]}
         className={styles.imageSlot}
@@ -34,16 +35,19 @@ const ImageCarousel = ({ images, title }) => {
         height={400}
         loading="eager"
       />
-      <button className={styles.carouselBtn} onClick={nextSlide}>❯</button>
-      <div className={styles.carouselDots}>
+      {displayImages.length > 1 && <button type="button" className={styles.carouselBtn} onClick={nextSlide} aria-label={t('product.nextImage')}>❯</button>}
+      {displayImages.length > 1 && <div className={styles.carouselDots}>
         {displayImages.map((_, idx) => (
-          <span
+          <button
+            type="button"
             key={idx}
             className={`${styles.dot} ${idx === currentIndex ? styles.active : ''}`}
+            aria-label={t('product.showImage', { number: idx + 1 })}
+            aria-current={idx === currentIndex ? 'true' : undefined}
             onClick={() => setCurrentIndex(idx)}
           />
         ))}
-      </div>
+      </div>}
     </div>
   );
 };

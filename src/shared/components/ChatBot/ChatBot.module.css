@@ -24,8 +24,12 @@
   justify-content: center;
 }
 
-.chatToggle:hover {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .chatToggle:hover { transform: scale(1.05); }
+}
+.chatToggle:focus-visible, .chatHeader button:focus-visible, .chatInput button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .tooltip {

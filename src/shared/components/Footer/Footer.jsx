@@ -16,7 +16,8 @@ const Footer = () => {
             <button 
               className={styles.expandBtn}
               onClick={() => setIsExpanded(!isExpanded)}
-              aria-label="Expand footer"
+              aria-label={isExpanded ? t('footer.collapse') : t('footer.expand')}
+              aria-expanded={isExpanded}
             >
               {isExpanded ? '−' : '+'}
             </button>

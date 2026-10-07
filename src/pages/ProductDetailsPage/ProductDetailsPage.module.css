@@ -77,8 +77,13 @@
   right: var(--spacing-4);
 }
 
-.carouselBtn:hover {
-  background: rgba(0, 0, 0, 0.8);
+@media (hover: hover) and (pointer: fine) {
+  .carouselBtn:hover:not(:active) { background: rgba(0, 0, 0, 0.7); }
+}
+.carouselBtn:active { background: rgba(0, 0, 0, 0.85); }
+.carouselBtn:focus-visible, .dot:focus-visible, .backBtn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .carouselDots {
@@ -91,15 +96,25 @@
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--border-light);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: transparent;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  border: 0;
+  padding: 0;
 }
 
-.dot.active {
+.dot::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--border-light);
+}
+.dot.active::before {
   background: var(--color-primary);
 }
 

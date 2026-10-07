@@ -29,7 +29,7 @@
   .active::after { content: ''; width: 18px; height: 2px; background: currentColor; border-radius: 2px; }
   .item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -3px; border-radius: 8px; }
   .iconWrap { position: relative; width: 24px; height: 24px; }
-  .iconWrap svg { width: 24px; height: 24px; }
+  .iconWrap svg { width: 24px; height: 24px; stroke-width: 1.8; }
   .badge { position: absolute; top: -6px; right: -12px; min-width: 17px; height: 17px; padding: 0 3px; display: grid; place-items: center; border-radius: 9px; color: white; background: var(--color-secondary); font-size: 10px; line-height: 1; }
   .label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }
   .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

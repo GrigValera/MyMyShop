@@ -59,10 +59,10 @@
   font-weight: var(--font-weight-bold);
 }
 
-.filterBtn:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .filterBtn:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
 }
+.filterBtn:active { background: var(--color-primary-dark); transform: translateY(0); }
 
 /* Products Content */
 .productsContent {
@@ -422,9 +422,9 @@
   font-weight: var(--font-weight-normal);
 }
 
-.categoryBtn:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .categoryBtn:hover:not(.active) { background: var(--bg-tertiary); color: var(--text-primary); }
+  .sortLabel:hover { color: var(--color-primary); }
 }
 
 .categoryBtn.active {
@@ -449,10 +449,6 @@
   transition: color var(--transition-fast);
 }
 
-.sortLabel:hover {
-  color: var(--color-primary);
-}
-
 .sortLabel input {
   width: 16px;
   height: 16px;
@@ -461,7 +457,7 @@
 }
 
 .sortLabel:has(input:checked) { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
-.priceField input:focus-visible, .categoryBtn:focus-visible, .sortLabel:focus-within, .clearFilters:focus-visible, .closeBtn:focus-visible {
+.priceField input:focus-visible, .categoryBtn:focus-visible, .sortLabel:has(input:focus-visible), .clearFilters:focus-visible, .closeBtn:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }

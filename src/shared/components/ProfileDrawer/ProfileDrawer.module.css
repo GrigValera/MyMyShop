@@ -42,8 +42,8 @@
   font-size: 24px;
   cursor: pointer;
   color: var(--text-secondary);
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,4 +157,8 @@
   .drawer {
     width: 280px;
   }
+}
+.closeBtn:focus-visible, .menuItem:focus-visible, .logoutBtn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
