@@ -43,28 +43,20 @@ const HomePage = () => {
     }));
   };
 
-  if (loading && saleItems.length === 0) {
-    return <Loader fullPage />;
-  }
-
-  if (error) {
-    return <div className={styles.error}>{t('common.error')}: {error}</div>;
-  }
-
-  if (!saleItems.length) {
-    return null;
-  }
-
   return (
     <div className={styles.homePage}>
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>{t('home.heroTitle')}</h1>
         <p className={styles.heroSubtitle}>{t('home.heroSubtitle')}</p>
+        <Link to="/products" className={styles.catalogCta}>{t('home.catalogCta')}</Link>
       </section>
 
-      <section className={styles.saleSection}>
+      {(loading || error || saleItems.length > 0) && <section className={styles.saleSection}>
         <h2 className={styles.sectionTitle}>{t('home.saleTitle')}</h2>
-        <div className={styles.productsGrid}>
+        <p className={styles.selectionHint}>{t('home.selectionHint')}</p>
+        {loading && saleItems.length === 0 && <Loader />}
+        {error && <div className={styles.error}>{t('common.error')}: {error}</div>}
+        {!error && <div className={styles.productsGrid}>
           {saleItems.map((product, index) => {
             const ratingValue = normalizeRating(product.rating);
             return (
@@ -115,8 +107,8 @@ const HomePage = () => {
               </Card>
             );
           })}
-        </div>
-      </section>
+        </div>}
+      </section>}
     </div>
   );
 };

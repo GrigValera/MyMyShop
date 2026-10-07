@@ -30,11 +30,21 @@ const Header = () => {
       if (window.innerWidth > 768 && isMenuOpen) {
         setIsMenuOpen(false);
       }
+      if (window.innerWidth <= 768) setIsCartDrawerOpen(false);
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsCartDrawerOpen(false);
+      setIsProfileDrawerOpen(false);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -77,15 +87,15 @@ const Header = () => {
           {/* Профиль - открывает дровер */}
           {isDemoSession ? (
             <button
-              className={styles.iconBtn}
+              className={`${styles.iconBtn} ${styles.desktopAction}`}
               onClick={() => setIsProfileDrawerOpen(true)}
-              aria-label="Profile"
+              aria-label={t('nav.profile')}
             >
               <UserIcon className={styles.icon} />
             </button>
           ) : (
             <button
-              className={styles.loginBtn}
+              className={`${styles.loginBtn} ${styles.desktopAction}`}
               onClick={() => navigate("/login")}
             >
               {t("nav.login")}
@@ -94,13 +104,13 @@ const Header = () => {
 
           {/* Корзина - открывает дровер */}
           {location.pathname === '/cart' ? (
-            <span className={styles.iconBtn} aria-label={t('nav.cart')} aria-current="page">
+            <span className={`${styles.iconBtn} ${styles.desktopAction}`} aria-label={t('nav.cart')} aria-current="page">
               <CartIcon className={styles.icon} />
               {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
             </span>
           ) : (
             <button
-              className={styles.iconBtn}
+              className={`${styles.iconBtn} ${styles.desktopAction}`}
               onClick={() => setIsCartDrawerOpen(true)}
               aria-label="Cart"
             >
@@ -113,6 +123,7 @@ const Header = () => {
             className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
+            aria-expanded={isMenuOpen}
           >
             <span></span>
             <span></span>
@@ -123,7 +134,7 @@ const Header = () => {
 
       <div className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ""}`}>
         <nav className={styles.mobileNav}>
-          {navLinks.map((link) => (
+          {navLinks.filter((link) => link.path !== '/' && link.path !== '/products').map((link) => (
             <Link
               key={link.path}
               to={link.path}
@@ -133,15 +144,6 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
-          {isDemoSession && (
-            <Link
-              to="/profile"
-              className={styles.mobileNavLink}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t("nav.profile")}
-            </Link>
-          )}
           <button
             onClick={() => {
               if (isDemoSession) {
