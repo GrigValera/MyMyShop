@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../features/auth/store/authSlice";
@@ -15,11 +15,13 @@ const Header = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDemoSession } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const closeCartDrawer = useCallback(() => setIsCartDrawerOpen(false), []);
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -50,7 +52,7 @@ const Header = () => {
   ];
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${isCartDrawerOpen && location.pathname !== '/cart' ? styles.cartDrawerOpen : ''}`}>
       <div className={`container ${styles.headerContainer}`}>
         <Link to="/" className={styles.logo}>
           <span className={styles.logoText}>MyMy</span>
@@ -91,14 +93,21 @@ const Header = () => {
           )}
 
           {/* Корзина - открывает дровер */}
-          <button
-            className={styles.iconBtn}
-            onClick={() => setIsCartDrawerOpen(true)}
-            aria-label="Cart"
-          >
-            <CartIcon className={styles.icon} />
-            {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
-          </button>
+          {location.pathname === '/cart' ? (
+            <span className={styles.iconBtn} aria-label={t('nav.cart')} aria-current="page">
+              <CartIcon className={styles.icon} />
+              {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
+            </span>
+          ) : (
+            <button
+              className={styles.iconBtn}
+              onClick={() => setIsCartDrawerOpen(true)}
+              aria-label="Cart"
+            >
+              <CartIcon className={styles.icon} />
+              {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
+            </button>
+          )}
 
           <button
             className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
@@ -164,8 +173,8 @@ const Header = () => {
         onClose={() => setIsProfileDrawerOpen(false)}
       />
       <CartDrawer
-        isOpen={isCartDrawerOpen}
-        onClose={() => setIsCartDrawerOpen(false)}
+        isOpen={isCartDrawerOpen && location.pathname !== '/cart'}
+        onClose={closeCartDrawer}
       />
     </header>
   );

@@ -10,9 +10,11 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const { product, price, originalPrice, hasDiscount, discountPercent } = action.payload;
+      const source = product.source === 'api' ? 'api' : 'demo';
       
       const existingItem = state.items.find(item => 
         item.id === product.id && 
+        (item.source || 'demo') === source &&
         item.hasDiscount === hasDiscount &&
         item.price === price
       );
@@ -22,6 +24,7 @@ const cartSlice = createSlice({
       } else {
         state.items.push({
           id: product.id,
+          source,
           title: product.title,
           image: product.image,
           category: product.category,
@@ -35,15 +38,17 @@ const cartSlice = createSlice({
     },
     removeFromCart: (state, action) => {
       state.items = state.items.filter(item => 
-        !(item.id === action.payload.id && 
+        !(item.id === action.payload.id &&
+          (item.source || 'demo') === (action.payload.source || 'demo') &&
           item.hasDiscount === action.payload.hasDiscount &&
           item.price === action.payload.price)
       );
     },
     updateQuantity: (state, action) => {
-      const { id, hasDiscount, price, quantity } = action.payload;
+      const { id, source = 'demo', hasDiscount, price, quantity } = action.payload;
       const item = state.items.find(item => 
-        item.id === id && 
+        item.id === id &&
+        (item.source || 'demo') === source &&
         item.hasDiscount === hasDiscount && 
         item.price === price
       );

@@ -1,0 +1,29 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  min-height: 44px;
+  padding: 0 var(--spacing-3);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: color-mix(in srgb, var(--color-error) 60%, var(--text-primary));
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button svg { width: 17px; height: 17px; flex: none; }
+.button:active { background: color-mix(in srgb, var(--color-error) 13%, var(--bg-card)); }
+.button:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover:not(:active) {
+    border-color: color-mix(in srgb, var(--color-error) 35%, var(--border-medium));
+    background: color-mix(in srgb, var(--color-error) 7%, var(--bg-card));
+  }
+}

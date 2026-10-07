@@ -1,13 +1,16 @@
-import { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Component, lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../shared/layouts/MainLayout/MainLayout';
 import HomePage from '../pages/HomePage/HomePage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 import { restoreAuth } from '../features/auth/store/authSlice';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import { Loader } from '../shared/ui';
+import styles from './App.module.css';
 
 // Lazy loaded pages
 const ProductsPage = lazy(() => import('../pages/ProductsPage/ProductsPage'));
@@ -16,6 +19,47 @@ const CartPage = lazy(() => import('../pages/CartPage/CartPage'));
 const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'));
 const DeliveryPage = lazy(() => import('../pages/DeliveryPage/DeliveryPage'));
 const ContactPage = lazy(() => import('../pages/ContactPage/ContactPage'));
+
+class PageErrorBoundary extends Component {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error, info) {
+    console.error('Page render failed:', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <section className={styles.loadError} role="alert">
+          <h1>{this.props.title}</h1>
+          <p>{this.props.description}</p>
+          <button type="button" onClick={() => window.location.reload()}>{this.props.reload}</button>
+        </section>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const LazyPage = ({ children }) => {
+  const { t } = useTranslation();
+  const location = useLocation();
+
+  return (
+    <PageErrorBoundary
+      key={location.pathname}
+      title={t('pageError.title')}
+      description={t('pageError.description')}
+      reload={t('pageError.reload')}
+    >
+      <Suspense fallback={<Loader fullPage />}>{children}</Suspense>
+    </PageErrorBoundary>
+  );
+};
 
 function App() {
   const dispatch = useDispatch();
@@ -33,53 +77,55 @@ function App() {
         <Route 
           path="products" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <ProductsPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
         <Route 
           path="product/:id" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <ProductDetailsPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
         <Route 
           path="cart" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <CartPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
+        <Route path="checkout" element={<Navigate to="/cart" replace />} />
         <Route 
           path="about" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <AboutPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
         <Route 
           path="delivery" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <DeliveryPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
         <Route 
           path="contact" 
           element={
-            <Suspense fallback={<Loader fullPage />}>
+            <LazyPage>
               <ContactPage />
-            </Suspense>
+            </LazyPage>
           } 
         />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="admin" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

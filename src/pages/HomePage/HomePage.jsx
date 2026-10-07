@@ -31,6 +31,7 @@ const HomePage = () => {
     dispatch(addToCart({
       product: {
         id: product.id,
+        source: 'demo',
         title: product.title,
         image: product.thumbnail || product.images?.[0] || '',
         category: product.category,
