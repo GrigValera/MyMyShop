@@ -25,7 +25,7 @@ const ProfileDrawer = ({ isOpen, onClose }) => {
       <div className={styles.drawer}>
         <div className={styles.header}>
           <h3>{t('profile.drawerTitle')}</h3>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t('common.close')}>✕</button>
         </div>
         <div className={styles.content}>
           <div className={styles.userInfo}>

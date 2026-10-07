@@ -83,7 +83,10 @@
     "rating": "Rating",
     "reviews": "Reviews",
     "specifications": "Specifications",
-    "noReviews": "No reviews yet"
+    "noReviews": "No reviews yet",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "showImage": "Show image {{number}}"
   },
   "filter": {
     "search": "Search",
@@ -117,7 +120,9 @@
     "follow": "Follow Us",
     "phone": "Phone",
     "rights": "All rights reserved",
-    "tagline": "Comfort to life"
+    "tagline": "Comfort to life",
+    "expand": "Expand footer",
+    "collapse": "Collapse footer"
   },
   "common": {
     "loading": "Loading...",

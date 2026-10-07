@@ -124,6 +124,12 @@
 .iconBtn:hover {
   background-color: var(--bg-tertiary);
 }
+.iconBtn:focus-visible, .menuBtn:focus-visible, .loginBtn:focus-visible,
+.logo:focus-visible, .navLink:focus-visible, .mobileNavLink:focus-visible,
+.mobileLogoutBtn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 /* Единый стиль для обеих иконок (SVG компоненты) */
 .icon {
@@ -194,9 +200,10 @@ body.dark .icon {
   margin-right: 0;
 }
 
-.menuBtn:hover {
-  background: var(--bg-tertiary);
+@media (hover: hover) and (pointer: fine) {
+  .menuBtn:hover { background: var(--bg-tertiary); }
 }
+.menuBtn:active { background: var(--bg-tertiary); }
 
 .menuBtn span {
   display: block;

@@ -163,6 +163,6 @@ test('regression: local filtered product can still be added to cart', async ({ p
   await page.getByRole('textbox', { name: 'Поиск' }).fill('mascara');
   await expect(page.getByRole('heading', { name: 'Essence Mascara Lash Princess' })).toBeVisible();
   await page.getByRole('button', { name: 'В корзину' }).click();
-  await page.getByRole('button', { name: 'Cart', exact: true }).click();
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
   await expect(page.getByRole('banner').getByText('Essence Mascara Lash Princess', { exact: true })).toBeVisible();
 });

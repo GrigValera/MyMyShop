@@ -112,7 +112,7 @@ const Header = () => {
             <button
               className={`${styles.iconBtn} ${styles.desktopAction}`}
               onClick={() => setIsCartDrawerOpen(true)}
-              aria-label="Cart"
+              aria-label={t('nav.cart')}
             >
               <CartIcon className={styles.icon} />
               {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
@@ -122,7 +122,7 @@ const Header = () => {
           <button
             className={`${styles.menuBtn} ${isMenuOpen ? styles.active : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Menu"
+            aria-label={t('mobileNav.menu')}
             aria-expanded={isMenuOpen}
           >
             <span></span>

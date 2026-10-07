@@ -70,7 +70,7 @@ test('Product Details gallery controls stay above the image and inside its slot'
 
     for (const width of [320, 390, 1280]) {
       await page.setViewportSize({ width, height: 900 });
-      await page.goto('/product/1');
+      await page.goto('/product/6');
       const slot = page.locator('[class*="_imageSlot_"][data-image-state]');
       await expect(slot).toHaveAttribute('data-image-state', state);
       const controls = page.locator('[class*="_carouselBtn_"]');
