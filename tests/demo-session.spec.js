@@ -90,6 +90,6 @@ test('integration: demo login and logout preserve the in-memory cart and theme',
   await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
   await page.getByRole('button', { name: 'Выйти', exact: true }).first().click();
   await page.getByRole('button', { name: 'Cart', exact: true }).click();
-  await expect(page.getByRole('spinbutton')).toHaveValue('1');
+  await expect(page.getByRole('dialog').locator('output')).toHaveText('1');
   expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
 });

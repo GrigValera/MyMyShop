@@ -32,9 +32,27 @@
     "catalogEmpty": "The catalog is empty",
     "emptyHint": "Try another search or reset your filters."
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Check the address or return to the catalog."
+  },
+  "pageError": {
+    "title": "Could not open this page",
+    "description": "Try reloading the page. Cart items remain available while navigating within the app.",
+    "reload": "Reload page"
+  },
   "cart": {
     "title": "Shopping Cart",
     "empty": "Your cart is empty, time to fix that!",
+    "emptyTitle": "Your cart is empty",
+    "emptyHint": "Browse the catalog and add something you like.",
+    "itemCount": "Items",
+    "quantityFor": "Quantity: {{title}}",
+    "currentQuantity": "Current: {{count}}",
+    "decreaseQuantity": "Decrease quantity: {{title}}",
+    "increaseQuantity": "Increase quantity: {{title}}",
+    "removeItem": "Remove from cart: {{title}}",
+    "viewProduct": "View product details: {{title}}",
     "total": "Total",
     "checkout": "Checkout",
     "remove": "Remove",

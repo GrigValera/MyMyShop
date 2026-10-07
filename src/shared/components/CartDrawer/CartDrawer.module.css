@@ -13,14 +13,14 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 380px;
+  width: min(380px, 100vw);
   height: 100vh;
   background: var(--bg-primary);
   box-shadow: var(--shadow-xl);
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease;
+  animation: fadeIn 0.2s ease;
 }
 
 .header {
@@ -42,8 +42,8 @@
   font-size: 24px;
   cursor: pointer;
   color: var(--text-secondary);
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,6 +54,7 @@
   background: var(--bg-tertiary);
   color: var(--text-primary);
 }
+.closeBtn:focus-visible, .viewCartBtn:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 
 .content {
   flex: 1;
@@ -67,9 +68,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6);
+  text-align: center;
   color: var(--text-secondary);
   font-size: var(--font-size-base);
 }
+.emptyCart h4 { color: var(--text-primary); font-size: var(--font-size-lg); }
 
 .cartItems {
   flex: 1;
@@ -81,34 +87,47 @@
 }
 
 .cartItem {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: start;
   gap: var(--spacing-3);
-  padding: var(--spacing-2);
+  padding: var(--spacing-3);
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
 }
 
 .cartItemImage {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   background: var(--bg-primary);
 }
 
 .cartItemInfo {
-  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.itemActions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--border-light);
 }
 
 .cartItemTitle {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--spacing-1);
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-2);
 }
 
 .cartItemPrice {
-  font-size: var(--font-size-sm);
+  font-size: 1rem;
+  line-height: 1.35;
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
 }
@@ -121,41 +140,6 @@
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   margin-top: var(--spacing-1);
-}
-
-.cartItemQuantity {
-  width: 60px;
-}
-
-.quantityInput {
-  width: 100%;
-  padding: var(--spacing-1);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  text-align: center;
-  font-size: var(--font-size-sm);
-}
-
-.removeBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--text-tertiary);
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  transition: all var(--transition-fast);
-}
-
-.removeBtn:hover {
-  background: var(--bg-tertiary);
-  color: var(--color-error);
 }
 
 .cartFooter {
@@ -171,17 +155,24 @@
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-4);
 }
+.countRow { display: flex; justify-content: space-between; margin-bottom: var(--spacing-2); color: var(--text-secondary); }
 
 .actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
   gap: var(--spacing-3);
 }
 
-.viewCartBtn,
-.checkoutBtn {
-  flex: 1;
+.viewCartBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
   text-align: center;
   padding: var(--spacing-2) var(--spacing-3);
+  min-height: 52px;
+  line-height: 1.25;
   border-radius: var(--radius-md);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
@@ -196,24 +187,6 @@
 
 .viewCartBtn:hover {
   background: var(--border-light);
-}
-
-.checkoutBtn {
-  background: var(--color-primary);
-  color: white;
-}
-
-.checkoutBtn:hover {
-  background: var(--color-primary-dark);
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
 }
 
 @keyframes fadeIn {

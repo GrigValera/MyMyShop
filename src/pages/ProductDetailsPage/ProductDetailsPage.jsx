@@ -117,6 +117,7 @@ const ProductDetailsPage = () => {
       dispatch(addToCart({
         product: {
           id: product.id,
+          source: isApiMode ? 'api' : 'demo',
           title: product.title,
           image: product.images?.[0] || product.thumbnail || '',
           category: product.category,
