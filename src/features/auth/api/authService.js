@@ -1,5 +1,4 @@
-// UI-only demo state: never persisted and never used for authorization.
-export const DEMO_USER = Object.freeze({ id: 'demo', name: 'Demo User' });
+// Remove only auth keys left by the old mock implementation.
 export const LEGACY_KEYS = Object.freeze([
   'mock_users', 'mock_current_user', 'mock_token', 'auth_user', 'auth_token',
 ]);

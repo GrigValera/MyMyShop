@@ -7,19 +7,3 @@
   background: var(--bg-secondary);
   padding: var(--spacing-4);
 }
-
-.registerLink {
-  margin-top: var(--spacing-4);
-  text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.registerLink a {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.registerLink a:hover {
-  text-decoration: underline;
-}
