@@ -87,7 +87,7 @@ test('mobile labels, focus and chat clear the navigation in English dark mode', 
 });
 
 test('product actions remain clickable after Back below fixed mobile controls', async ({ page }) => {
-  for (const width of [320, 390, 400, 480]) {
+  for (const [index, width] of [320, 390, 400, 480].entries()) {
     await page.setViewportSize({ width, height: 640 });
     await page.goto('/products');
     const product = page.locator('[class*="_productsGrid_"] a[href^="/product/"]').first();
@@ -112,7 +112,7 @@ test('product actions remain clickable after Back below fixed mobile controls', 
     });
     expect(hitTest).toEqual({ buttonHit: true, aboveNav: true, aboveChat: true });
     await button.click();
-    await expect(page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).locator('[class*="_badge_"]')).toHaveText('1');
+    await expect(page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).locator('[class*="_badge_"]')).toHaveText(String(index + 1));
   }
 });
 
