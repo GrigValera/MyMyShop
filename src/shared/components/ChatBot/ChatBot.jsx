@@ -11,6 +11,16 @@ const ChatBot = () => {
   const [input, setInput] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
 
+  const openChat = () => {
+    setShowTooltip(false);
+    setIsOpen(true);
+  };
+
+  const closeChat = () => {
+    setShowTooltip(false);
+    setIsOpen(false);
+  };
+
   const botResponses = {
     'order': t('chatBot.responseOrder'),
     'delivery': t('chatBot.responseDelivery'),
@@ -47,7 +57,7 @@ const ChatBot = () => {
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
         >
-          <button className={styles.chatToggle} onClick={() => setIsOpen(true)} aria-label={t('chatBot.tooltip')}>
+          <button className={styles.chatToggle} onClick={openChat} aria-label={t('chatBot.tooltip')}>
             💬
           </button>
           {showTooltip && <span className={styles.tooltip}>{t('chatBot.tooltip')}</span>}
@@ -56,7 +66,7 @@ const ChatBot = () => {
         <div className={styles.chatWindow}>
           <div className={styles.chatHeader}>
             <span>{t('chatBot.title')}</span>
-            <button onClick={() => setIsOpen(false)} aria-label={t('common.close')}>✕</button>
+            <button onClick={closeChat} aria-label={t('common.close')}>✕</button>
           </div>
           <div className={styles.chatMessages}>
             {messages.map((msg, idx) => (

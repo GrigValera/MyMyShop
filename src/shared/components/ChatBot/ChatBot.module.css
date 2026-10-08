@@ -172,7 +172,7 @@
   .chatWindow {
     width: 280px;
     height: min(380px, calc(100dvh - 160px));
-    right: -10px;
+    right: 0;
   }
   
   .tooltip {

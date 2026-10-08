@@ -1,5 +1,11 @@
 import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import LoginForm from '../../features/auth/components/LoginForm';
+import { selectHasSession } from '../../features/auth/store/authSlice';
+import styles from '../LoginPage/LoginPage.module.css';
 
 export default function RegisterPage() {
-  return <Navigate to="/login" replace />;
+  const hasSession = useSelector(selectHasSession);
+  if (hasSession) return <Navigate to="/profile" replace />;
+  return <div className={styles.loginPage}><LoginForm kind="register" /></div>;
 }

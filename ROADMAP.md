@@ -623,6 +623,14 @@ SHOP-01, SHOP-06, SHOP-07.
 
 ---
 
+## SHOP-AUTH-UI — Authentication UX and demo-safe form contract
+
+Статус: IN PROGRESS — реализовано в `feat/shop-auth-ui`, ожидает manual QA. Формы `/login`, `/register`, `/forgot-password` имеют локальную validation, RU/EN и состояния отправки, ошибки и информации. Публичный demo adapter не проверяет credentials, не создаёт аккаунт и не отправляет email; session остаётся в памяти до refresh. UI обращается к `sessionService`, который позже может получить backend adapter. Настоящий reset-token flow ждёт backend recovery contract.
+
+Следующий отдельный ticket: SHOP-ACCOUNT-01 — Account shell и overview/dashboard. Его реализация сюда не входит.
+
+---
+
 ## SHOP-COMMERCE-FLOW — Cart and staged checkout
 
 Статус: PLANNED. Release class: **A — PRODUCTION V1 BLOCKING** для core CartLine/pricing/checkout/delivery contracts; расширенные undo, promo и server reconciliation получают отдельные B PR. Делить на cart model и checkout flow PR после базовых SHOP-04/05.

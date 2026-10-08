@@ -8,6 +8,10 @@ import ruTranslation from './ru/translation.json';
 // Получаем сохраненный язык из localStorage или используем русский по умолчанию
 const savedLanguage = localStorage.getItem('language') || 'ru';
 
+i18n.on('languageChanged', (language) => {
+  document.documentElement.lang = language === 'en' ? 'en' : 'ru';
+});
+
 i18n
   .use(initReactI18next)
   .init({

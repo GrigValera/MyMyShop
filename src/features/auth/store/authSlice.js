@@ -16,7 +16,14 @@ export const selectSessionCleanupFailed = (state) => state.auth.cleanupFailed;
 export const selectSessionError = (state) => state.auth.error;
 
 export const startSession = () => async (dispatch) => {
-  dispatch(authSlice.actions.sessionChanged(await sessionService.startSession()));
+  const session = await sessionService.startSession();
+  dispatch(authSlice.actions.sessionChanged(session));
+  return session;
+};
+export const signIn = (input) => async (dispatch) => {
+  const session = await sessionService.signIn(input);
+  dispatch(authSlice.actions.sessionChanged(session));
+  return session;
 };
 export const logout = () => async (dispatch) => {
   dispatch(authSlice.actions.sessionChanged(await sessionService.endSession()));

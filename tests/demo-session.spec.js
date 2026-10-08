@@ -32,24 +32,27 @@ for (const width of [320, 390, 1280]) {
     page.on('request', request => requests.push(request));
     page.on('console', message => logs.push(message.text()));
     await page.goto('/register');
-    await expect(page).toHaveURL('/login');
+    await expect(page.getByRole('heading', { name: 'Создать аккаунт' })).toBeVisible();
     await page.goto('/profile');
-    await expect(page.getByRole('link', { name: 'Войти как демо-пользователь' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
     await page.goto('/login');
-    await expect(page.locator('input')).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'Распродажа' })).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Электронная почта' })).toBeVisible();
     await page.screenshot({ path: `test-results/demo-login-${width}.png` });
-    await expect(page.getByText(/Это не защищённая авторизация/)).toBeVisible();
-    await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
+    await expect(page.getByText(/данные не отправляются на сервер/)).toBeVisible();
+    await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
+    await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
+    await page.getByRole('button', { name: 'Войти в демо' }).click();
     await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
     await expect(page).toHaveURL('/profile');
     await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
     await page.screenshot({ path: `test-results/demo-profile-${width}.png` });
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Demo User' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'Войти как демо-пользователь' })).toBeVisible();
-    await page.getByRole('link', { name: 'Войти как демо-пользователь' }).click();
-    await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
+    await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
+    await page.getByRole('link', { name: 'Войти', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
+    await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
+    await page.getByRole('button', { name: 'Войти в демо' }).click();
     await page.getByRole('button', { name: 'Выйти', exact: true }).first().click();
     await expect(page.getByRole('heading', { name: 'Demo User' })).toHaveCount(0);
     if (width < 769) {
@@ -81,7 +84,7 @@ test('E2E: forged storage grants no admin access; cleanup preserves unrelated da
     }
   });
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Войти как демо-пользователь' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Войти в демо' })).toBeVisible();
   expect(await page.evaluate(() => [localStorage, sessionStorage].map(storage => ({
     legacy: ['mock_users', 'mock_current_user', 'mock_token', 'auth_user', 'auth_token'].map(key => storage.getItem(key)),
     cart: storage.getItem('cart'), theme: storage.getItem('theme'), unrelated: storage.getItem('unrelated'),
@@ -97,7 +100,9 @@ test('integration: cleanup failure is explicit and demo login stays disabled', a
   });
   await page.goto('/login');
   await expect(page.getByRole('alert')).toBeVisible();
-  await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
+  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
+  await page.getByRole('button', { name: 'Войти в демо' }).click();
   await expect(page).toHaveURL('/login');
   await expect(page.getByRole('alert')).toBeVisible();
 });
@@ -116,7 +121,9 @@ test('integration: cart persists across demo start, end and reload', async ({ pa
     localStorage.setItem('shop-test-unrelated', 'keep-me');
   });
   await page.getByRole('button', { name: 'Войти', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
+  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
+  await page.getByRole('button', { name: 'Войти в демо' }).click();
   expect(await page.evaluate(() => localStorage.getItem('mymyshop.cart.v1'))).toBe(cartBefore);
   await page.getByRole('button', { name: 'Выйти', exact: true }).first().click();
   expect(await page.evaluate(() => localStorage.getItem('mymyshop.cart.v1'))).toBe(cartBefore);
@@ -125,7 +132,7 @@ test('integration: cart persists across demo start, end and reload', async ({ pa
   await page.reload();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.goto('/profile');
-  await expect(page.getByRole('link', { name: 'Войти как демо-пользователь' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('mymyshop.cart.v1'))).toBe(cartBefore);
   expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
   expect(await page.evaluate(() => localStorage.getItem('shop-test-unrelated'))).toBe('keep-me');
@@ -134,9 +141,10 @@ test('integration: cart persists across demo start, end and reload', async ({ pa
 test('desktop demo controls work by keyboard and profile drawer remains usable', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/login');
-  const start = page.getByRole('button', { name: 'Войти как демо-пользователь' });
-  await page.keyboard.press('Tab');
-  await expect(start).toBeFocused();
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
+  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
+  const start = page.getByRole('button', { name: 'Войти в демо' });
+  await start.focus();
   expect(await start.evaluate(element => element.matches(':focus-visible'))).toBe(true);
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();

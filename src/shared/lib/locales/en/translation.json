@@ -108,6 +108,14 @@
     "activeCount": "Active filters: {{count}}"
   },
   "auth": {
+    "login": { "title": "Sign in", "intro": "Sign in to explore the demo profile.", "submit": "Sign in to demo" },
+    "register": { "title": "Sign up", "intro": "Explore the sign-up experience.", "submit": "Check form", "success": "Demo: the form was checked, but no real account was created." },
+    "recovery": { "title": "Recover access", "link": "Forgot password?", "intro": "Enter your email address.", "submit": "Check request", "success": "Demo: the request was checked, but no recovery email was sent." },
+    "name": "Name", "email": "Email", "password": "Password", "confirmation": "Confirm password",
+    "showPassword": "Show password", "hidePassword": "Hide password", "show": "Show", "hide": "Hide",
+    "backToLogin": "Back to sign in", "submitting": "Please wait…",
+    "formDemoNotice": "Demo mode: form data is not sent to a server or saved. Passwords are not verified; no account or email is created.",
+    "validation": { "required": "This field is required.", "invalidEmail": "Enter a valid email address.", "shortPassword": "Use at least 8 characters.", "passwordMismatch": "Passwords do not match." },
     "demoTitle": "Demo-session",
     "demoLogin": "Continue as demo user",
     "demoNotice": "Demonstration session only. This is not secure authentication: there is no account, personal data or administrator access.",
