@@ -1,4 +1,4 @@
-// Public demo identity only. It grants no access to protected resources.
+// Только публичная demo-идентичность, без доступа к защищённым ресурсам.
 const DEMO_USER = Object.freeze({ id: 'demo', name: 'Demo User' });
 
 export const demoSessionAdapter = {

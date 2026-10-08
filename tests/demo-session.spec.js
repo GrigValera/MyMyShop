@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { cleanupLegacyCredentials, LEGACY_KEYS } from '../src/features/auth/api/authService.js';
 import { sessionService } from '../src/features/auth/api/sessionService.js';
 
-// Uses the existing Playwright runner for a pure unit test; no extra dependencies.
+// Используем существующий Playwright для модульного теста без новых зависимостей.
 test('unit: cleanup removes only app legacy keys', () => {
   const values = new Map([...LEGACY_KEYS.map(key => [key, 'synthetic-demo']),
     ['cart', 'keep-cart'], ['theme', 'dark'], ['another_app_token', 'keep-other']]);
@@ -16,7 +16,7 @@ test('unit: session contract starts anonymous and demo adapter returns display-s
   expect(sessionService.getInitialSession()).toEqual({
     status: 'anonymous', user: null, cleanupFailed: false, error: null,
   });
-  // The adapter is deterministic; browser storage cleanup is covered by the E2E tests.
+  // Адаптер детерминирован; очистку хранилища браузера проверяют E2E-тесты.
   const { demoSessionAdapter } = await import('../src/features/auth/api/demoSessionAdapter.js');
   expect(await demoSessionAdapter.startSession()).toEqual({
     status: 'demo', user: { id: 'demo', name: 'Demo User' },
