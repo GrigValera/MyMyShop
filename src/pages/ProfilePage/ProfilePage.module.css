@@ -105,3 +105,5 @@
     flex-direction: column;
   }
 }
+.authLinks { display: flex; flex-wrap: wrap; gap: var(--spacing-4); }
+.authLinks a { color: var(--color-primary); text-decoration: underline; }

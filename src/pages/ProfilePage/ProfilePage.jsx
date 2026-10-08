@@ -23,7 +23,7 @@ const ProfilePage = () => {
         {hasSession ? <>
           <h2>{user.name}</h2>
           <Button onClick={() => dispatch(logout())}>{t('nav.logout')}</Button>
-        </> : <Link to="/login">{t('auth.demoLogin')}</Link>}
+        </> : <div className={styles.authLinks}><Link to="/login">{t('auth.login.title')}</Link><Link to="/register">{t('auth.register.title')}</Link></div>}
       </Card>
     </div>
   );

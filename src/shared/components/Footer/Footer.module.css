@@ -124,6 +124,8 @@ body {
 
 @media (max-width: 768px) {
   .footer { position: static; }
+  /* Keep the footer control clear of the 50px floating ChatBot button. */
+  .expandBtn { margin-right: calc(50px + var(--spacing-2)); }
   .footerContent {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-4);

@@ -6,6 +6,7 @@ import MainLayout from '../shared/layouts/MainLayout/MainLayout';
 import HomePage from '../pages/HomePage/HomePage';
 import LoginPage from '../pages/LoginPage/LoginPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage/ForgotPasswordPage';
 import { restoreAuth } from '../features/auth/store/authSlice';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
@@ -70,9 +71,10 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<MainLayout />}>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route index element={<HomePage />} />
         <Route 
           path="products" 
