@@ -198,6 +198,10 @@ backend или запросов авторизации. `/register` перена
 
 Сессия существует только в Redux в памяти: refresh/reload и новая вкладка начинают
 состояние без входа. Storage не восстанавливает сессию и не предоставляет прав.
+UI использует действия и селекторы сессии; `sessionService` задаёт асинхронную
+границу, а `demoSessionAdapter` сейчас возвращает только безопасные поля
+`{ status, user }`. Будущий backend adapter должен преобразовать свой DTO в эту
+форму внутри service boundary; реального backend или credentials сейчас нет.
 При запуске, входе и выходе из localStorage и sessionStorage удаляются только
 `mock_users`, `mock_current_user`, `mock_token`, `auth_user`, `auth_token`.
 Остальные ключи (включая cart/theme/language) не удаляются. Старые mock-профили

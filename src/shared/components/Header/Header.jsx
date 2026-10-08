@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../../features/auth/store/authSlice";
+import { logout, selectHasSession } from "../../../features/auth/store/authSlice";
 import ThemeToggle from "../../../features/theme/components/ThemeToggle";
 import LanguageSwitcher from "../../../features/language/LanguageSwitcher";
 import ProfileDrawer from "../ProfileDrawer/ProfileDrawer";
@@ -16,7 +16,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isDemoSession } = useSelector((state) => state.auth);
+  const hasSession = useSelector(selectHasSession);
   const cartItems = useSelector((state) => state.cart.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
@@ -85,7 +85,7 @@ const Header = () => {
           </div>
 
           {/* Профиль - открывает дровер */}
-          {isDemoSession ? (
+          {hasSession ? (
             <button
               className={`${styles.iconBtn} ${styles.desktopAction}`}
               onClick={() => setIsProfileDrawerOpen(true)}
@@ -146,7 +146,7 @@ const Header = () => {
           ))}
           <button
             onClick={() => {
-              if (isDemoSession) {
+              if (hasSession) {
                 handleLogout();
               } else {
                 navigate("/login");
@@ -155,7 +155,7 @@ const Header = () => {
             }}
             className={styles.mobileLogoutBtn}
           >
-            {isDemoSession ? t("nav.logout") : t("nav.login")}
+            {hasSession ? t("nav.logout") : t("nav.login")}
           </button>
         </nav>
         <div className={styles.mobileToggles}>

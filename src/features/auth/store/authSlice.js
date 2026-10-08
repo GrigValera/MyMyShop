@@ -1,28 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { cleanupBrowserCredentials, DEMO_USER } from '../api/authService';
+import { sessionService } from '../api/sessionService';
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { isDemoSession: false, user: null, cleanupFailed: false },
+  initialState: sessionService.getInitialSession(),
   reducers: {
-    started(state, action) {
-      state.cleanupFailed = !action.payload;
-      state.isDemoSession = action.payload;
-      state.user = action.payload ? DEMO_USER : null;
-    },
-    ended(state, action) {
-      state.isDemoSession = false;
-      state.user = null;
-      state.cleanupFailed = !action.payload;
-    },
+    sessionChanged: (_state, action) => action.payload,
   },
 });
 
-export const loginDemo = () => (dispatch) => {
-  dispatch(authSlice.actions.started(cleanupBrowserCredentials()));
+export const selectSessionStatus = (state) => state.auth.status;
+export const selectHasSession = (state) => selectSessionStatus(state) !== 'anonymous';
+export const selectSessionUser = (state) => state.auth.user;
+export const selectSessionCleanupFailed = (state) => state.auth.cleanupFailed;
+export const selectSessionError = (state) => state.auth.error;
+
+export const startSession = () => async (dispatch) => {
+  dispatch(authSlice.actions.sessionChanged(await sessionService.startSession()));
 };
-export const logout = () => (dispatch) => {
-  dispatch(authSlice.actions.ended(cleanupBrowserCredentials()));
+export const logout = () => async (dispatch) => {
+  dispatch(authSlice.actions.sessionChanged(await sessionService.endSession()));
 };
-export const restoreAuth = logout;
+export const restoreAuth = () => (dispatch) => {
+  dispatch(authSlice.actions.sessionChanged(sessionService.restoreSession()));
+};
 export default authSlice.reducer;

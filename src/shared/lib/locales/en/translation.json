@@ -112,7 +112,8 @@
     "demoLogin": "Continue as demo user",
     "demoNotice": "Demonstration session only. This is not secure authentication: there is no account, personal data or administrator access.",
     "demoRefresh": "The session lives only in memory and ends on page reload.",
-    "cleanupFailed": "Could not remove legacy sign-in data. Allow storage access and try again."
+    "cleanupFailed": "Could not remove legacy sign-in data. Allow storage access and try again.",
+    "sessionUnavailable": "Could not start or end the session. Please try again."
 },
   "footer": {
     "links": "Links",
