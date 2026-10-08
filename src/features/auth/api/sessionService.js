@@ -1,9 +1,9 @@
 import { cleanupBrowserCredentials } from './authService.js';
 import { demoSessionAdapter } from './demoSessionAdapter.js';
 
-// Session contract: { status: 'anonymous' | 'demo', user: null | { id, name },
+// Контракт сессии: { status: 'anonymous' | 'demo', user: null | { id, name },
 // cleanupFailed: boolean, error: null | 'unavailable' }.
-// A backend adapter maps its response DTO to this display-safe shape here.
+// Здесь backend-адаптер преобразует свой DTO в безопасную для отображения форму.
 const adapter = demoSessionAdapter;
 
 const anonymousSession = (cleanupFailed = false, error = null) => ({

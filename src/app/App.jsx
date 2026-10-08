@@ -12,7 +12,7 @@ import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import { Loader } from '../shared/ui';
 import styles from './App.module.css';
 
-// Lazy loaded pages
+// Страницы с отложенной загрузкой
 const ProductsPage = lazy(() => import('../pages/ProductsPage/ProductsPage'));
 const ProductDetailsPage = lazy(() => import('../pages/ProductDetailsPage/ProductDetailsPage'));
 const CartPage = lazy(() => import('../pages/CartPage/CartPage'));

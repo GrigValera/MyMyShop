@@ -11,7 +11,7 @@
   font-size: var(--font-size-3xl);
 }
 
-/* Steps Section */
+/* Этапы доставки */
 .steps {
   margin-bottom: var(--spacing-10);
 }
@@ -67,7 +67,7 @@
   line-height: 1.5;
 }
 
-/* Options Section */
+/* Варианты доставки */
 .options {
   margin-bottom: var(--spacing-10);
 }
@@ -115,7 +115,7 @@
   font-size: var(--font-size-sm);
 }
 
-/* Info Section */
+/* Информация о доставке */
 .info {
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
@@ -133,7 +133,7 @@
   line-height: 1.6;
 }
 
-/* Responsive */
+/* Адаптивная компоновка */
 @media (max-width: 1024px) {
   .stepsGrid {
     grid-template-columns: repeat(2, 1fr);

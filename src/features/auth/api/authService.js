@@ -1,4 +1,4 @@
-// Remove only auth keys left by the old mock implementation.
+// Удаляем только ключи авторизации от старой имитации входа.
 export const LEGACY_KEYS = Object.freeze([
   'mock_users', 'mock_current_user', 'mock_token', 'auth_user', 'auth_token',
 ]);

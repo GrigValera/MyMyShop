@@ -137,7 +137,7 @@
   cursor: pointer;
 }
 
-/* Responsive */
+/* Адаптивная компоновка */
 @media (max-width: 768px) {
   .chatBot {
     bottom: calc(72px + env(safe-area-inset-bottom, 0px));

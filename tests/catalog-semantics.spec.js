@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 import { demoProducts, demoCategories, snapshotMetadata } from '../src/features/products/data/demoProducts.js';
 import { applyCatalogPipeline, normalizePriceRange } from '../src/features/products/model/catalogPipeline.js';
 
-// Small synthetic fixtures exercise exact boundaries; production uses the full snapshot.
+// Небольшие синтетические данные проверяют граничные случаи; сборка использует полный снимок.
 const fixture = [
   { id: 1, title: 'Red Balm', category: 'beauty', price: 10 },
   { id: 2, title: 'Red Mist', category: 'fragrances', price: 25 },

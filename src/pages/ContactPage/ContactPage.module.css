@@ -16,7 +16,7 @@
   gap: var(--spacing-8);
 }
 
-/* Form Section */
+/* Форма обращения */
 .formSection {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -93,7 +93,7 @@ body.light .textareaWrapper textarea {
   border-radius: var(--radius-md);
 }
 
-/* Info Section */
+/* Контактная информация */
 .infoSection {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -133,7 +133,7 @@ body.light .textareaWrapper textarea {
   margin-bottom: var(--spacing-1);
 }
 
-/* Chat Bot */
+/* Чат-бот */
 .chatBot {
   position: fixed;
   bottom: var(--spacing-4);
@@ -282,7 +282,7 @@ body.light .formSection input:focus {
 }
 
 /* ============================================
-   RESPONSIVE
+   АДАПТИВНАЯ КОМПОНОВКА
    ============================================ */
 @media (max-width: 1240px) {
   .contactPage {

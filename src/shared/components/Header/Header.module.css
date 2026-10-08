@@ -20,7 +20,7 @@
   gap: var(--spacing-4);
 }
 
-/* Logo */
+/* Логотип */
 .logo {
   display: flex;
   align-items: baseline;
@@ -48,7 +48,7 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* Desktop navigation */
+/* Навигация на широких экранах */
 .desktopNav {
   display: flex;
   align-items: center;
@@ -80,7 +80,7 @@
   width: 100%;
 }
 
-/* Actions */
+/* Действия */
 .actions {
   display: flex;
   align-items: center;
@@ -88,7 +88,7 @@
   flex-shrink: 0;
 }
 
-/* Toggles Group */
+/* Группа переключателей */
 .togglesGroup {
   display: flex;
   align-items: center;
@@ -181,7 +181,7 @@ body.dark .icon {
   transform: translateY(-1px);
 }
 
-/* Menu button */
+/* Кнопка меню */
 .menuBtn {
   display: none;
   flex-direction: column;
@@ -226,7 +226,7 @@ body.dark .icon {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Mobile menu */
+/* Мобильное меню */
 .mobileMenu {
   display: none;
   position: absolute;
@@ -293,7 +293,7 @@ body.dark .icon {
 }
 
 /* ============================================
-   RESPONSIVE BREAKPOINTS
+   КОНТРОЛЬНЫЕ ТОЧКИ АДАПТИВНОЙ КОМПОНОВКИ
    ============================================ */
 
 /* До 1100px */
@@ -385,7 +385,7 @@ body.dark .icon {
   }
 }
 
-/* Small mobile */
+/* Узкий мобильный экран */
 @media (max-width: 576px) {
   .headerContainer {
     padding: 0 var(--spacing-4);
@@ -441,7 +441,7 @@ body.dark .icon {
   }
 }
 
-/* Extra small mobile */
+/* Очень узкий мобильный экран */
 @media (max-width: 480px) {
   .headerContainer {
     padding: 0 var(--spacing-3);

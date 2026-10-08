@@ -1,7 +1,7 @@
 import products from './products.snapshot.json' with { type: 'json' };
 import metadata from './snapshot.metadata.json' with { type: 'json' };
 
-// Local public catalog: a complete, dated snapshot of DummyJSON product data.
+// Локальный публичный каталог: полный датированный снимок товаров DummyJSON.
 export const demoProducts = products.map(product => ({
   ...product,
   discountPercent: product.discountPercentage,
