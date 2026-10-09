@@ -37,8 +37,8 @@ const ProfileDrawer = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className={styles.menu}>
-            <Link to="/profile" className={styles.menuItem} onClick={onClose}>
-              {t('profile.myProfile')}
+            <Link to="/account" className={styles.menuItem} onClick={onClose}>
+              {t('account.title')}
             </Link>
 
           </div>

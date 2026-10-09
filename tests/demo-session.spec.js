@@ -34,7 +34,7 @@ for (const width of [320, 390, 1280]) {
     await page.goto('/register');
     await expect(page.getByRole('heading', { name: 'Создать аккаунт' })).toBeVisible();
     await page.goto('/profile');
-    await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
+    await expect(page).toHaveURL('/login');
     await page.goto('/login');
     await expect(page.getByRole('textbox', { name: 'Электронная почта' })).toBeVisible();
     await page.screenshot({ path: `test-results/demo-login-${width}.png` });
@@ -43,17 +43,17 @@ for (const width of [320, 390, 1280]) {
     await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
     await page.getByRole('button', { name: 'Войти в демо' }).click();
     await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
-    await expect(page).toHaveURL('/profile');
+    await expect(page).toHaveURL('/account');
     await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
     await page.screenshot({ path: `test-results/demo-profile-${width}.png` });
     await page.reload();
+    await expect(page).toHaveURL('/login');
     await expect(page.getByRole('heading', { name: 'Demo User' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
-    await page.getByRole('link', { name: 'Войти', exact: true }).click();
     await page.getByRole('textbox', { name: 'Электронная почта' }).fill('demo@example.test');
     await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
     await page.getByRole('button', { name: 'Войти в демо' }).click();
     await page.getByRole('button', { name: 'Выйти', exact: true }).first().click();
+    await expect(page).toHaveURL('/login');
     await expect(page.getByRole('heading', { name: 'Demo User' })).toHaveCount(0);
     if (width < 769) {
       await page.getByRole('navigation', { name: /Основная навигация|Main navigation/ }).getByRole('link', { name: /Корзина|Cart/ }).click();
@@ -132,7 +132,7 @@ test('integration: cart persists across demo start, end and reload', async ({ pa
   await page.reload();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.goto('/profile');
-  await expect(page.getByRole('link', { name: 'Войти', exact: true })).toBeVisible();
+  await expect(page).toHaveURL('/login');
   expect(await page.evaluate(() => localStorage.getItem('mymyshop.cart.v1'))).toBe(cartBefore);
   expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
   expect(await page.evaluate(() => localStorage.getItem('shop-test-unrelated'))).toBe('keep-me');
@@ -150,7 +150,7 @@ test('desktop demo controls work by keyboard and profile drawer remains usable',
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
   await page.getByRole('link', { name: 'MyMy Shop' }).click();
   await page.getByRole('button', { name: 'Профиль' }).click();
-  await expect(page.getByRole('link', { name: 'Мой профиль' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Мой аккаунт' })).toBeVisible();
   const end = page.getByRole('button', { name: 'Выйти' });
   await end.focus();
   await page.keyboard.press('Enter');

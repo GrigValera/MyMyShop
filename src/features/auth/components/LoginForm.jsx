@@ -40,7 +40,7 @@ export default function LoginForm({ kind = 'login' }) {
       const input = { ...values, email: values.email.trim(), ...(values.name ? { name: values.name.trim() } : {}) };
       if (kind === 'login') {
         const result = await dispatch(signIn({ email: input.email, password: input.password }));
-        if (result.status === 'demo') navigate('/profile');
+        if (result.status === 'demo') navigate('/account');
         else setState('error');
       } else {
         const result = kind === 'register'
@@ -58,7 +58,7 @@ export default function LoginForm({ kind = 'login' }) {
     if (submitting) return;
     setState('submitting');
     const result = await dispatch(startSession());
-    if (result.status === 'demo') navigate('/profile');
+    if (result.status === 'demo') navigate('/account');
     else setState('error');
   }
 

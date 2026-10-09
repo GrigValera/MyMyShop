@@ -24,9 +24,9 @@ test('mobile primary routes, catalog CTA and history stay usable', async ({ page
   await page.goBack();
   await expect(page).toHaveURL('/products');
   await nav.getByRole('link', { name: 'Профиль' }).click();
-  await expect(page).toHaveURL('/profile');
-  await expect(page.getByText('Демо', { exact: false }).first()).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Профиль' })).toHaveAttribute('aria-current', 'page');
+  await expect(page).toHaveURL('/login');
+  await expect(page.getByRole('heading', { name: 'Войти' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Профиль' })).not.toHaveAttribute('aria-current', 'page');
   await page.goto('/missing-mobile-route');
   await expect(nav.locator('[aria-current="page"]')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Страница не найдена' })).toBeVisible();
@@ -143,7 +143,7 @@ test('mobile PUSH starts at top while Back restores catalog scroll', async ({ pa
       await expect(page).toHaveURL('/products');
       await expect.poll(top).toBeGreaterThanOrEqual(catalogScroll - 50);
 
-      for (const { label, path } of [{ label: 'Корзина', path: '/cart' }, { label: 'Профиль', path: '/profile' }]) {
+      for (const { label, path } of [{ label: 'Корзина', path: '/cart' }, { label: 'Профиль', path: '/login' }]) {
         await nav.getByRole('link', { name: label }).click();
         await expect(page).toHaveURL(path);
         await expect.poll(top).toBeLessThanOrEqual(2);

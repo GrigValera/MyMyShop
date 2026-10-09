@@ -25,7 +25,7 @@ const MobileNavigation = () => {
     { to: '/', label: t('mobileNav.home'), icon: <HomeIcon /> },
     { to: '/products', label: t('mobileNav.catalog'), icon: <CatalogIcon /> },
     { to: '/cart', label: t('nav.cart'), icon: <CartIcon />, badge: count },
-    { to: '/profile', label: t('nav.profile'), icon: <UserIcon /> },
+    { to: '/account', label: t('nav.profile'), icon: <UserIcon /> },
   ];
 
   return <nav className={styles.navigation} aria-label={t('mobileNav.label')}>
