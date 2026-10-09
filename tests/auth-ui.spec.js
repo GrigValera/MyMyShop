@@ -16,7 +16,7 @@ test('sign in validates fields and offers accessible password control', async ({
   await page.getByRole('button', { name: 'Скрыть пароль' }).click();
   await expect(password).toHaveAttribute('type', 'password');
   await password.press('Enter');
-  await expect(page).toHaveURL('/profile');
+  await expect(page).toHaveURL('/account');
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Demo User' })).toHaveCount(0);
@@ -40,7 +40,7 @@ test('sign up reports that no account is created and can continue as demo user',
   await page.getByRole('button', { name: 'Проверить форму' }).click();
   await expect(page.getByRole('status')).toContainText('реальный аккаунт не создан');
   await page.getByRole('button', { name: 'Войти как демо-пользователь' }).click();
-  await expect(page).toHaveURL('/profile');
+  await expect(page).toHaveURL('/account');
 });
 
 test('recovery validates email and never claims a message was sent', async ({ page }) => {

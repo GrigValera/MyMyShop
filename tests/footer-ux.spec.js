@@ -21,7 +21,7 @@ for (const { width, height } of mobileSizes) {
     await expect(about).toBeVisible();
     await expect(delivery).toBeVisible();
     await expect(footer.locator('button[aria-expanded]')).toHaveCount(0);
-    for (const destination of ['/', '/products', '/cart', '/profile']) {
+    for (const destination of ['/', '/products', '/cart', '/account']) {
       await expect(nav.locator(`a[href="${destination}"]`)).toBeVisible();
       await expect(footer.locator(`a[href="${destination}"]`)).toBeHidden();
     }

@@ -198,6 +198,24 @@
   "responsePayment": "We accept credit cards, PayPal, and cash on delivery.",
   "responseDefault": "Thank you for your message! Our support team will contact you soon."
 },
+"account": {
+  "title": "My account",
+  "overview": "Overview",
+  "loading": "Loading account…",
+  "unavailable": "Could not load account details. Please try again.",
+  "avatarFor": "Avatar for {{name}}",
+  "demoBadge": "Demo account",
+  "demoEmail": "Demo address, separate from your sign-in form",
+  "cartTitle": "Your cart",
+  "cartCount_one": "{{count}} item in cart",
+  "cartCount_other": "{{count}} items in cart",
+  "cartReady": "Keep shopping or open your cart.",
+  "cartEmpty": "Nothing here yet. Explore the catalog.",
+  "viewCart": "View cart",
+  "browseProducts": "Browse products",
+  "demoTitle": "About demo mode",
+  "demoNotice": "This is a demo account. The session ends when you reload, and account details are not saved on a server."
+},
 "profile": {
   "drawerTitle": "Profile",
   "myProfile": "My Profile",

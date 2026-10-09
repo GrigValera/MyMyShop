@@ -633,7 +633,20 @@ SHOP-01, SHOP-06, SHOP-07.
 
 Статус: IN PROGRESS — реализовано в `feat/shop-auth-ui`, ожидает manual QA. Формы `/login`, `/register`, `/forgot-password` имеют локальную validation, RU/EN и состояния отправки, ошибки и информации. Публичный demo adapter не проверяет credentials, не создаёт аккаунт и не отправляет email; session остаётся в памяти до refresh. UI обращается к `sessionService`, который позже может получить backend adapter. Настоящий reset-token flow ждёт backend recovery contract.
 
-Следующий отдельный ticket: SHOP-ACCOUNT-01 — Account shell и overview/dashboard. Его реализация сюда не входит.
+Отдельный ticket SHOP-ACCOUNT-01 реализует Account shell и overview/dashboard; auth form contract остаётся самостоятельным.
+
+### SHOP-ACCOUNT-01 — Account Shell & Overview
+
+Статус: IN PROGRESS — реализация в `feat/shop-account-01-overview`, ожидает manual QA. `/account` — канонический session-dependent маршрут; `/profile` перенаправляет на него. Account Shell показывает фиксированную demo identity, текущее количество товаров в корзине, переходы к каталогу и корзине, информацию о demo-сессии и выход. `accountService → demoAccountAdapter` отделён от `sessionService`; введённые credentials не становятся данными аккаунта и не сохраняются.
+
+Следующие отдельные tickets остаются PLANNED:
+
+- SHOP-ACCOUNT-02 — Profile editing & avatar.
+- SHOP-ACCOUNT-03 — Orders, Order Details & Shipment Tracking.
+- SHOP-ACCOUNT-04 — Addresses.
+- SHOP-ACCOUNT-05 — Reviews & Ratings.
+- SHOP-ACCOUNT-06 — Recently Viewed.
+- SHOP-ACCOUNT-07 — Settings & Preferences.
 
 ---
 

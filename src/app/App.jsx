@@ -8,7 +8,8 @@ import LoginPage from '../pages/LoginPage/LoginPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage/ForgotPasswordPage';
 import { restoreAuth } from '../features/auth/store/authSlice';
-import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import AccountPage from '../pages/AccountPage/AccountPage';
+import RequireSession from '../features/auth/components/RequireSession';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import { Loader } from '../shared/ui';
 import styles from './App.module.css';
@@ -125,7 +126,10 @@ function App() {
             </LazyPage>
           } 
         />
-        <Route path="profile" element={<ProfilePage />} />
+        <Route element={<RequireSession />}>
+          <Route path="account" element={<AccountPage />} />
+        </Route>
+        <Route path="profile" element={<Navigate to="/account" replace />} />
         <Route path="admin" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

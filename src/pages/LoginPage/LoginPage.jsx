@@ -6,7 +6,7 @@ import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
   const hasSession = useSelector(selectHasSession);
-  if (hasSession) return <Navigate to="/profile" replace />;
+  if (hasSession) return <Navigate to="/account" replace />;
   return (
     <div className={styles.loginPage}>
       <LoginForm />
