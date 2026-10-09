@@ -1,61 +1,34 @@
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Footer.module.css';
 
 const Footer = () => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
-  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.footerBar}>
-        <div className="container">
-          <div className={styles.barContent}>
-            <p>© {currentYear} MyMy Shop</p>
-            <button 
-              className={styles.expandBtn}
-              onClick={() => setIsExpanded(!isExpanded)}
-              aria-label={isExpanded ? t('footer.collapse') : t('footer.expand')}
-              aria-expanded={isExpanded}
-            >
-              {isExpanded ? '−' : '+'}
-            </button>
-          </div>
+      <div className="container">
+        <div className={styles.footerContent}>
+          <nav className={`${styles.footerSection} ${styles.shopping}`} aria-label={t('footer.shopping')}>
+            <h2>{t('footer.shopping')}</h2>
+            <ul>
+              <li><Link to="/products">{t('nav.products')}</Link></li>
+              <li><Link to="/cart">{t('nav.cart')}</Link></li>
+            </ul>
+          </nav>
+          <nav className={styles.footerSection} aria-label={t('footer.information')}>
+            <h2>{t('footer.information')}</h2>
+            <ul>
+              <li><Link to="/about">{t('nav.about')}</Link></li>
+              <li><Link to="/delivery">{t('nav.delivery')}</Link></li>
+            </ul>
+          </nav>
         </div>
       </div>
-      
-      <div className={`${styles.footerExpandable} ${isExpanded ? styles.expanded : ''}`}>
+      <div className={styles.footerBar}>
         <div className="container">
-          <div className={styles.footerContent}>
-            <div className={styles.footerSection}>
-              <h4>MyMy Shop</h4>
-              <p>{t('footer.tagline')}</p>
-            </div>
-            <div className={styles.footerSection}>
-              <h4>{t('footer.links')}</h4>
-              <ul>
-                <li><a href="/">{t('nav.home')}</a></li>
-                <li><a href="/products">{t('nav.products')}</a></li>
-                <li><a href="/cart">{t('nav.cart')}</a></li>
-              </ul>
-            </div>
-            <div className={styles.footerSection}>
-              <h4>{t('footer.contact')}</h4>
-              <ul>
-                <li>Email: support@mymyshop.com</li>
-                <li>{t('footer.phone')}: +1 (555) 123-4567</li>
-              </ul>
-            </div>
-            <div className={styles.footerSection}>
-              <h4>{t('footer.follow')}</h4>
-              <div className={styles.socialLinks}>
-                <a href="#" className={styles.socialLink}>Facebook</a>
-                <a href="#" className={styles.socialLink}>Instagram</a>
-                <a href="#" className={styles.socialLink}>Twitter</a>
-              </div>
-            </div>
-          </div>
+          <p>© {currentYear} MyMy Shop</p>
         </div>
       </div>
     </footer>

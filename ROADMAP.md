@@ -623,6 +623,12 @@ SHOP-01, SHOP-06, SHOP-07.
 
 ---
 
+## SHOP-UI-08 — Mobile Footer UX & Information Architecture
+
+Статус: IN PROGRESS — реализация в `fix/shop-ui-08-mobile-footer`, ожидает повторный manual QA. Mobile Footer сразу показывает только информационные маршруты `/about` и `/delivery`; primary navigation остаётся в MobileNavigation. Desktop Footer показывает группы «Покупки» и «Информация» без дублирования ссылки на главную. Playwright защищает доступность ссылок, нижнюю навигацию и геометрию ChatBot/Footer.
+
+---
+
 ## SHOP-AUTH-UI — Authentication UX and demo-safe form contract
 
 Статус: IN PROGRESS — реализовано в `feat/shop-auth-ui`, ожидает manual QA. Формы `/login`, `/register`, `/forgot-password` имеют локальную validation, RU/EN и состояния отправки, ошибки и информации. Публичный demo adapter не проверяет credentials, не создаёт аккаунт и не отправляет email; session остаётся в памяти до refresh. UI обращается к `sessionService`, который позже может получить backend adapter. Настоящий reset-token flow ждёт backend recovery contract.

@@ -124,14 +124,8 @@
     "sessionUnavailable": "Could not start or end the session. Please try again."
 },
   "footer": {
-    "links": "Links",
-    "contact": "Contact",
-    "follow": "Follow Us",
-    "phone": "Phone",
-    "rights": "All rights reserved",
-    "tagline": "Comfort to life",
-    "expand": "Expand footer",
-    "collapse": "Collapse footer"
+    "shopping": "Shopping",
+    "information": "Information"
   },
   "common": {
     "loading": "Loading...",

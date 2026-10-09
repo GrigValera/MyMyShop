@@ -1,73 +1,19 @@
 .footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 90;
-  background: var(--bg-primary);
-  border-top: 1px solid var(--border-light);
-}
-
-.footerBar {
-  padding: var(--spacing-2) 0;
-}
-
-.barContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.expandBtn {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-light);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  transition: all var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1;
-  padding: 0;
-}
-
-.expandBtn:hover {
-  background: var(--color-primary);
-  color: white;
-}
-.expandBtn:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
-
-.footerExpandable {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-out;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-light);
 }
 
-.footerExpandable.expanded {
-  max-height: 300px;
-  transition: max-height 0.3s ease-in;
-}
-
 .footerContent {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-6);
-  padding: var(--spacing-4) 0;
+  padding: var(--spacing-5) 0;
 }
 
-.footerSection h4 {
+.footerSection h2 {
   margin-bottom: var(--spacing-2);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
 }
 
 .footerSection ul {
@@ -75,81 +21,42 @@
   padding: 0;
 }
 
-.footerSection li {
-  margin-bottom: var(--spacing-1);
-  color: var(--text-secondary);
-  font-size: var(--font-size-xs);
-}
-
 .footerSection a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
   color: var(--text-secondary);
-  transition: color var(--transition-fast);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
 }
 
 .footerSection a:hover {
   color: var(--color-primary);
 }
 
-.socialLinks {
-  display: flex;
-  gap: var(--spacing-2);
-  flex-wrap: wrap;
+.footerSection a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-/* Повышаем специфичность селектора для socialLink */
-.footer .socialLinks .socialLink {
-  display: inline-block;
-  padding: var(--spacing-1) var(--spacing-2);
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
-  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
-  font-size: var(--font-size-xs);
+.footerBar {
+  padding: var(--spacing-3) 0;
+  border-top: 1px solid var(--border-light);
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Повышаем специфичность для hover */
-.footer .socialLinks .socialLink:hover {
-  background: var(--color-primary);
-  color: #ffffff;
-  transform: translateY(-2px);
-}
-
-/* Отступ для контента */
-body {
-  padding-bottom: 48px;
 }
 
 @media (max-width: 768px) {
-  .footer { position: static; }
-  /* Keep the footer control clear of the 50px floating ChatBot button. */
-  .expandBtn { margin-right: calc(50px + var(--spacing-2)); }
-  .footerContent {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-4);
-  }
-  
-  .footerExpandable.expanded {
-    max-height: 400px;
-  }
-  
-  body { padding-bottom: 0; }
-}
-
-@media (max-width: 480px) {
   .footerContent {
     grid-template-columns: 1fr;
-    text-align: center;
-    gap: var(--spacing-3);
+    padding: var(--spacing-4) 0;
   }
-  
-  .socialLinks {
-    justify-content: center;
+
+  .shopping {
+    display: none;
   }
-  
-  .footerExpandable.expanded {
-    max-height: 500px;
+
+  .footerSection a {
+    min-height: 44px;
   }
 }
