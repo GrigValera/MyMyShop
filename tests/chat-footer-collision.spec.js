@@ -6,20 +6,21 @@ for (const { width, height } of [
   { width: 400, height: 800 },
   { width: 480, height: 800 },
 ]) {
-  test(`mobile footer and ChatBot remain independently clickable at ${width}x${height}`, async ({ page }) => {
+  test(`mobile footer links and ChatBot remain independently clickable at ${width}x${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     for (const route of ['/register', '/profile', '/login', '/forgot-password']) {
       await page.goto(route);
-      const footer = page.getByRole('button', { name: 'Развернуть подвал' });
+      const footer = page.locator('footer');
+      const about = footer.locator('a[href="/about"]');
+      const delivery = footer.locator('a[href="/delivery"]');
       const chat = page.getByRole('button', { name: 'Задать вопрос' });
       await footer.evaluate(element => element.scrollIntoView({ block: 'end' }));
 
       const geometry = await page.evaluate(() => {
-        const footerButton = document.querySelector('footer button[aria-expanded]');
+        const footerLinks = [...document.querySelectorAll('footer a')].filter(link => getComputedStyle(link).display !== 'none' && link.getClientRects().length);
         const chatButton = document.querySelector('button[aria-label="Задать вопрос"]');
         const nav = document.querySelector('nav[aria-label="Основная навигация"]');
         const homeLink = nav.querySelector('a[href="/"]');
-        const footerBox = footerButton.getBoundingClientRect();
         const chatBox = chatButton.getBoundingClientRect();
         const navBox = nav.getBoundingClientRect();
         const hit = element => {
@@ -28,20 +29,19 @@ for (const { width, height } of [
           return element === target || element.contains(target);
         };
         return {
-          overlap: footerBox.left < chatBox.right && footerBox.right > chatBox.left &&
-            footerBox.top < chatBox.bottom && footerBox.bottom > chatBox.top,
-          footerHit: hit(footerButton),
+          overlap: footerLinks.some(link => {
+            const box = link.getBoundingClientRect();
+            return box.left < chatBox.right && box.right > chatBox.left && box.top < chatBox.bottom && box.bottom > chatBox.top;
+          }),
+          footerHit: footerLinks.every(hit),
           chatHit: hit(chatButton),
           navHit: hit(homeLink),
-          aboveNav: footerBox.bottom <= navBox.top && chatBox.bottom <= navBox.top,
+          aboveNav: footerLinks.every(link => link.getBoundingClientRect().bottom <= navBox.top) && chatBox.bottom <= navBox.top,
           overflow: document.documentElement.scrollWidth > innerWidth,
         };
       });
       expect(geometry).toEqual({ overlap: false, footerHit: true, chatHit: true, navHit: true, aboveNav: true, overflow: false });
 
-      await footer.click();
-      await expect(page.getByRole('button', { name: 'Свернуть подвал' })).toHaveAttribute('aria-expanded', 'true');
-      await page.getByRole('button', { name: 'Свернуть подвал' }).click();
       await chat.click();
       const panel = page.locator('[class*="_chatWindow_"]');
       await expect(panel).toBeVisible();
@@ -53,8 +53,10 @@ for (const { width, height } of [
       await expect(panel).toHaveCount(0);
       await expect(page.locator('[class*="_tooltip_"]')).toHaveCount(0);
       await expect(chat).toBeVisible();
-      await footer.click();
-      await expect(page.getByRole('button', { name: 'Свернуть подвал' })).toHaveAttribute('aria-expanded', 'true');
+      await expect(about).toBeVisible();
+      await expect(delivery).toBeVisible();
+      await delivery.click();
+      await expect(page).toHaveURL('/delivery');
       await expect(panel).toHaveCount(0);
       await expect(page.getByRole('navigation', { name: 'Основная навигация' })).toBeVisible();
       await page.getByRole('navigation', { name: 'Основная навигация' }).locator('a[href="/"]').click();
@@ -72,9 +74,9 @@ test('touch path leaves no ChatBot tooltip or blocking layer after close', async
   await page.getByRole('button', { name: 'Закрыть' }).tap();
   await expect(page.locator('[class*="_chatWindow_"]')).toHaveCount(0);
   await expect(page.locator('[class*="_tooltip_"]')).toHaveCount(0);
-  const footer = page.getByRole('button', { name: 'Развернуть подвал' });
-  await footer.evaluate(element => element.scrollIntoView({ block: 'end' }));
-  await footer.tap();
-  await expect(page.getByRole('button', { name: 'Свернуть подвал' })).toHaveAttribute('aria-expanded', 'true');
+  const footerLink = page.locator('footer a[href="/delivery"]');
+  await footerLink.scrollIntoViewIfNeeded();
+  await footerLink.tap();
+  await expect(page).toHaveURL('/delivery');
   await context.close();
 });
