@@ -43,6 +43,22 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 
 Каждый ticket начинается только после явного подтверждения пользователя и выполняется по [CODEX_WORKFLOW.md](CODEX_WORKFLOW.md). Зависимости перечислены в каждом ticket.
 
+Для major user-facing tickets до реализации действует UX/Product Benchmark Gate: user jobs → изучение релевантных исследований и зрелых продуктов → product IA/domain contract → короткое UX decision summary → адаптивная реализация и product review. Новая domain capability синхронизирует все связанные поверхности, tests и docs. Полная IA допускает честные placeholder-разделы до появления бизнес-данных; вымышленные заказы, платежи и статусы запрещены. Результат ретроспективного аудита текущих экранов и границы его доказательств: [UX/Product audit](docs/UX_PRODUCT_AUDIT.md). Находки вне SHOP-ACCOUNT-02 становятся отдельными tickets ниже и не расширяют текущий runtime scope.
+
+### UX remediation backlog после ретроспективного аудита
+
+Приоритеты P0/P1/P2 обозначают риск для целевого продукта и релиза, а не разрешение автоматически начинать ticket. Ни один пункт ниже не является частью runtime scope SHOP-ACCOUNT-02.
+
+| ID / proposed ticket | Priority / class | Surface и причина | Benchmark rationale | Dependency |
+| --- | --- | --- | --- | --- |
+| **SHOP-UX-COMMERCE-01 — честный Cart → Checkout → Order flow** | **P0 / DOMAIN GAP**, release blocker | CartPage сейчас показывает `Order placed`, пишет в console и очищает корзину без заказа; `/checkout` возвращает в корзину. Убрать ложный success и синхронизировать Cart, checkout, confirmation и Account Orders. | [Baymard Cart & Checkout](https://baymard.com/research/checkout-usability): пользователь должен иметь проверяемые шаги и итог заказа; текущее сообщение не соответствует результату. | SHOP-04/05/06, core SHOP-COMMERCE-FLOW и договорённая domain/API boundary. Scope согласовать с владельцем существующего commerce ticket, без второй реализации. |
+| **SHOP-UX-PDP-01 — достоверная информация о товаре** | **P1 / UX DEBT + DOMAIN GAP** | PDP подставляет бренд и наличие при отсутствии данных, а подписи характеристик жёстко русские; reviews и price должны следовать одному product model. | [Baymard Product Page](https://baymard.com/research/product-page): сведения, цена и доступность нужны для решения о покупке; недостоверные значения вредят доверию. | Product data/Price contract SHOP-06, соответствующий SHOP-UI/PDP ticket. |
+| **SHOP-UX-SUPPORT-01 — правдивый support flow** | **P1 / UX DEBT + DOMAIN GAP** | Локальный ChatBot отвечает как реальная поддержка и обещает контакт, хотя сообщения никуда не отправляются; согласовать ChatBot, Contact и support copy. | Self-service должен ясно сообщать доступное действие и его результат; общий reviewer-first standard из [WAI о понятной структуре](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o2p02-site-structure/) применён здесь как продуктовый вывод. | SHOP-COMMERCE-CONTENT; реальная отправка только после server/API boundary. |
+| **SHOP-UX-DISCOVERY-01 — целостность Home → Catalog → Product** | **P2 / POLISH + DOMAIN GAP** | Home ведёт в каталог, но мало раскрывает ассортимент; карточки и фильтры используют главным образом общие поля, без проверенных категорийных атрибутов. | [Baymard Product Lists](https://baymard.com/research/ecommerce-product-lists): фильтры, сортировка и достаточная информация в строке списка работают как единая система. | SHOP-CATALOG-POLISH, product attributes/data contract и SHOP-06. |
+| **SHOP-UX-SYSTEM-01 — сквозные тексты, состояния и controls** | **P2 / POLISH** | Header mobile menu имеет жёсткие `Theme`/`Language` в RU; часть ошибок и 404 используют общие подписи; auth demo explanation повторяется и занимает место. Проверить RU/EN, темы, кнопки, формы, empty/error и focus как единую систему. | [WAI Navigation](https://www.w3.org/WAI/tutorials/menus/structure/) требует ясных названий и согласованной структуры; единые тексты и состояния снижают стоимость ориентирования. | SHOP-UI-06, SHOP-RESILIENCE; не менять действующие auth/session contracts. |
+
+**PASS без отдельного remediation ticket:** текущий Account Home/Profile IA после SHOP-ACCOUNT-02, защищённые placeholder routes, работающие фильтры/сортировка/сброс, cart quantity и persistence, глобальная мобильная навигация и footer, базовые 404/empty recovery. Это оценка текущего паттерна и существующих проверок, а не утверждение о завершении будущих business domains.
+
 ## Направления и порядок реализации
 
 ### SHOP-ARCH-01 — Архитектурная схема системы
@@ -641,12 +657,16 @@ SHOP-01, SHOP-06, SHOP-07.
 
 Следующие отдельные tickets остаются PLANNED:
 
-- SHOP-ACCOUNT-02 — Profile editing & avatar.
+- SHOP-ACCOUNT-02 — Profile editing & avatar: реализуется в `feat/shop-account-02-profile-editing`; защищённый `/account/profile`, редактируемое имя, read-only demo email, локальный preview аватара, Save/Cancel и обновление только в памяти через backend-ready `accountService.updateProfile`. Ожидает automated checks и manual QA.
 - SHOP-ACCOUNT-03 — Orders, Order Details & Shipment Tracking.
 - SHOP-ACCOUNT-04 — Addresses.
 - SHOP-ACCOUNT-05 — Reviews & Ratings.
 - SHOP-ACCOUNT-06 — Recently Viewed.
 - SHOP-ACCOUNT-07 — Settings & Preferences.
+
+**Принцип Account IA:** полная структура `/account`, `/account/profile`, `/account/orders`, `/account/addresses`, `/account/reviews`, `/account/settings` появляется до реализации всех бизнес-функций. Главная страница кабинета показывает профиль и прямые переходы к покупкам и настройкам; на mobile это компактные строки, на desktop сохраняется боковая навигация. Сейчас demo-редактор личных данных работает; Orders, Addresses, Reviews и Settings имеют только защищённые маршруты и честные пользовательские placeholder-экраны. Данных заказов, адресов, отзывов и настроек они не создают.
+
+При реализации каждого будущего домена его ticket синхронно заменяет placeholder, обновляет главную страницу кабинета и страницу раздела, связанные бизнес-экраны (например, checkout и детали заказа для Orders, адрес доставки для Addresses, PDP для Reviews), тесты, документацию и удаляет устаревший placeholder copy. Навигация и shell остаются общей продуктовой структурой; backend capability появляется только с её собственным контрактом и проверками.
 
 ---
 

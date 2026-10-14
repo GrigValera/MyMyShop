@@ -10,7 +10,7 @@
 | Category | Метаданные снимка и категории DummyJSON | Семантика полного локального набора и загруженных API-страниц различается |
 | Cart / CartItem | Redux slice и версионированное локальное хранение | Снимок для отображения, а не заказ или достоверный итог |
 | Session / DemoUser | `sessionService`, адаптер и auth slice | Только память, без прав доступа и Customer-идентичности |
-| Account overview | `accountService → demoAccountAdapter`; статический display-only fixture | Не Customer Profile, не запись покупателя и не источник авторизации |
+| Demo account profile | `accountService → demoAccountAdapter`; исходный fixture и изменения имени/аватара только в памяти runtime | Не серверная запись покупателя и не источник авторизации; email read-only |
 | Данные Review / Rating | Рейтинг товара есть в снимке и карточках; поле `reviews` запрашивается в API-режиме PDP, но отсутствует в локальном снимке | Базовый компонент `Reviews` не образует полноценный UI; нет домена и отправки отзывов |
 
 ## PLANNED — будущие понятия
@@ -60,7 +60,7 @@
 | Данные | CURRENT источник | Будущий источник истины | Статус |
 | --- | --- | --- | --- |
 | Сессия | Память Redux и demo-адаптер | Серверная сессия | CURRENT / PLANNED |
-| Обзор аккаунта | Статический demo fixture за `accountService`, без сохранения | Серверная граница Customer | CURRENT demo / PLANNED |
+| Профиль аккаунта | Demo fixture и in-memory обновление имени/аватара за `accountService` | Серверная граница Customer | CURRENT demo / PLANNED |
 | Корзина | Redux и `localStorage` | Серверная корзина авторизованного Customer; правило согласования открыто | CURRENT / PLANNED |
 | Каталог | Снимок и дополнительный режим DummyJSON | Серверная граница Catalog; PIM необязателен | CURRENT / PLANNED |
 | Заказ | Нет | Серверный домен Orders | PLANNED |

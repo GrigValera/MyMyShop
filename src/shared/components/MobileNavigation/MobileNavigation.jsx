@@ -31,7 +31,7 @@ const MobileNavigation = () => {
   return <nav className={styles.navigation} aria-label={t('mobileNav.label')}>
     {items.map(({ to, label, icon, badge }) => {
       const current = pathname === to;
-      const active = current || (to === '/products' && pathname.startsWith('/product/'));
+      const active = current || (to === '/products' && pathname.startsWith('/product/')) || (to === '/account' && pathname.startsWith('/account/'));
       return <NavLink key={to} to={to} state={{ mobilePrimaryNavigation: true }} className={`${styles.item} ${active ? styles.active : ''}`} aria-current={current ? 'page' : undefined} aria-describedby={to === '/cart' && badge > 0 ? 'mobile-cart-count' : undefined}>
         <span className={styles.iconWrap}>{icon}{badge > 0 && <span className={styles.badge} aria-hidden="true">{badge > 99 ? '99+' : badge}</span>}</span>
         <span className={styles.label}>{label}</span>

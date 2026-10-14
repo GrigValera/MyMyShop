@@ -150,7 +150,7 @@ test('desktop demo controls work by keyboard and profile drawer remains usable',
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
   await page.getByRole('link', { name: 'MyMy Shop' }).click();
   await page.getByRole('button', { name: 'Профиль' }).click();
-  await expect(page.getByRole('link', { name: 'Мой аккаунт' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Личный кабинет' })).toBeVisible();
   const end = page.getByRole('button', { name: 'Выйти' });
   await end.focus();
   await page.keyboard.press('Enter');

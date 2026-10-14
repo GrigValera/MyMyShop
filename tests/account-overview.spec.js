@@ -3,7 +3,7 @@ import { demoAccountAdapter } from '../src/features/account/api/demoAccountAdapt
 import { accountService } from '../src/features/account/api/accountService.js';
 
 test('account service exposes a separate, static demo overview', async () => {
-  const fixture = { id: 'demo', displayName: 'Demo User', email: 'demo@example.test', initials: 'DU' };
+  const fixture = { id: 'demo', displayName: 'Demo User', email: 'demo@example.test', initials: 'DU', avatarUrl: null };
   expect(await demoAccountAdapter.getOverview()).toEqual(fixture);
   expect(await accountService.getOverview()).toEqual({ status: 'success', data: fixture });
 });
@@ -12,7 +12,7 @@ test('anonymous account and legacy profile routes reach sign in', async ({ page 
   for (const route of ['/account', '/profile']) {
     await page.goto(route);
     await expect(page).toHaveURL('/login');
-    await expect(page.getByRole('heading', { name: 'Мой аккаунт' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Личный кабинет' })).toHaveCount(0);
     await expect(page.getByText('demo@example.test')).toHaveCount(0);
   }
 });
@@ -31,14 +31,12 @@ test('demo overview, canonical profile, refresh, and storage isolation', async (
   await page.getByLabel('Пароль', { exact: true }).fill('secret-demo-password');
   await page.getByRole('button', { name: 'Войти в демо' }).click();
   await expect(page).toHaveURL('/account');
-  await expect(page.getByRole('heading', { name: 'Мой аккаунт' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Личный кабинет' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
   await expect(page.getByText('demo@example.test')).toBeVisible();
   await expect(page.getByText('entered@example.test')).toHaveCount(0);
-  await expect(page.getByText('Демо-аккаунт')).toBeVisible();
-  await expect(page.getByText('В корзине 1 товар')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Открыть корзину' })).toHaveAttribute('href', '/cart');
-  await expect(page.getByRole('link', { name: 'Смотреть товары' })).toHaveAttribute('href', '/products');
+  await expect(page.getByText('Демо', { exact: true })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Мои покупки' }).getByRole('link', { name: 'Корзина 1 товар' })).toHaveAttribute('href', '/cart');
   await page.goto('/profile');
   await expect(page).toHaveURL('/login'); // A direct navigation reloads the memory-only session.
   await expect(page.getByText('demo@example.test')).toHaveCount(0);
@@ -75,7 +73,7 @@ test('account layout and localized content fit target widths', async ({ page }) 
   await page.getByRole('button', { name: 'Войти в демо' }).click();
   for (const width of [320, 390, 400, 480, 768, 769, 1024, 1280, 1440]) {
     await page.setViewportSize({ width, height: width === 320 ? 568 : 900 });
-    await expect(page.getByRole('heading', { name: 'Мой аккаунт' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Личный кабинет' })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await expect(page.getByRole('button', { name: 'Выйти' })).toBeVisible();
   }
@@ -88,7 +86,7 @@ test('account layout and localized content fit target widths', async ({ page }) 
   await page.getByRole('textbox', { name: 'Email' }).fill('demo@example.test');
   await page.getByLabel('Password', { exact: true }).fill('demo-password');
   await page.getByRole('button', { name: 'Sign in to demo' }).click();
-  await expect(page.getByRole('heading', { name: 'My account' })).toBeVisible();
-  await expect(page.getByText('Demo account', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Account' })).toBeVisible();
+  await expect(page.getByText('Demo', { exact: true })).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/dark/);
 });
