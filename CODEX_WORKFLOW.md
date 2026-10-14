@@ -17,6 +17,22 @@
 9. README должен соответствовать фактической реализации.
 10. Codex не начинает следующий ticket автоматически. Требуется явное подтверждение пользователя.
 
+## UX / PRODUCT BENCHMARK GATE
+
+Перед реализацией нового или существенно изменяемого пользовательского потока (навигация, Account, каталог, PDP, корзина, checkout, платежи, доставка, заказы, формы, mobile shell) Codex сначала фиксирует короткое UX decision summary. Оно содержит: user jobs; 1–2 релевантных источника UX research и 2–4 примера зрелых продуктов, когда доступны; повторяющиеся patterns; выбранный и отклонённые варианты с причиной; связь с текущей product IA и domain contract; поведение desktop/tablet/mobile, keyboard, RU/EN и light/dark; путь расширения будущих возможностей. Изучаются принципы, а не копируются визуальный стиль и тексты бренда.
+
+Порядок для major UX: **benchmark → user jobs → product IA → domain contract → UX decision → implementation → automated QA → human product review**. Summary показывается пользователю до изменений runtime UI и сохраняется в ticket documentation или соответствующем decision/audit документе. Если внешние источники недоступны и решение действительно требует исследования, нельзя выдавать предположение за benchmark: работа останавливается перед major IA redesign, ограничение сообщается пользователю. Мелкие исправления существующего контракта не требуют нового полного benchmark, но опираются на уже зафиксированное решение.
+
+## DOMAIN-WIDE CONSISTENCY CHECK
+
+Ticket реализует domain capability, а не изолированный компонент. Перед изменением Codex перечисляет затронутые поверхности и проверяет их согласованность: например, Orders связывают кабинет, checkout success, детали, доставку, статусы, уведомления, tests и docs; Cart связывает карточки, PDP, drawer, страницу корзины и checkout. В рамках ticket синхронизируются все поверхности, необходимые для правдивого текущего поведения. Независимые улучшения других доменов выносятся в отдельный backlog/ticket; mass refactor не следует из аудита.
+
+Полная product IA может предшествовать бизнес-возможностям. Нереализованные разделы получают честное empty/coming-soon состояние без вымышленных заказов, платежей, адресов и статусов. Demo mechanics раскрываются коротко в интерфейсе и подробно в README/docs. Customer-facing текст объясняет задачу и доступное действие, а не устройство services/adapters.
+
+## RESPONSIVE / PRODUCT REVIEW CHECK
+
+Responsive quality входит в Definition of Done runtime UI ticket. Проверяются 320, 390, 400, 480, 768, 769, 1024, 1280 и 1440 px либо обоснованный subset, обе локали и темы, keyboard/focus, error/empty states, столкновения fixed controls и отсутствие horizontal overflow. Одна product IA должна иметь осмысленную композицию на mobile, tablet и desktop. До передачи на Manual QA Codex просматривает целый экран и ключевые journeys как reviewer: понятны ли местоположение, доступные функции, главное действие и следующий шаг без архитектурных документов. Проверка визуальной иерархии включает typography, spacing, alignment, action/field priority и icon geometry.
+
 ## Git workflow
 
 ### Перед изменениями
