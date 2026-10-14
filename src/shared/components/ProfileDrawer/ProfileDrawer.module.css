@@ -75,6 +75,7 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
+  font-size: var(--font-size-lg);
 }
 
 .userName {

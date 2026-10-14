@@ -9,6 +9,9 @@ import RegisterPage from '../pages/RegisterPage/RegisterPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage/ForgotPasswordPage';
 import { restoreAuth } from '../features/auth/store/authSlice';
 import AccountPage from '../pages/AccountPage/AccountPage';
+import AccountLayout from '../pages/AccountPage/AccountLayout';
+import ProfileEditor from '../pages/AccountPage/ProfileEditor';
+import AccountPlaceholder from '../pages/AccountPage/AccountPlaceholder';
 import RequireSession from '../features/auth/components/RequireSession';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import { Loader } from '../shared/ui';
@@ -127,7 +130,14 @@ function App() {
           } 
         />
         <Route element={<RequireSession />}>
-          <Route path="account" element={<AccountPage />} />
+          <Route path="account" element={<AccountLayout />}>
+            <Route index element={<AccountPage />} />
+            <Route path="profile" element={<ProfileEditor />} />
+            <Route path="orders" element={<AccountPlaceholder section="orders" />} />
+            <Route path="addresses" element={<AccountPlaceholder section="addresses" />} />
+            <Route path="reviews" element={<AccountPlaceholder section="reviews" />} />
+            <Route path="settings" element={<AccountPlaceholder section="settings" />} />
+          </Route>
         </Route>
         <Route path="profile" element={<Navigate to="/account" replace />} />
         <Route path="admin" element={<Navigate to="/" replace />} />

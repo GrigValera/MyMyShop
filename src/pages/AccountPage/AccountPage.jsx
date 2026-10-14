@@ -1,16 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { accountService } from '../../features/account/api/accountService';
-import { logout } from '../../features/auth/store/authSlice';
+import { useAccountProfile } from '../../features/account/model/useAccountProfile';
+import AccountAvatar from '../../features/account/components/AccountAvatar';
 import { Button, Card } from '../../shared/ui';
 import styles from './AccountPage.module.css';
 
+function DestinationRow({ to, label, detail }) {
+  return <Link to={to} className={styles.destinationRow}>
+    <span className={styles.destinationCopy}><strong>{label}</strong>{detail && <small>{detail}</small>}</span>
+    <span className={styles.rowChevron} aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" focusable="false"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+  </Link>;
+}
+
 export default function AccountPage() {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const cartCount = useSelector((state) => state.cart.items.reduce((sum, item) => sum + item.quantity, 0));
+  const profile = useAccountProfile();
   const [overview, setOverview] = useState({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => {
@@ -26,46 +34,43 @@ export default function AccountPage() {
     return () => { active = false; };
   }, [attempt]);
 
-  return <section className={styles.account} aria-labelledby="account-title">
-    <header className={styles.heading}>
-      <p className={styles.eyebrow}>{t('account.overview')}</p>
-      <h1 id="account-title">{t('account.title')}</h1>
-    </header>
+  return <div aria-labelledby="account-title">
+    <header className={styles.heading}><h1 id="account-title">{t('account.title')}</h1></header>
 
     {overview.status === 'loading' && <p role="status">{t('account.loading')}</p>}
     {overview.status === 'error' && <Card className={styles.stateCard}>
       <p role="alert">{t('account.unavailable')}</p>
       <Button onClick={retry}>{t('common.retry')}</Button>
     </Card>}
-    {overview.status === 'success' && <div className={styles.content}>
-      <Card className={styles.identityCard}>
-        <div className={styles.avatar} aria-label={t('account.avatarFor', { name: overview.data.displayName })} role="img">
-          {overview.data.initials}
-        </div>
-        <div className={styles.identityText}>
-          <span className={styles.badge}>{t('account.demoBadge')}</span>
-          <h2>{overview.data.displayName}</h2>
-          <p>{overview.data.email}</p>
-          <p className={styles.fixtureNote}>{t('account.demoEmail')}</p>
-        </div>
-      </Card>
-
-      <div className={styles.columns}>
-        <Card className={styles.cartCard}>
-          <h2>{t('account.cartTitle')}</h2>
-          <p className={styles.cartCount}>{t('account.cartCount', { count: cartCount })}</p>
-          <p>{t(cartCount ? 'account.cartReady' : 'account.cartEmpty')}</p>
-          <div className={styles.links}>
-            <Link to="/cart" className={styles.primaryLink}>{t('account.viewCart')}</Link>
-            <Link to="/products" className={styles.secondaryLink}>{t('account.browseProducts')}</Link>
+    {overview.status === 'success' && <div className={styles.overviewContent}>
+      <section className={styles.profileSummary} aria-labelledby="profile-summary-title">
+        <div className={styles.identityRow}>
+          <AccountAvatar profile={profile} />
+          <div className={styles.identityText}>
+            <div className={styles.identityHeading}><h2 id="profile-summary-title">{profile.displayName}</h2><span className={styles.badge}>{t('account.demoBadge')}</span></div>
+            <p>{profile.email}</p>
           </div>
-        </Card>
-        <Card className={styles.demoCard}>
-          <h2>{t('account.demoTitle')}</h2>
-          <p>{t('account.demoNotice')}</p>
-          <Button variant="secondary" onClick={() => dispatch(logout())}>{t('nav.logout')}</Button>
-        </Card>
-      </div>
+        </div>
+        <Link to="/account/profile" className={styles.editProfileLink}>{t('account.editProfile')}</Link>
+      </section>
+
+      <section className={styles.destinationGroup} aria-labelledby="purchases-title">
+        <h2 id="purchases-title">{t('account.purchases')}</h2>
+        <nav aria-label={t('account.purchases')} className={styles.destinationList}>
+          <DestinationRow to="/account/orders" label={t('account.orders')} />
+          <DestinationRow to="/cart" label={t('account.cartTitle')} detail={cartCount ? t('account.cartItems', { count: cartCount }) : t('account.emptyCart')} />
+          <DestinationRow to="/account/addresses" label={t('account.addresses')} />
+          <DestinationRow to="/account/reviews" label={t('account.reviews')} />
+        </nav>
+      </section>
+
+      <section className={styles.destinationGroup} aria-labelledby="account-destinations-title">
+        <h2 id="account-destinations-title">{t('account.accountGroup')}</h2>
+        <nav aria-label={t('account.accountGroup')} className={styles.destinationList}>
+          <DestinationRow to="/account/settings" label={t('account.settings')} />
+        </nav>
+      </section>
+      <p className={styles.demoNote}>{t('account.demoNotice')}</p>
     </div>}
-  </section>;
+  </div>;
 }

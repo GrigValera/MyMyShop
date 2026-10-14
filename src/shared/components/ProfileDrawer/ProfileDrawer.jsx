@@ -1,15 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout, selectSessionUser } from '../../../features/auth/store/authSlice';
-import { UserIcon } from '../../icons/UserIcon';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../features/auth/store/authSlice';
+import { useAccountProfile } from '../../../features/account/model/useAccountProfile';
+import AccountAvatar from '../../../features/account/components/AccountAvatar';
 import styles from './ProfileDrawer.module.css';
 
 const ProfileDrawer = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(selectSessionUser);
+  const profile = useAccountProfile();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -29,9 +30,9 @@ const ProfileDrawer = ({ isOpen, onClose }) => {
         </div>
         <div className={styles.content}>
           <div className={styles.userInfo}>
-            <UserIcon className={styles.avatar} />
+            <AccountAvatar profile={profile} className={styles.avatar} />
             <div>
-              <p className={styles.userName}>{user?.name}</p>
+              <p className={styles.userName}>{profile.displayName}</p>
               <p>{t('auth.demoNotice')}</p>
               <p>{t('auth.demoRefresh')}</p>
             </div>
