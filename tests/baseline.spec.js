@@ -29,7 +29,7 @@ test('E2E: sale item can be added, counted and opened in cart', async ({ page })
   await page.getByRole('link', { name: 'Перейти в корзину' }).click();
   await expect(page).toHaveURL('/cart');
   await expect(page.getByRole('heading', { name: 'Корзина', exact: true })).toBeVisible();
-  await expect(page.getByText('Сводка заказа', { exact: true })).toBeVisible();
+  await expect(page.getByText('В вашей корзине', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: title })).toBeVisible();
   await expect(page.locator('output')).toHaveText('3');
   await page.getByRole('button', { name: `Удалить из корзины: ${title}` }).click();

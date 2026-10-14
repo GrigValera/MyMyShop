@@ -65,9 +65,9 @@ test('multiple products keep totals and layout at cart widths', async ({ page })
   await expect(drawer.locator('output')).toHaveCount(2);
   await drawer.getByRole('link', { name: 'Перейти в корзину' }).click();
   await expect(page.getByRole('heading', { name: titles[1] })).toHaveCount(0);
-  const totalBefore = await page.locator('[class*="_totalRow_"] span').last().textContent();
+  const totalBefore = await page.locator('[class*="_summaryRow_"]').last().locator('span').last().textContent();
   await page.getByRole('button', { name: `Увеличить количество: ${titles[0]}` }).click();
-  const totalAfter = await page.locator('[class*="_totalRow_"] span').last().textContent();
+  const totalAfter = await page.locator('[class*="_summaryRow_"]').last().locator('span').last().textContent();
   expect(totalAfter).not.toBe(totalBefore);
   await expect(page.getByText('Товаров')).toBeVisible();
   for (const width of [320, 390, 480, 768, 1024, 1280, 1440]) {
@@ -77,6 +77,32 @@ test('multiple products keep totals and layout at cart widths', async ({ page })
   }
   await page.getByRole('link', { name: 'Продолжить покупки' }).click();
   await expect(page).toHaveURL('/products');
+});
+
+test('drawer list scrolls while its item count, subtotal and cart action remain reachable', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await addFirstProducts(page, 6);
+  await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
+  const drawer = page.getByRole('dialog', { name: 'Корзина' });
+  const list = drawer.locator('[class*="_cartItems_"]');
+  const dimensions = await list.evaluate(node => ({
+    scrollHeight: node.scrollHeight,
+    clientHeight: node.clientHeight,
+    overflowY: getComputedStyle(node).overflowY,
+  }));
+  expect(dimensions.overflowY).toBe('auto');
+  expect(dimensions.scrollHeight).toBeGreaterThan(dimensions.clientHeight);
+  await list.evaluate(node => { node.scrollTop = node.scrollHeight; });
+  await expect(drawer.locator('[class*="_cartItem_"]').last()).toBeInViewport();
+  await expect(drawer.getByText('Товаров')).toBeInViewport();
+  await expect(drawer.locator('[class*="_totalRow_"]')).toBeInViewport();
+  await expect(drawer.getByRole('link', { name: 'Перейти в корзину' })).toBeInViewport();
+  const bounds = await drawer.evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, width: window.innerWidth };
+  });
+  expect(bounds.left).toBeGreaterThanOrEqual(0);
+  expect(bounds.right).toBeLessThanOrEqual(bounds.width);
 });
 
 test('cart containers and actions stay inside narrow viewports', async ({ page }) => {
@@ -360,7 +386,7 @@ test('cart survives repeated drawer and route transitions without an empty root 
   await testInfo.attach('cart-navigation-states', { body: JSON.stringify(navigationLog, null, 2), contentType: 'application/json' });
 });
 
-test('retired checkout URL returns to cart instead of rendering a blank root', async ({ page }) => {
+test('empty checkout URL returns to cart instead of rendering a blank root', async ({ page }) => {
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
   await page.goto('/checkout');
