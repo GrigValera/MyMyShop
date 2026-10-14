@@ -63,7 +63,9 @@
     "removeItem": "Remove from cart: {{title}}",
     "viewProduct": "View product details: {{title}}",
     "total": "Total",
-    "checkout": "Checkout",
+    "checkout": "Preview checkout",
+    "checkoutNote": "Orders cannot be placed in this demo yet. Your cart will stay saved.",
+    "cartSummary": "Your cart",
     "remove": "Remove",
     "quantity": "Quantity",
     "subtotal": "Subtotal",
@@ -73,6 +75,17 @@
     "deliveryMethod": "Delivery Method",
     "deliveryPrice": "Delivery Price",
     "viewCart": "View Cart"
+  },
+  "checkout": {
+    "title": "Checkout preview",
+    "unavailableTitle": "Checkout is not available yet",
+    "unavailableBody": "This is a demo: no order was created or sent to a seller. Your items will stay in the cart so you can go back and change them.",
+    "summaryTitle": "Items in your cart",
+    "quantity": "Quantity: {{count}}",
+    "itemCount": "Items",
+    "subtotal": "Items subtotal",
+    "priceNote": "Delivery cost and final total are not calculated yet.",
+    "backToCart": "Back to cart"
   },
   "product": {
     "addToCart": "Add to Cart",

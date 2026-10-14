@@ -21,6 +21,7 @@ import styles from './App.module.css';
 const ProductsPage = lazy(() => import('../pages/ProductsPage/ProductsPage'));
 const ProductDetailsPage = lazy(() => import('../pages/ProductDetailsPage/ProductDetailsPage'));
 const CartPage = lazy(() => import('../pages/CartPage/CartPage'));
+const CheckoutPage = lazy(() => import('../pages/CheckoutPage/CheckoutPage'));
 const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'));
 const DeliveryPage = lazy(() => import('../pages/DeliveryPage/DeliveryPage'));
 const ContactPage = lazy(() => import('../pages/ContactPage/ContactPage'));
@@ -104,7 +105,7 @@ function App() {
             </LazyPage>
           } 
         />
-        <Route path="checkout" element={<Navigate to="/cart" replace />} />
+        <Route path="checkout" element={<LazyPage><CheckoutPage /></LazyPage>} />
         <Route 
           path="about" 
           element={

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Card } from '../../shared/ui';
-import { removeFromCart, updateQuantity, clearCart } from '../../features/cart/store/cartSlice';
+import { Card } from '../../shared/ui';
+import { removeFromCart, updateQuantity } from '../../features/cart/store/cartSlice';
 import QuantityControls from '../../features/cart/components/QuantityControls';
 import RemoveButton from '../../features/cart/components/RemoveButton';
 import ProductImage from '../../features/products/components/ProductImage';
@@ -26,13 +26,6 @@ const CartPage = () => {
 
   const handleRemove = (item) => {
     dispatch(removeFromCart({ id: item.id, source: item.source, hasDiscount: item.hasDiscount, price: item.price }));
-  };
-
-  const handleCheckout = () => {
-    console.log('Order placed:', cartItems);
-    console.log('Total amount:', totalPrice);
-    alert('Order placed! Check console for details.');
-    dispatch(clearCart());
   };
 
   if (cartItems.length === 0) {
@@ -93,7 +86,7 @@ const CartPage = () => {
           })}
         </div>
         <div className={styles.cartSummary}>
-          <h3>{t('cart.orderSummary')}</h3>
+          <h3>{t('cart.cartSummary')}</h3>
           <div className={styles.summaryRow}>
             <span>{t('cart.itemCount')}</span>
             <span>{itemCount}</span>
@@ -102,17 +95,10 @@ const CartPage = () => {
             <span>{t('cart.subtotal')}</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
-          <div className={styles.summaryRow}>
-            <span>{t('cart.shipping')}</span>
-            <span>{totalPrice > 50 ? t('cart.free') : '$5.99'}</span>
-          </div>
-          <div className={`${styles.summaryRow} ${styles.totalRow}`}>
-            <span>{t('cart.total')}</span>
-            <span>${totalPrice > 50 ? totalPrice.toFixed(2) : (totalPrice + 5.99).toFixed(2)}</span>
-          </div>
-          <Button variant="primary" size="lg" onClick={handleCheckout} className={styles.checkoutBtn}>
+          <p className={styles.checkoutNote}>{t('cart.checkoutNote')}</p>
+          <Link to="/checkout" className={styles.checkoutBtn}>
             {t('cart.checkout')}
-          </Button>
+          </Link>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@
 .cartContent { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--spacing-6); align-items: start; margin-top: var(--spacing-4); }
 .cartItems { display: grid; min-width: 0; gap: var(--spacing-4); }
 .cartItem { display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: var(--spacing-4); align-items: start; min-width: 0; padding: var(--spacing-4); }
+.cartItem:hover { transform: none; box-shadow: var(--shadow-sm); }
 .productLink { grid-column: 1 / 3; display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: var(--spacing-4); min-width: 0; border-radius: var(--radius-md); color: inherit; text-decoration: none; }
 .productLink h3 { color: var(--color-primary-dark); }
 :global(body.dark) .productLink h3 { color: var(--color-primary-light); }
@@ -28,7 +29,9 @@
 .summaryRow { display: flex; justify-content: space-between; gap: var(--spacing-3); margin-bottom: var(--spacing-3); color: var(--text-secondary); }
 .summaryRow span:last-child { white-space: nowrap; }
 .totalRow { margin-top: var(--spacing-4); padding-top: var(--spacing-4); border-top: 1px solid var(--border-light); color: var(--text-primary); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
-.checkoutBtn { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; margin-top: var(--spacing-4); line-height: 1.25; text-align: center; }
+.checkoutNote { color: var(--text-secondary); line-height: 1.5; }
+.checkoutBtn { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; margin-top: var(--spacing-4); padding: var(--spacing-3); border-radius: var(--radius-md); background: var(--color-primary); color: white; font-weight: var(--font-weight-semibold); line-height: 1.25; text-align: center; text-decoration: none; }
+.checkoutBtn:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
 @media (max-width: 1024px) {
   .cartContent { grid-template-columns: minmax(0, 1fr); }
   .cartSummary { position: static; }
