@@ -15,13 +15,14 @@ const ProductImage = ({ src, alt = '', className = '', loading = 'lazy', width =
       role={failed && alt ? 'img' : undefined}
       aria-label={failed ? alt || undefined : undefined}
     >
-      {failed ? (
+      {(failed || !loaded) && (
         <svg className={styles.fallback} viewBox="0 0 64 64" fill="none" aria-hidden="true" focusable="false">
           <rect x="7" y="12" width="50" height="40" rx="6" stroke="currentColor" strokeWidth="2" />
           <circle cx="23" cy="25" r="4" fill="currentColor" />
           <path d="m12 45 13-13 9 9 7-7 11 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      ) : (
+      )}
+      {!failed && (
         <img
           src={imageSrc}
           alt={alt}
