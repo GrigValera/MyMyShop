@@ -32,7 +32,7 @@ test('empty page and drawer lead to the catalog in both locales', async ({ page 
 test('quantity minimum, totals, drawer consistency and last-item removal', async ({ page }) => {
   const [title] = await addFirstProducts(page);
   const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
-  await card.getByRole('button', { name: 'В корзину' }).click();
+  await card.getByRole('button', { name: `Увеличить количество: ${title}` }).click();
   await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog');
   const minus = drawer.getByRole('button', { name: `Уменьшить количество: ${title}` });

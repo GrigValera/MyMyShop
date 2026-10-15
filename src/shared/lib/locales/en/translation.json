@@ -10,6 +10,12 @@
     "contact": "Contact",
     "profile": "Profile"
   },
+  "cartFeedback": {
+    "inCart": "In cart",
+    "addedStatus": "{{title}} added to cart. In cart: {{count}}",
+    "quantityStatus": "{{title}}: {{count}} in cart",
+    "removedStatus": "{{title}} removed from cart"
+  },
   "mobileNav": {
     "label": "Main navigation",
     "home": "Home",

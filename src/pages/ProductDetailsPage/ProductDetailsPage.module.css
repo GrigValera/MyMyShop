@@ -217,6 +217,10 @@
   font-weight: var(--font-weight-bold);
 }
 
+.addToCartAction {
+  max-width: 300px;
+}
+
 .addToCartBtn {
   width: 100%;
   max-width: 300px;
@@ -337,6 +341,7 @@
     font-size: var(--font-size-lg);
   }
   
+  .addToCartAction,
   .addToCartBtn {
     max-width: 100%;
   }

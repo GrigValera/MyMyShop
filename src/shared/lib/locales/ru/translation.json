@@ -10,6 +10,12 @@
     "contact": "Контакты",
     "profile": "Профиль"
   },
+  "cartFeedback": {
+    "inCart": "В корзине",
+    "addedStatus": "{{title}} добавлен в корзину. В корзине: {{count}}",
+    "quantityStatus": "{{title}}: в корзине {{count}}",
+    "removedStatus": "{{title}} удалён из корзины"
+  },
   "mobileNav": {
     "label": "Основная навигация",
     "home": "Главная",

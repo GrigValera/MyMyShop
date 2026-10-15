@@ -16,7 +16,6 @@
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-primary);
-  font-size: 22px;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -30,9 +29,13 @@
 }
 
 .value {
+  display: grid;
+  place-items: center;
   min-width: 3ch;
+  height: 44px;
   padding: 0 4px;
   text-align: center;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-semibold);
 }

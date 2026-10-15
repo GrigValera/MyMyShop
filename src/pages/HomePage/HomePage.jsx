@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { fetchSaleItems } from '../../features/sale/saleSlice';
-import { Card, Button, Loader } from '../../shared/ui';
-import { addToCart } from '../../features/cart/store/cartSlice';
+import { Card, Loader } from '../../shared/ui';
+import CartProductControl from '../../features/cart/components/CartProductControl';
 import ProductImage from '../../features/products/components/ProductImage';
 import styles from './HomePage.module.css';
 
@@ -24,24 +24,6 @@ const HomePage = () => {
       dispatch(fetchSaleItems());
     }
   }, [dispatch, saleItems.length, loading]);
-
-  const handleAddToCart = (product, salePrice, originalPrice, discountPercent, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatch(addToCart({
-      product: {
-        id: product.id,
-        source: 'demo',
-        title: product.title,
-        image: product.thumbnail || product.images?.[0] || '',
-        category: product.category,
-      },
-      price: salePrice,
-      originalPrice: originalPrice,
-      hasDiscount: true,
-      discountPercent: discountPercent,
-    }));
-  };
 
   return (
     <div className={styles.homePage}>
@@ -95,14 +77,17 @@ const HomePage = () => {
                   </div>
                 </Link>
                 <div className={styles.productFooter}>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={(e) => handleAddToCart(product, product.salePrice, product.originalPrice, product.discountPercent, e)}
+                  <CartProductControl
+                    item={{
+                      product: { id: product.id, source: 'demo', title: product.title,
+                        image: product.thumbnail || product.images?.[0] || '', category: product.category },
+                      price: product.salePrice,
+                      originalPrice: product.originalPrice,
+                      hasDiscount: true,
+                      discountPercent: product.discountPercent,
+                    }}
                     className={`${styles.addToCartBtn} add-to-cart-btn`}
-                  >
-                    {t('product.addToCart')}
-                  </Button>
+                  />
                 </div>
               </Card>
             );
