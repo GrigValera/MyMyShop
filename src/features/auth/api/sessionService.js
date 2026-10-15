@@ -23,7 +23,7 @@ export const sessionService = {
   async signIn(input) {
     if (!cleanupBrowserCredentials()) return anonymousSession(true);
     try {
-      // A future adapter may use the form input; the demo adapter discards it.
+      // Будущий адаптер может использовать данные формы; демонстрационный адаптер их игнорирует.
       const session = input ? await adapter.signIn(input) : await adapter.startSession();
       return {
         status: session.status,

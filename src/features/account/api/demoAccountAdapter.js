@@ -1,6 +1,6 @@
 import { getInitials } from '../model/profileValidation';
 
-// This fixture belongs to the current JavaScript runtime, never browser storage.
+// Эти демонстрационные данные существуют только в текущем процессе JavaScript и не попадают в хранилище браузера.
 let profile = Object.freeze({
   id: 'demo', displayName: 'Demo User', email: 'demo@example.test',
   initials: 'DU', avatarUrl: null,

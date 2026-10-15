@@ -2,7 +2,7 @@
 const DEMO_USER = Object.freeze({ id: 'demo', name: 'Demo User' });
 
 export const demoSessionAdapter = {
-  // Form values are deliberately ignored in the public demo. No credential is checked or kept.
+  // В публичной demo-версии данные формы намеренно игнорируются: учётные данные не проверяются и не сохраняются.
   async signIn() {
     return this.startSession();
   },
