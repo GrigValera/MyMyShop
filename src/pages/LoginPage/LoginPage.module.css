@@ -8,7 +8,7 @@
   padding: var(--spacing-4);
 }
 
-/* The desktop footer occupies layout space on auth routes, including long forms. */
+/* На широких экранах footer занимает место в компоновке страниц авторизации, включая длинные формы. */
 @media (min-width: 769px) {
   :global(body):has(.loginPage) :global(footer) { position: static; }
   :global(body):has(.loginPage) { padding-bottom: 0; }

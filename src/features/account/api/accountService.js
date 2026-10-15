@@ -1,7 +1,7 @@
 import { demoAccountAdapter } from './demoAccountAdapter';
 import { normalizeDisplayName, validateAvatar, validateAvatarContent, validateDisplayName } from '../model/profileValidation';
 
-// A backend adapter can replace this runtime adapter without changing consumers.
+// Серверный адаптер может заменить текущий без изменений в использующих его модулях.
 const adapter = demoAccountAdapter;
 
 async function read(method) {
