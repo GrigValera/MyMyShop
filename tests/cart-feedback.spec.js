@@ -142,6 +142,7 @@ test('rapid increments and keyboard focus preserve quantity and status', async (
 
 test('product, drawer and cart quantity buttons share rounded hover and pressed states', async ({ page }) => {
   await page.goto('/products');
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
   const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
   const title = await card.getByRole('heading', { level: 3 }).textContent();
   await card.getByRole('button', { name: 'В корзину' }).click();
@@ -164,6 +165,7 @@ test('product, drawer and cart quantity buttons share rounded hover and pressed 
   const drawerStyle = await inspect(drawerPlus);
   await page.keyboard.press('Escape');
   await page.goto('/cart');
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
   const cartPlus = page.getByRole('button', { name: `Увеличить количество: ${title}` });
   const cartStyle = await inspect(cartPlus);
   expect(productStyle.radius).toBe(drawerStyle.radius);
