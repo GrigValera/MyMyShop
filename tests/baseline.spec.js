@@ -21,7 +21,7 @@ test('E2E: sale item can be added, counted and opened in cart', async ({ page })
   const title = await page.getByRole('heading', { level: 3 }).first().textContent();
   const add = page.getByRole('button', { name: 'В корзину', exact: true }).first();
   await add.click();
-  await add.click();
+  await page.getByRole('button', { name: `Увеличить количество: ${title}` }).first().click();
   await page.getByRole('button', { name: /^(Корзина|Cart)$/, exact: true }).click();
   await expect(page.getByRole('dialog').locator('output')).toHaveText('2');
   await page.getByRole('dialog').getByRole('button', { name: `Увеличить количество: ${title}` }).click();

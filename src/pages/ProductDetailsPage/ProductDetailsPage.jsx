@@ -1,12 +1,11 @@
 import { useLayoutEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetProductByIdQuery } from '../../features/products/api/productsApi';
 import { getDemoProductById } from '../../features/products/data/demoProducts';
 import ProductImage from '../../features/products/components/ProductImage';
 import { Button, Loader } from '../../shared/ui';
-import { addToCart } from '../../features/cart/store/cartSlice';
+import CartProductControl from '../../features/cart/components/CartProductControl';
 import styles from './ProductDetailsPage.module.css';
 
 const ImageCarousel = ({ images, title }) => {
@@ -100,7 +99,6 @@ const ProductDetailsPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const isApiMode = new URLSearchParams(location.search).get('source') === 'api';
 
   useLayoutEffect(() => {
@@ -119,24 +117,6 @@ const ProductDetailsPage = () => {
   const displayPrice = hasDiscount && salePrice ? salePrice : product?.price;
   const displayOriginalPrice = hasDiscount && originalPriceFromState ? originalPriceFromState : product?.price;
   const showDiscount = hasDiscount && discountPercent > 0;
-
-  const handleAddToCart = () => {
-    if (product) {
-      dispatch(addToCart({
-        product: {
-          id: product.id,
-          source: isApiMode ? 'api' : 'demo',
-          title: product.title,
-          image: product.images?.[0] || product.thumbnail || '',
-          category: product.category,
-        },
-        price: displayPrice,
-        originalPrice: displayOriginalPrice,
-        hasDiscount: showDiscount,
-        discountPercent: discountPercent,
-      }));
-    }
-  };
 
   if (isLoading) {
     return <Loader fullPage />;
@@ -188,14 +168,21 @@ const ProductDetailsPage = () => {
               <span className={styles.productPrice}>${displayPrice}</span>
             )}
           </div>
-          <Button 
-            variant="primary" 
-            size="lg" 
-            onClick={handleAddToCart}
+          <CartProductControl
+            item={{
+              product: { id: product.id, source: isApiMode ? 'api' : 'demo',
+                title: product.title, image: product.images?.[0] || product.thumbnail || '',
+                category: product.category },
+              price: displayPrice,
+              originalPrice: displayOriginalPrice,
+              hasDiscount: showDiscount,
+              discountPercent,
+            }}
+            size="lg"
+            variant="detail"
+            containerClassName={styles.addToCartAction}
             className={styles.addToCartBtn}
-          >
-            {t('product.addToCart')}
-          </Button>
+          />
         </div>
       </div>
       

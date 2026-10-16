@@ -32,7 +32,7 @@ test('empty page and drawer lead to the catalog in both locales', async ({ page 
 test('quantity minimum, totals, drawer consistency and last-item removal', async ({ page }) => {
   const [title] = await addFirstProducts(page);
   const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
-  await card.getByRole('button', { name: 'В корзину' }).click();
+  await card.getByRole('button', { name: `Увеличить количество: ${title}` }).click();
   await page.getByRole('button', { name: /^(Корзина|Cart)$/ }).click();
   const drawer = page.getByRole('dialog');
   const minus = drawer.getByRole('button', { name: `Уменьшить количество: ${title}` });
@@ -177,7 +177,10 @@ test('touch quantity controls do not keep a hover tint after tap', async ({ brow
     const page = await context.newPage();
     const [title] = await addFirstProducts(page);
     await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).tap();
+    await expect(page).toHaveURL('/cart');
     const plus = page.getByRole('button', { name: `Увеличить количество: ${title}` });
+    await expect(plus).toBeVisible();
+    await expect.poll(() => plus.evaluate(button => getComputedStyle(button).borderRadius)).not.toBe('0px');
     const before = await plus.evaluate(button => getComputedStyle(button).backgroundColor);
     expect(await plus.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
     await plus.tap();

@@ -1,0 +1,88 @@
+.action {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  width: 100%;
+}
+
+.action > button { min-height: 46px; }
+
+.inCart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  min-width: 0;
+  min-height: 44px;
+  padding-left: var(--spacing-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.inCartLabel {
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.stepButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stepButton:active { background: var(--border-medium); }
+.stepButton:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--color-primary); }
+@media (hover: hover) and (pointer: fine) {
+  .stepButton:hover:not(:active) { background: var(--bg-tertiary); }
+}
+
+.value {
+  display: grid;
+  place-items: center;
+  min-width: 3ch;
+  height: 44px;
+  padding: 0 2px;
+  text-align: center;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.detail .inCart { max-width: 300px; }
+.detail .inCartLabel { font-size: var(--font-size-base); }
+.cartLink { align-self: flex-start; margin-top: var(--spacing-2); color: var(--color-primary); font-weight: var(--font-weight-semibold); }
+.cartLink:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,10 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery, useSearchProductsInfiniteQuery } from '../../features/products/api/productsApi';
 import { Card, Button, Loader } from '../../shared/ui';
-import { addToCart } from '../../features/cart/store/cartSlice';
+import CartProductControl from '../../features/cart/components/CartProductControl';
 import { useIntersectionObserver } from '../../shared/hooks/useIntersectionObserver';
 import { demoProducts, demoCategories } from '../../features/products/data/demoProducts';
 import ProductImage from '../../features/products/components/ProductImage';
@@ -19,7 +18,6 @@ const normalizeRating = (rating) => {
 
 const ProductsPage = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const location = useLocation();
   const isApiMode = new URLSearchParams(location.search).get('source') === 'api';
   
@@ -86,24 +84,6 @@ const ProductsPage = () => {
       fetchNextPage();
     }
   }, { enabled: isApiMode && hasNextPage && !isFetchingNextPage && !isFetchNextPageError && !isInitialLoading, rootMargin: '300px' });
-
-  const handleAddToCart = (product, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatch(addToCart({
-      product: {
-        id: product.id,
-        source: isApiMode ? 'api' : 'demo',
-        title: product.title,
-        image: product.thumbnail || product.images?.[0] || '',
-        category: product.category,
-      },
-      price: product.price,
-      originalPrice: product.price,
-      hasDiscount: false,
-      discountPercent: 0,
-    }));
-  };
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -191,14 +171,19 @@ const ProductsPage = () => {
                 </Link>
                 <div className={styles.productFooter}>
                   <span className={styles.productPrice}>${product.price}</span>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={(e) => handleAddToCart(product, e)}
+                  <CartProductControl
+                    item={{
+                      product: { id: product.id, source: isApiMode ? 'api' : 'demo',
+                        title: product.title, image: product.thumbnail || product.images?.[0] || '',
+                        category: product.category },
+                      price: product.price,
+                      originalPrice: product.price,
+                      hasDiscount: false,
+                      discountPercent: 0,
+                    }}
+                    containerClassName={styles.addToCartAction}
                     className={`${styles.addToCartBtn} add-to-cart-btn`}
-                  >
-                    {t('product.addToCart')}
-                  </Button>
+                  />
                 </div>
               </Card>
             );
