@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useGetCategoriesQuery, useSearchProductsInfiniteQuery } from '../../features/products/api/productsApi';
@@ -28,6 +29,45 @@ const ProductsPage = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const filterTriggerRef = useRef(null);
+  const filterDialogRef = useRef(null);
+  const filterTitleRef = useRef(null);
+  const filterCloseRef = useRef(null);
+  const filterApplyRef = useRef(null);
+
+  useEffect(() => {
+    if (!isDrawerOpen) return undefined;
+
+    const dialog = filterDialogRef.current;
+    const trigger = filterTriggerRef.current;
+    const scrollY = window.scrollY;
+    const previousBodyStyle = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+
+    dialog.showModal();
+    filterTitleRef.current?.focus();
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
+    const handleResize = () => {
+      if (window.innerWidth > 768) setIsDrawerOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (dialog.open) dialog.close();
+      document.body.style.position = previousBodyStyle.position;
+      document.body.style.top = previousBodyStyle.top;
+      document.body.style.width = previousBodyStyle.width;
+      window.scrollTo(0, scrollY);
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+    };
+  }, [isDrawerOpen]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery.trim()), 400);
@@ -110,7 +150,10 @@ const ProductsPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button 
+          ref={filterTriggerRef}
           className={styles.filterBtn}
+          aria-expanded={isDrawerOpen}
+          aria-controls="catalog-filter-dialog"
           onClick={() => setIsDrawerOpen(true)}
         >
           {t('filter.filters')}{activeFilters.length > 0 && <><span aria-hidden="true">·</span><span className={styles.filterCount} aria-label={t('filter.activeCount', { count: activeFilters.length })}>{activeFilters.length}</span></>}
@@ -223,10 +266,32 @@ const ProductsPage = () => {
         )}
       </div>
 
-      <div className={`${styles.drawer} ${isDrawerOpen ? styles.open : ''}`}>
+      {isDrawerOpen && createPortal(<dialog
+        id="catalog-filter-dialog"
+        ref={filterDialogRef}
+        className={styles.drawer}
+        aria-labelledby="catalog-filter-title"
+        onCancel={(event) => { event.preventDefault(); setIsDrawerOpen(false); }}
+        onKeyDown={(event) => {
+          if (event.key !== 'Tab') return;
+          if (event.shiftKey && (document.activeElement === filterCloseRef.current || document.activeElement === filterTitleRef.current)) {
+            event.preventDefault();
+            filterApplyRef.current?.focus();
+          } else if (!event.shiftKey && document.activeElement === filterApplyRef.current) {
+            event.preventDefault();
+            filterCloseRef.current?.focus();
+          }
+        }}
+        onClick={(event) => {
+          const bounds = event.currentTarget.getBoundingClientRect();
+          if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+            setIsDrawerOpen(false);
+          }
+        }}
+      >
         <div className={styles.drawerHeader}>
-          <h3>{t('filter.filters')}</h3>
-          <button className={styles.closeBtn} aria-label={t('common.close')} onClick={() => setIsDrawerOpen(false)}>✕</button>
+          <h3 id="catalog-filter-title" ref={filterTitleRef} tabIndex={-1}>{t('filter.filters')}</h3>
+          <button ref={filterCloseRef} className={styles.closeBtn} aria-label={t('common.close')} onClick={() => setIsDrawerOpen(false)}>✕</button>
         </div>
         <div className={styles.drawerContent}>
           {activeFilters.length > 0 && <div className={styles.drawerSelection} data-testid="drawer-active-filters">
@@ -305,16 +370,12 @@ const ProductsPage = () => {
             <Button variant="outline" size="sm" onClick={handleResetFilters}>
               {t('filter.resetAll')}
             </Button>
-            <Button variant="primary" size="sm" onClick={() => setIsDrawerOpen(false)}>
+            <Button ref={filterApplyRef} variant="primary" size="sm" onClick={() => setIsDrawerOpen(false)}>
               {t('filter.apply')}
             </Button>
           </div>
         </div>
-      </div>
-      
-      {isDrawerOpen && (
-        <div className={styles.overlay} onClick={() => setIsDrawerOpen(false)}></div>
-      )}
+      </dialog>, document.body)}
     </div>
   );
 };
