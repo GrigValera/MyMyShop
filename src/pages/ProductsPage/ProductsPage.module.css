@@ -304,24 +304,26 @@
   position: fixed;
   top: 0;
   right: 0;
+  left: auto;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
   width: min(380px, 100vw);
   max-width: 100%;
   box-sizing: border-box;
-  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   background: var(--bg-primary);
+  color: var(--text-primary);
   box-shadow: var(--shadow-xl);
-  z-index: 1000;
-  transform: translateX(100%);
-  visibility: hidden;
-  transition: transform var(--transition-base), visibility var(--transition-base);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-.drawer.open {
-  transform: translateX(0);
-  visibility: visible;
+.drawer::backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .drawerHeader {
@@ -365,6 +367,9 @@
   flex: 1;
   padding: var(--spacing-5);
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .filterSection {
@@ -482,18 +487,6 @@
   min-height: 44px;
 }
 
-/* Затемнение фона */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  animation: fadeIn var(--transition-base);
-}
-
 /* ============================================
    АНИМАЦИИ
    ============================================ */
@@ -505,15 +498,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
