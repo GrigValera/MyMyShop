@@ -57,10 +57,13 @@ for (const { path, card } of surfaces) {
       expect(Math.abs(button.iconCenter - geometry.valueCenter)).toBeLessThan(0.5);
     }
     for (const button of [minus, plus]) {
+      await page.mouse.move(0, 0);
       const normal = await button.evaluate(element => getComputedStyle(element).backgroundColor);
       await button.hover();
+      await expect.poll(() => button.evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe(normal);
       const hover = await button.evaluate(element => getComputedStyle(element).backgroundColor);
       await page.mouse.down();
+      await expect.poll(() => button.evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe(hover);
       const pressed = await button.evaluate(element => getComputedStyle(element).backgroundColor);
       await page.mouse.move(0, 0);
       await page.mouse.up();

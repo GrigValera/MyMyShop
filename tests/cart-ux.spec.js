@@ -177,7 +177,10 @@ test('touch quantity controls do not keep a hover tint after tap', async ({ brow
     const page = await context.newPage();
     const [title] = await addFirstProducts(page);
     await page.getByRole('navigation', { name: 'Основная навигация' }).getByRole('link', { name: 'Корзина' }).tap();
+    await expect(page).toHaveURL('/cart');
     const plus = page.getByRole('button', { name: `Увеличить количество: ${title}` });
+    await expect(plus).toBeVisible();
+    await expect.poll(() => plus.evaluate(button => getComputedStyle(button).borderRadius)).not.toBe('0px');
     const before = await plus.evaluate(button => getComputedStyle(button).backgroundColor);
     expect(await plus.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
     await plus.tap();
