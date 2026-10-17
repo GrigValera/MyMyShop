@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('mobile filters remain usable and active values match the exact local result', async ({ page }) => {
-  for (const width of [320, 390, 480, 768, 1024, 1280, 1440]) {
+for (const width of [320, 390, 480, 768, 1024, 1280, 1440]) {
+  test(`filter fields remain usable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/products');
     await page.getByRole('button', { name: 'Фильтры' }).click();
@@ -30,7 +30,13 @@ test('mobile filters remain usable and active values match the exact local resul
       expect(second.y - first.y - first.height).toBeGreaterThanOrEqual(30);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-  }
+  });
+}
+
+test('active filter values match the exact local result', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto('/products');
+  await page.getByRole('button', { name: 'Фильтры' }).click();
   await page.getByRole('button', { name: 'Beauty' }).click();
   await page.getByRole('button', { name: 'Fragrances' }).click();
   await page.getByRole('button', { name: 'Применить' }).click();

@@ -49,8 +49,78 @@ for (const { language, theme, filters, close } of cases) {
   });
 }
 
-test('mobile geometry, background and backdrop follow modal contract', async ({ page }) => {
-  for (const [width, height] of [[320, 568], [360, 640], [375, 667], [390, 844], [393, 852], [412, 915], [430, 932], [480, 900], [768, 900]]) {
+for (const { width, language, theme } of [
+  { width: 320, language: 'ru', theme: 'light' },
+  { width: 390, language: 'ru', theme: 'light' },
+  { width: 390, language: 'en', theme: 'dark' },
+  { width: 430, language: 'ru', theme: 'light' },
+  { width: 768, language: 'ru', theme: 'light' },
+  { width: 769, language: 'ru', theme: 'light' },
+]) {
+  test(`filter selection keeps dialog position at ${width}px in ${language} ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/products');
+    await page.evaluate(({ language, theme }) => {
+      localStorage.setItem('language', language);
+      localStorage.setItem('theme', theme);
+    }, { language, theme });
+    await page.reload();
+
+    await page.getByRole('button', { name: language === 'ru' ? 'Фильтры' : 'Filters' }).click();
+    const dialog = page.getByRole('dialog', { name: language === 'ru' ? 'Фильтры' : 'Filters' });
+    const measure = () => dialog.evaluate(element => {
+      const content = element.querySelector('[class*="_drawerContent_"]');
+      const sections = [...content.querySelectorAll('[class*="_filterSection_"]')];
+      return {
+        scrollTop: content.scrollTop,
+        sectionY: sections.map(section => section.getBoundingClientRect().y),
+      };
+    });
+    const stableAt = async (control, sectionIndex, action, waitForApplied) => {
+      await control.scrollIntoViewIfNeeded();
+      const before = await measure();
+      await action();
+      await waitForApplied();
+      const after = await measure();
+      expect(after.scrollTop).toBe(before.scrollTop);
+      expect(Math.abs(after.sectionY[sectionIndex] - before.sectionY[sectionIndex])).toBeLessThanOrEqual(1);
+    };
+
+    const beauty = dialog.getByRole('button', { name: 'Beauty' });
+    await stableAt(beauty, 0, () => beauty.click(), async () => {
+      await expect.poll(() => new URL(page.url()).searchParams.getAll('category')).toEqual(['beauty']);
+      await expect(dialog.getByTestId('drawer-active-filters')).toContainText('beauty');
+    });
+
+    const minPrice = dialog.locator('input[type="number"]').first();
+    await stableAt(minPrice, 1, () => minPrice.fill('10'), async () => {
+      await expect.poll(() => new URL(page.url()).searchParams.get('minPrice')).toBe('10');
+      await expect(dialog.getByTestId('drawer-active-filters')).toContainText('10');
+    });
+
+    const fragrances = dialog.getByRole('button', { name: 'Fragrances' });
+    await stableAt(fragrances, 0, () => fragrances.click(), async () => {
+      await expect.poll(() => new URL(page.url()).searchParams.getAll('category')).toEqual(['beauty', 'fragrances']);
+      await expect(dialog.getByTestId('drawer-active-filters')).toContainText('fragrances');
+    });
+
+    const sort = dialog.locator('input[type="radio"][value="asc"]');
+    await stableAt(sort, 2, () => sort.check(), async () => {
+      await expect.poll(() => new URL(page.url()).searchParams.get('sort')).toBe('asc');
+      await expect(dialog.locator('[class*="_drawerCount_"]')).toHaveText('4');
+    });
+    await expect(dialog.locator('[class*="_drawerCount_"]')).toHaveText('4');
+    await expect(dialog.getByTestId('drawer-active-filters')).toContainText('fragrances');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+
+    await dialog.getByRole('button', { name: /Применить|Apply/ }).click();
+    await expect(dialog).toHaveCount(0);
+    await expect.poll(() => new URL(page.url()).searchParams.get('sort')).toBe('asc');
+  });
+}
+
+for (const [width, height] of [[320, 568], [360, 640], [375, 667], [390, 844], [393, 852], [412, 915], [430, 932], [480, 900], [768, 900]]) {
+  test(`mobile geometry, background and backdrop follow modal contract at ${width}x${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/products');
     const trigger = page.getByRole('button', { name: 'Фильтры' });
@@ -82,8 +152,10 @@ test('mobile geometry, background and backdrop follow modal contract', async ({ 
     if (width === 320) expect(state.contentScrolls).toBe(true);
     await dialog.getByRole('button', { name: 'Закрыть' }).click();
     await expect(trigger).toBeFocused();
-  }
+  });
+}
 
+test('desktop backdrop closes the filter dialog and restores focus', async ({ page }) => {
   await page.setViewportSize({ width: 769, height: 900 });
   await page.goto('/products');
   const trigger = page.getByRole('button', { name: 'Фильтры' });

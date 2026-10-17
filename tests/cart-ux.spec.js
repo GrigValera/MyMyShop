@@ -171,8 +171,8 @@ test('opening cart from a scrolled catalog shows its heading below the header', 
   expect(heading.y).toBeGreaterThanOrEqual(header.y + header.height);
 });
 
-test('touch quantity controls do not keep a hover tint after tap', async ({ browser }) => {
-  for (const width of [320, 390]) {
+for (const width of [320, 390]) {
+  test(`touch quantity controls do not keep a hover tint after tap at ${width}px`, async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: true, isMobile: true });
     const page = await context.newPage();
     const [title] = await addFirstProducts(page);
@@ -192,8 +192,8 @@ test('touch quantity controls do not keep a hover tint after tap', async ({ brow
     await expect(page.locator('output')).toHaveText('3');
     await expect.poll(() => pagePlus.evaluate(button => getComputedStyle(button).backgroundColor)).toBe(pageBefore);
     await context.close();
-  }
-});
+  });
+}
 
 test('mouse hover, pressed and keyboard focus remain distinct; remove is consistent', async ({ page }) => {
   const [title] = await addFirstProducts(page);
