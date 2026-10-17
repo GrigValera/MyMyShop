@@ -155,13 +155,12 @@ test('future destinations keep honest localized placeholder states', async ({ pa
   await signIn(page);
   await page.setViewportSize({ width: 320, height: 568 });
   const descriptions = [
-    ['orders', 'Заказы', 'История заказов появится здесь после оформления покупки.'],
     ['addresses', 'Адреса', 'Здесь можно будет управлять адресами доставки.'],
     ['reviews', 'Отзывы', 'Здесь появятся ваши отзывы и товары, ожидающие оценки.'],
     ['settings', 'Настройки', 'Здесь будут доступны настройки аккаунта.'],
   ];
   for (const [section, label, description] of descriptions) {
-    if (section !== 'orders') await page.getByRole('link', { name: 'Личный кабинет' }).click();
+    if (section !== 'addresses') await page.getByRole('link', { name: 'Личный кабинет' }).click();
     await page.getByRole('navigation', { name: section === 'settings' ? 'Аккаунт' : 'Мои покупки' }).getByRole('link', { name: label }).click();
     await expect(page).toHaveURL(`/account/${section}`);
     await expect(page.getByRole('heading', { name: label, exact: true })).toBeVisible();

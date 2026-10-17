@@ -226,7 +226,6 @@
   "addresses": "Addresses",
   "reviews": "Reviews",
   "settings": "Settings",
-  "ordersDescription": "Your order history will appear here after you place an order.",
   "addressesDescription": "You will be able to manage delivery addresses here.",
   "reviewsDescription": "Your reviews and products ready to rate will appear here.",
   "settingsDescription": "Account settings will be available here.",
@@ -276,6 +275,35 @@
   "browseProducts": "Browse catalog",
   "demoTitle": "About demo mode",
   "demoNotice": "Changes last until you reload the page."
+},
+"orders": {
+  "demoLabel": "Sample order history",
+  "loading": "Loading orders…",
+  "unavailableTitle": "Orders unavailable",
+  "unavailable": "Could not load orders. Please try again.",
+  "empty": "No orders yet",
+  "browseCatalog": "Browse catalog",
+  "notFound": "Order not found",
+  "notFoundBody": "Check the link or return to your orders.",
+  "backToOrders": "Back to orders",
+  "orderNumber": "Order #{{number}}",
+  "viewDetails": "View order #{{number}}",
+  "itemCount_one": "{{count}} item",
+  "itemCount_other": "{{count}} items",
+  "itemsTitle": "Items",
+  "unitPrice": "Unit price",
+  "quantity": "Quantity",
+  "summaryTitle": "Order summary",
+  "subtotal": "Items subtotal",
+  "total": "Total",
+  "deliveryTitle": "Delivery",
+  "deliveryMethod": "Delivery method",
+  "paymentTitle": "Payment method",
+  "status": {
+    "processing": "Processing",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  }
 },
 "profile": {
   "drawerTitle": "Profile",

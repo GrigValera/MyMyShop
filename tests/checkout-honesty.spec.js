@@ -59,18 +59,28 @@ for (const { width, locale, theme, action, title, message } of [
   });
 }
 
-test('preview leaves Account Orders empty', async ({ page }) => {
+test('preview does not change deterministic Account Orders or clear the cart', async ({ page }) => {
   await page.goto('/products');
   await page.getByRole('button', { name: 'В корзину' }).first().click();
-  await page.goto('/cart');
-  await page.getByRole('link', { name: 'Посмотреть оформление' }).click();
   await page.goto('/login');
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('checkout@example.test');
   await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
   await page.getByRole('button', { name: 'Войти в демо' }).click();
   await expect(page).toHaveURL('/account');
   await page.getByRole('link', { name: 'Заказы', exact: true }).first().click();
+  const before = await page.getByRole('article').allTextContents();
+  await page.getByRole('navigation', { name: 'Личный кабинет' }).getByRole('link', { name: 'Личный кабинет' }).click();
+  await page.getByRole('navigation', { name: 'Мои покупки' }).getByRole('link', { name: 'Корзина 1 товар' }).click();
+  await page.getByRole('link', { name: 'Посмотреть оформление' }).click();
+  await page.getByRole('link', { name: 'Вернуться в корзину' }).click();
+  await page.goBack();
+  await page.goBack();
+  await page.goBack();
+  await page.goBack();
+  await expect(page).toHaveURL('/account/orders');
   await expect(page.getByRole('heading', { name: 'Заказы' })).toBeVisible();
-  await expect(page.getByText('Раздел будет доступен в следующих версиях демо.')).toBeVisible();
+  await expect(page.getByRole('article')).toHaveCount(3);
+  expect(await page.getByRole('article').allTextContents()).toEqual(before);
+  await expect(page.getByRole('heading', { name: 'Заказ № MS-2026-103' })).toBeVisible();
   await expect(page.locator('[id="mobile-cart-count"]')).toContainText('1');
 });
