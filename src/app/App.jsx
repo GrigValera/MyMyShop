@@ -12,6 +12,8 @@ import AccountPage from '../pages/AccountPage/AccountPage';
 import AccountLayout from '../pages/AccountPage/AccountLayout';
 import ProfileEditor from '../pages/AccountPage/ProfileEditor';
 import AccountPlaceholder from '../pages/AccountPage/AccountPlaceholder';
+import OrdersPage from '../pages/AccountPage/OrdersPage';
+import OrderDetailsPage from '../pages/AccountPage/OrderDetailsPage';
 import RequireSession from '../features/auth/components/RequireSession';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import { Loader } from '../shared/ui';
@@ -134,7 +136,8 @@ function App() {
           <Route path="account" element={<AccountLayout />}>
             <Route index element={<AccountPage />} />
             <Route path="profile" element={<ProfileEditor />} />
-            <Route path="orders" element={<AccountPlaceholder section="orders" />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="orders/:orderId" element={<OrderDetailsPage />} />
             <Route path="addresses" element={<AccountPlaceholder section="addresses" />} />
             <Route path="reviews" element={<AccountPlaceholder section="reviews" />} />
             <Route path="settings" element={<AccountPlaceholder section="settings" />} />
