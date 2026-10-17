@@ -77,18 +77,19 @@ test('mobile home exposes destination rows without navigation overhead', async (
   await expect(page).toHaveURL('/cart');
 });
 
-test('mobile nested account pages use back navigation without sign out', async ({ page }) => {
-  await signIn(page);
-  const destinations = [
+const mobileAccountDestinations = [
     ['Редактировать профиль', 'Личные данные', '/account/profile'],
     ['Заказы', 'Заказы', '/account/orders'],
     ['Адреса', 'Адреса', '/account/addresses'],
     ['Отзывы', 'Отзывы', '/account/reviews'],
     ['Настройки', 'Настройки', '/account/settings'],
-  ];
-  for (const width of [320, 390, 400, 480, 768]) {
+];
+
+for (const width of [320, 390, 400, 480, 768]) {
+  test(`mobile nested account pages use back navigation at ${width}px`, async ({ page }) => {
+    await signIn(page);
     await page.setViewportSize({ width, height: width === 320 ? 568 : 900 });
-    for (const [entry, heading, path] of destinations) {
+    for (const [entry, heading, path] of mobileAccountDestinations) {
       await expect(page.getByRole('button', { name: 'Выйти' })).toBeVisible();
       await page.getByRole('link', { name: entry, exact: true }).click();
       await expect(page).toHaveURL(path);
@@ -104,13 +105,13 @@ test('mobile nested account pages use back navigation without sign out', async (
       await expect(page).toHaveURL('/account');
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     }
-  }
-  const settings = page.getByRole('navigation', { name: 'Аккаунт' }).getByRole('link', { name: 'Настройки' });
-  const logout = page.getByRole('button', { name: 'Выйти' });
-  expect((await settings.boundingBox()).y + (await settings.boundingBox()).height).toBeLessThan((await logout.boundingBox()).y);
-  await logout.click();
-  await expect(page).toHaveURL('/login');
-});
+    const settings = page.getByRole('navigation', { name: 'Аккаунт' }).getByRole('link', { name: 'Настройки' });
+    const logout = page.getByRole('button', { name: 'Выйти' });
+    expect((await settings.boundingBox()).y + (await settings.boundingBox()).height).toBeLessThan((await logout.boundingBox()).y);
+    await logout.click();
+    await expect(page).toHaveURL('/login');
+  });
+}
 
 test('desktop sign out stays in the sidebar on nested account pages', async ({ page }) => {
   await signIn(page);

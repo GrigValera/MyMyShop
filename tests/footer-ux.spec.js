@@ -73,8 +73,7 @@ test('desktop footer groups lead to supported routes in RU and EN', async ({ pag
   await expect(footer.getByRole('link', { name: 'About Us' })).toBeVisible();
 });
 
-test('global footer keeps its responsive structure across shell routes', async ({ page }) => {
-  for (const { width, height } of [
+for (const { width, height } of [
     ...mobileSizes,
     { width: 769, height: 800 },
     { width: 1024, height: 768 },
@@ -82,6 +81,7 @@ test('global footer keeps its responsive structure across shell routes', async (
     { width: 1280, height: 900 },
     { width: 1440, height: 900 },
   ]) {
+  test(`global footer keeps its structure across shell routes at ${width}x${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     for (const route of ['/', '/products', '/profile', '/login', '/register', '/forgot-password', '/cart']) {
       await page.goto(route);
@@ -89,5 +89,5 @@ test('global footer keeps its responsive structure across shell routes', async (
       await expect(page.locator('footer a[href="/delivery"]')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     }
-  }
-});
+  });
+}

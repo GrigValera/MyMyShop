@@ -95,7 +95,8 @@ test('one product stays in sync across Home, Catalog, PDP and cart', async ({ pa
   await homeCard.getByRole('button', { name: 'В корзину' }).click();
   await page.goto('/products');
   await page.getByRole('textbox', { name: 'Поиск' }).fill(title);
-  const catalogCard = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
+  const catalogCard = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]')
+    .filter({ has: page.getByRole('heading', { name: title, exact: true }) });
   await expect(catalogCard.locator('[class*="_value_"]')).toHaveText('1');
   await catalogCard.getByRole('button', { name: `Увеличить количество: ${title}` }).click();
   await expect(catalogCard.locator('[class*="_value_"]')).toHaveText('2');
@@ -174,9 +175,8 @@ test('product, drawer and cart quantity buttons share rounded hover and pressed 
   expect(cartStyle).toEqual(drawerStyle);
 });
 
-test('quantity controls fit mobile and desktop widths in RU and EN', async ({ page }) => {
-  test.setTimeout(90_000);
-  for (const width of [320, 360, 375, 390, 393, 412, 430, 480, 768, 769, 1280, 1440]) {
+for (const width of [320, 360, 375, 390, 393, 412, 430, 480, 768, 769, 1280, 1440]) {
+  test(`quantity controls fit at ${width}px in RU`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/products');
     const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
@@ -191,9 +191,11 @@ test('quantity controls fit mobile and desktop widths in RU and EN', async ({ pa
       const nav = await page.getByRole('navigation', { name: 'Основная навигация' }).boundingBox();
       if (bounds.y < nav.y) expect(bounds.y + bounds.height).toBeLessThanOrEqual(nav.y);
     }
-    await page.evaluate(() => localStorage.removeItem('mymyshop.cart.v1'));
-    await page.reload();
-  }
+  });
+}
+
+test('quantity controls expose English labels', async ({ page }) => {
+  await page.goto('/products');
   await page.evaluate(() => localStorage.setItem('language', 'en'));
   await page.reload();
   const card = page.locator('[class*="_productsGrid_"] > [class*="_cardInner_"]').first();
