@@ -16,7 +16,26 @@
 | Бизнес-показатели | Аналитика/наблюдаемость | Инструмент аналитики | Согласованный поток событий/отчётов | События товаров и заказов | Приватность, сроки хранения, отсутствие секретов | OPTIONAL / не выбран |
 | Публикация отзывов | Отзывы | Сервис модерации | Серверный обмен решением | Отзыв, оценка, решение | Проверка злоупотреблений и персональных данных | OPTIONAL / не выбран |
 
-**PROPOSED — контракт интеграции:** адаптер преобразует данные и ошибки поставщика в доменные понятия, хранит credentials на сервере, проверяет callbacks и возвращает состояния, из которых можно восстановиться. Выбор поставщика, повторные запросы и идемпотентность, сроки хранения и сверка определяются позднее. Здесь не утверждаются endpoint, транспорт событий, vendor, SLA или сертификат.
+**PROPOSED — контракт интеграции:** адаптер преобразует данные и ошибки поставщика в доменные понятия, хранит credentials на сервере, проверяет callbacks и возвращает состояния, из которых можно восстановиться. Для транзакций нужны идемпотентность и обработка повторных webhook; точные правила повторов, сроки хранения и сверка определяются в реализации. Здесь не утверждаются точные endpoints, транспорт событий, vendor, SLA или сертификат.
+
+Решение `SHOP-INTEGRATIONS-01`, матрица CURRENT/PROPOSED/PLANNED, сравнение test providers и порядок реализации находятся в [стратегии интеграций](INTEGRATION_STRATEGY.md). Ниже описаны **PROPOSED** интерфейсы, а не уже работающие API endpoints. Действующие demo-сервисы покрывают только часть методов и состояний.
+
+## PROPOSED — компактные connector contracts
+
+| Граница frontend/domain service | Операции | Результат и правило |
+| --- | --- | --- |
+| `Catalog` | `list(query, cursor)`, `get(productId)` | Нормализованные `Product`, категории и pagination; UI не разбирает DummyJSON DTO |
+| `Session` | `restore()`, `signIn(input)`, `signOut()` | `checking`, `anonymous`, `authenticated`, `unavailable`; backend подтверждает доступ и expiry |
+| `Customer` | `getProfile()`, `updateProfile(input)` | App-owned Customer DTO; персональные данные доступны только владельцу |
+| `Checkout` | `quote(cartIntent, address?)`, `submit(quoteId, idempotencyKey)`, `status(orderId)` | CURRENT demo: Preview и явная недоступность submit; TARGET demo/test: сохранённый demo Order, читаемый через Orders/Details; sandbox/backend: серверные amount/currency/availability и app-owned pending Order |
+| `Orders` | `list(cursor)`, `get(orderId)` | История и детали текущего Customer; snapshots позиций и суммы не пересчитываются из текущего каталога |
+| Серверные `PaymentConnector` / `ShippingConnector` | Создание/проверка provider operation, нормализация events | Provider IDs и статусы остаются за backend; UI видит доменные Payment и Shipment |
+
+**PROPOSED — parity без фиктивной транзакции:** demo/test и API/backend adapters сохраняют одинаковую domain-facing форму метода и customer-facing flow, но доступность возможностей различается. CURRENT неподдерживаемая demo-операция возвращает нормализованное `not_available_in_demo` (конкретное имя будущего кода открыто). TARGET demo `submit` может создать Order в изолированном demo/test источнике, если запись сохраняется и `Orders.list/get` читают её же; UI явно показывает demo/test state и отсутствие реального списания. Такой связный workflow не является fake success. Ошибка sandbox provider не становится успешным demo Order; страницы, формы и маршруты не зависят от типа поставщика, его DTO остаются за adapters/connectors.
+
+**PROPOSED API boundary:** небольшой REST `/api/v1`, явные request/response DTO, schema validation и cursor pagination для списков. Концептуальный error envelope: `{ code, message?, requestId, retryable? }`. Это не окончательная OpenAPI schema и не обещание существующих маршрутов. HTTP status и код ошибки должны различать validation, unauthorized, not-found, conflict и provider-unavailable. Provider text не показывается покупателю напрямую; RU/EN текст выбирает UI. `Order`, `Payment` и `Shipment` имеют разные состояния. Browser route guard не заменяет backend authorization.
+
+**PROPOSED transaction rules:** Cart содержит намерение, backend заново рассчитывает quote; при `submit(quoteId, idempotencyKey)` он повторно проверяет identity, право session/Customer на quote, срок действия, актуальные серверные цены, наличие/допустимость позиций, валюту, состояние submit и отсутствие выполненного или конфликтующего submit. Устаревший quote или изменённые данные дают нормализованную ошибку, а не success. Backend связывает test PSP operation с известными `PaymentAttempt` и `pending_payment` Order. Provider callback/webhook принимается только после проверки криптографической подписи либо эквивалентной подлинности, применимого account context, связи с известной operation и допустимости перехода состояния; дубликаты и replay не повторяют эффект. Произвольный client-supplied Order ID не даёт права обновить заказ. Redirect браузера и client callback не подтверждают оплату; ошибка sandbox никогда не превращается в demo success. Точные поля DTO, сроки quote, status enum, retry и provider mapping проверяются contract tests в будущих runtime tickets.
 
 ## Связь с бизнес-функциями
 
