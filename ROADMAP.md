@@ -2,7 +2,7 @@
 
 ## Target State
 
-MyMyShop должен стать production-oriented e-commerce storefront/reference implementation. UI и domain logic должны быть готовы к реальному backend: явные API contracts, service/repository interfaces и сменные demo/local, mock HTTP и real HTTP adapters позволяют подключить backend без переписывания страниц и компонентов. Cart, checkout, auth, orders, delivery и profile получают backend-ready границы. Приложение должно быть responsive, accessible, resilient, observable, secure и ограничено измеренным performance budget. Публичный GitHub Pages demo остаётся безопасным и самодостаточным; optional reference backend не блокирует завершение frontend.
+MyMyShop должен стать публичным portfolio/reference storefront со стабильной ссылкой и связными demo/test journeys без credentials. UI и domain logic должны быть готовы к backend: общие контракты и сменные demo/test и MyMyShop API adapters позволяют подключить реальный backend без переписывания страниц, форм, маршрутов и покупательского flow. Cart, checkout, auth, orders, delivery и profile получают backend-ready границы. Текущий локальный demo запускается без backend; будущий функциональный public demo может использовать demo backend и persistent test data. Чистый static hosting, включая GitHub Pages, допустим только если подходит выбранному mode; provider размещения выбирается позднее. Для доверенных payment/shipping transactions backend обязателен.
 
 Цель — production-ready storefront/frontend architecture, а не инфраструктурный клон крупного marketplace или marketplace backend platform. Текущее поведение не объявляется production-ready до выполнения release gates ниже.
 
@@ -28,14 +28,35 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 
 - CI;
 
-- GitHub Pages deployment;
+- стабильный публичный deployment URL; GitHub Pages остаётся кандидатом для совместимого static mode;
 
 - README, соответствующий реальному поведению;
 - backend-ready contracts, устойчивость, безопасность, наблюдаемость и измеренный performance budget.
 
-Магазин показывает обработку ошибок и качественный UX. Посетитель может найти товар, изменить корзину и создать локальный демонстрационный заказ. Реальные credentials и оплата в публичном demo не запрашиваются. Полноценные интеграции планируются по контрактам, но roadmap не выдаёт их за уже реализованные.
+Магазин показывает обработку ошибок и качественный UX. **CURRENT:** посетитель может найти товар, изменить корзину и открыть Checkout Preview; заказ через checkout не создаётся. Order History содержит независимые фиксированные примеры. Реальные credentials и оплата в публичном demo не запрашиваются. Старые описания локального demo-order в отдельных запланированных SHOP tickets ниже — исторический scope плана, а не реализованное поведение или решение этого ticket; перед их запуском требуется сверка с [SHOP-INTEGRATIONS-01](docs/INTEGRATION_STRATEGY.md).
 
 ## Основание и порядок работы
+
+### SHOP-INTEGRATIONS-01 — ближайшая интеграционная последовательность
+
+**CURRENT:** исследование зафиксировано в [стратегии интеграций](docs/INTEGRATION_STRATEGY.md); runtime, provider и backend не добавлены. **PROPOSED:** `Order` принадлежит MyMyShop; minimal backend обязателен перед test payment/shipping, при этом demo продолжает работать без него. Следующие tickets требуют отдельного запуска и собственных gates:
+
+**Основная цепочка зависимостей:**
+
+1. `SHOP-BACKEND-FOUNDATION-01` — выбрать stack на implementation gate; создать минимальные HTTP API и application/repository boundary, persistent DB и миграции, config/server secrets, ограниченного test actor с проверкой доступа, нормализованные ошибки, requestId/logging и детерминированные contract/integration tests. Connector boundary остаётся provider-neutral и допускает раздельные demo/test и sandbox/production-like data environments. Конкретные DTO/API schemas уточнить при реализации без отдельного повторного architecture-only ticket. Полные quote/submit, PSP, рабочий payment webhook и customer-facing payment states не обязаны входить в foundation.
+2. `SHOP-AUTH-SESSION-02` — восстановление сессии, expiry/logout, protected deep-link return и backend authorization; выбрать app session либо hosted IdP. Foundation может использовать ограниченного test actor, но завершённый customer-facing commerce slice требует проверенного Customer и защищённой истории Orders.
+3. `SHOP-CHECKOUT-ORDER-PAYMENT-01` — Cart → server quote → повторная проверка при submit → `pending_payment` app Order → PaymentAttempt → один test PSP → backend reconciliation → Orders/Details. Цель — связный flow с общим UI/доменным контрактом для функционального public demo/test, sandbox provider и будущего real backend: созданный Order читается в той же истории, а demo/test не выдаётся за реальное списание. К завершению ticket нужны quote/submit/status, provider connector и проверяемый webhook, idempotency, правила для abandoned pending Orders, duplicate submit, delayed webhook, browser close и retries; полный lifecycle проектируется при реализации. PSP gate проводится непосредственно перед этим ticket, а не перед foundation: Stripe — preferred first test candidate, PayPal — альтернатива, production provider не выбран.
+4. `SHOP-SHIPPING-TRACKING-01` — rates, test Shipment и tracking через backend после устойчивого persistent Order; EasyPost/Shippo остаются candidates.
+
+**Независимые задачи, не блокирующие серверную основу:** `SHOP-UX-COPY-PROMISES-01` — небольшое исправление обещаний отсутствующих функций, включая отслеживание в тексте о доставке; можно выполнить рано при наличии времени. `SHOP-ACCOUNT-AVATAR-01` — отдельное визуальное исправление. Ни одна из них не меняет основную цепочку зависимостей.
+
+**Будущая задача:** следующую доменную/продуктовую задачу определить после ручной проверки `SHOP-CHECKOUT-ORDER-PAYMENT-01` и/или задачи доставки; заранее она не выбрана.
+
+`SHOP-CHECKOUT-ORDER-PAYMENT-01` может быть слишком велик для одного reviewable PR. На implementation gate решить, оставить один ticket или выполнить максимум два связных increments без новых ticket IDs сейчас: (A) verified Customer → server quote → validated submit → persistent `pending_payment` Order → Orders/Details с явным сообщением «оплата не завершена/недоступна», без success confirmation; (B) PaymentAttempt → один test PSP → проверенный callback/webhook → reconciliation → Payment state в тех же Orders/Details. Каждый increment должен быть честным и проверяемым, а не placeholder checkout или fake payment.
+
+**Следующая основная задача после объединения `SHOP-INTEGRATIONS-01`:** `SHOP-BACKEND-FOUNDATION-01`. `SHOP-UX-COPY-PROMISES-01` может идти раньше по календарю как небольшое исправление текста, но не задерживает серверную основу. `SHOP-ACCOUNT-04` Addresses, `SHOP-ACCOUNT-05` Reviews, `SHOP-ACCOUNT-06` Recently Viewed, `SHOP-ACCOUNT-07` Settings, широкий mock API, контент и косметические направления остаются в менее приоритетном backlog, пока не нужны конкретному commerce flow.
+
+Существующие `SHOP-ARCH`, `SHOP-API-CONTRACT`, `SHOP-MOCK-API` и `SHOP-BACKEND-REF` ниже описывают более широкий исходный frontend roadmap. Они не являются отдельными prerequisites для `SHOP-BACKEND-FOUNDATION-01` и не создают второй общий architecture/research loop: нужные контракты, stack, auth и provider choices решаются на implementation gates соответствующих tickets. Их прежний объём сверяется с новой последовательностью при запуске, без требования завершить весь frontend roadmap до minimal backend.
 
 Источник: утверждённый пользователем Master Development Plan для MyMyShop и утверждённый Backlog Reconciliation Audit для исходных T-001…T-039. SHOP-00…03 merged в main; остальные этапы остаются планом. Этот roadmap сам по себе не начинает следующий ticket.
 
@@ -69,7 +90,7 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 
 | ID / proposed ticket | Priority / class | Surface и причина | Benchmark rationale | Dependency |
 | --- | --- | --- | --- | --- |
-| **SHOP-UX-COMMERCE-01 — честный Cart → Checkout → Order flow** | **P0 / DOMAIN GAP**, release blocker; manual QA passed, awaiting commit authorization | Устранить `Order placed` и очистку корзины без заказа. Cart ведёт к честному `/checkout` preview без отправки, корзина сохраняется; SHOP-ACCOUNT-03 отдельно добавляет фиксированную историю, которая не меняется после preview. Создание заказа остаётся в SHOP-04; staged checkout — в SHOP-COMMERCE-FLOW. | [Baymard Cart & Checkout](https://baymard.com/research/checkout-usability): шаг проверки и подтверждение созданного заказа должны различаться. | SHOP-04/05/06, core SHOP-COMMERCE-FLOW и будущая domain/API boundary; не создавать вторую реализацию заказа. |
+| **SHOP-UX-COMMERCE-01 — честный Cart → Checkout → Order flow** | **P0 / DOMAIN GAP**, release blocker; manual QA passed, awaiting commit authorization | Устранить `Order placed` и очистку корзины без заказа. Cart ведёт к честному `/checkout` preview без отправки, корзина сохраняется; SHOP-ACCOUNT-03 отдельно добавляет фиксированную историю, которая не меняется после preview. Создание persistent app-owned Order относится к будущей backend-backed commerce slice; старый SHOP-04 scope superseded. | [Baymard Cart & Checkout](https://baymard.com/research/checkout-usability): шаг проверки и подтверждение созданного заказа должны различаться. | Текущий путь — BACKEND-FOUNDATION → AUTH-SESSION → CHECKOUT-ORDER-PAYMENT; не создавать вторую реализацию заказа из исторического SHOP-04/COMMERCE-FLOW. |
 | **SHOP-UX-IMAGES-01 — надёжная доставка изображений товаров** | **P1 / UX DEBT; Manual QA Blocks 1–5 PASS, full-app mobile audit завершён; ожидание final gate** | Общий `ProductImage` сохраняет размер слота и показывает нейтральный placeholder при загрузке и сбое; автоматический retry не применяется. Проверены Home/Catalog/PDP/Cart/Drawer, включая принудительный массовый и смешанный отказ изображений. В ограниченном браузере CDN возвращал `ERR_NETWORK_ACCESS_DENIED` одинаково на main и прошлой ветке; выборочный URL вне него отвечал HTTP 200. | Видимое изображение помогает оценить товар; отказ внешнего источника не должен лишать покупателя ориентиров. | SHOP-CATALOG-POLISH и существующий ProductImage; не менять checkout runtime. |
 | **SHOP-UX-CART-FEEDBACK-01 — обратная связь при добавлении в корзину** | **P1 / UX DEBT; Manual QA Blocks 1–5 PASS; commit создан, ветка отправлена; PR #32 открыт, merge не выполнен** | Home/Catalog/PDP показывают постоянное состояние товара: Add при нуле, «В корзине» с количеством и `−`/`+` после добавления. Badge отражает сумму единиц; `role="status"` озвучивает результат. PDP даёт переход в Cart. Кнопки имеют общий с Cart/Drawer скруглённый hover/pressed и геометрически центрированные значки; focus остаётся видимым. | [NN/g Persistent Feedback](https://www.nngroup.com/articles/cart-feedback/) и [Baymard Quantity Selector](https://baymard.com/research-articles/grocery-add-to-cart-buttons): маленького временного сообщения недостаточно, control должен показывать сохранённое состояние и позволять изменить quantity. | SHOP-UI-04 и cart state; checkout не меняется. |
 | **SHOP-UX-PDP-01 — достоверная информация о товаре** | **P1 / UX DEBT + DOMAIN GAP** | PDP подставляет бренд и наличие при отсутствии данных, а подписи характеристик жёстко русские; reviews и price должны следовать одному product model. | [Baymard Product Page](https://baymard.com/research/product-page): сведения, цена и доступность нужны для решения о покупке; недостоверные значения вредят доверию. | Product data/Price contract SHOP-06, соответствующий SHOP-UI/PDP ticket. |
@@ -92,7 +113,7 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 | --- | --- |
 | Авторизация | Настоящий интерфейс входа и серверный адаптер сессии — SHOP-08/SHOP-API-CONTRACT; сейчас demo-сессия только в памяти. |
 | Аккаунт | Обзор аккаунта, редактирование профиля/аватара, адреса, заказы/детали, отзывы/оценки, недавно просмотренные товары и настройки — отдельные tickets класса B в SHOP-ACCOUNT/CATALOG-POLISH; текущая страница Profile демонстрационная. |
-| Торговые операции | Оформление, платежи, доставка/самовывоз, создание и история заказа, детали, отслеживание, отмена и возвраты — отдельные tickets по контрактам, доменам и UI после базовых SHOP-04/05/06; сейчас нет реального заказа или оплаты. |
+| Торговые операции | Оформление, платежи, создание и история заказа, детали и отслеживание — по текущей цепочке BACKEND-FOUNDATION → AUTH-SESSION → CHECKOUT-ORDER-PAYMENT → SHIPPING-TRACKING; прежние SHOP-04/05/06 остаются историческим frontend scope. Сейчас нет реального заказа или оплаты; отмена и возвраты требуют отдельных будущих решений. |
 | Поддержка | Обратная связь, переписка и при необходимости адаптер CRM/helpdesk — SHOP-COMMERCE-CONTENT и отдельный ticket интеграции; текущий ChatBot локальный, контактная форма не отправляет заявку. |
 | Платформа/backend | Контракты API, преобразование DTO, серверные адаптеры и интеграции — SHOP-ARCH, SHOP-API-CONTRACT и следующие tickets реализации; конкретные поставщики и устройство системы не утверждены. |
 
@@ -104,35 +125,39 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 | --- | --- |
 | Foundation | SHOP-00, SHOP-01, SHOP-02, SHOP-03 |
 | Product experience | SHOP-UI-01…07 и SHOP-UI-DEC, SHOP-CATALOG-POLISH, SHOP-COMMERCE-CONTENT |
-| Commerce domain | SHOP-04, SHOP-05, SHOP-06, SHOP-08; последующие SHOP-COMMERCE-FLOW и SHOP-ACCOUNT |
+| Commerce domain | Исторический frontend план: SHOP-04/05/06/08, SHOP-COMMERCE-FLOW и SHOP-ACCOUNT; текущая transactional chain указана выше |
 | Platform / architecture | SHOP-ARCH, SHOP-API-CONTRACT, SHOP-MOCK-API, SHOP-RESILIENCE, SHOP-PERF, SHOP-OBSERVABILITY, SHOP-SECURITY; SHOP-07 обеспечивает dependency baseline |
 | Delivery / release | SHOP-90, SHOP-91, SHOP-92 |
-| Optional after frontend completion | SHOP-BACKEND-REF, SHOP-INTEGRATION-TELEGRAM |
+| Optional after frontend completion | Прежний широкий SHOP-BACKEND-REF и SHOP-INTEGRATION-TELEGRAM; frontend demo работает без backend, но отдельный minimal BACKEND-FOUNDATION обязателен до trusted payment/shipping |
 
 ### Release classes и milestones
 
-Каждый новый epic/ticket ниже имеет один release class: **A — PRODUCTION V1 BLOCKING** (обязательный минимум), **B — POST-V1 / PRODUCT ENHANCEMENT** (плановое улучшение после v1), **C — OPTIONAL INTEGRATION** (внешняя интеграция без влияния на выпуск frontend). Класс A относится только к явно названному v1 scope; расширенные функции внутри того же направления получают отдельный B PR, а не наследуют блокирующий статус. Существующие tickets SHOP-04…08 сохраняют согласованный scope; продуктовые дополнения не вставляются в них задним числом.
+**Исторический frontend milestone plan:** M1–M3 и старые классы ниже сохраняют исходный scope статического demo и frontend release. Они не задают цепочку перед новым backend foundation или transactional commerce. Для текущего ближайшего порядка действует `SHOP-INTEGRATIONS-01` выше; конкретные контракты уточняются в implementation tickets, не в новом общем исследовательском цикле.
+
+Каждый исходный epic/ticket ниже имел один release class: **A — PRODUCTION V1 BLOCKING** (обязательный минимум), **B — POST-V1 / PRODUCT ENHANCEMENT** (плановое улучшение после v1), **C — OPTIONAL INTEGRATION** (внешняя интеграция без влияния на выпуск frontend). Класс A относился только к явно названному frontend v1 scope. Исторические scopes сохранены для трассировки; прежний SHOP-04 demo-order superseded и не становится prerequisite новой commerce цепочки.
 
 | Milestone | Acceptance для v1 |
 | --- | --- |
 | M1 — Product/UI Foundation | Завершены SHOP-03 (уже DONE), SHOP-UI-01/02/03/04/06 и core SHOP-CATALOG-POLISH: детерминированный catalog/product behavior, product page, базовые UI primitives, responsive/accessibility foundation. SHOP-UI-DEC/05 и косметический SHOP-UI-07 выполняются после v1, если review не выявит конкретный release blocker. |
-| M2 — Backend-ready Commerce Frontend | SHOP-04/05/06, core SHOP-ARCH/API-CONTRACT, SHOP-07/08, SHOP-MOCK-API и core SHOP-COMMERCE-FLOW: типизированные границы, версия хранения, cart, безопасный demo checkout, delivery contract, auth и сменные adapters. M1 и M2 могут перекрываться; commerce/API расширения используют готовые границы. |
-| M3 — Production Readiness | SHOP-RESILIENCE, SHOP-PERF baseline/budget, SHOP-SECURITY, минимальный SHOP-OBSERVABILITY, сквозная accessibility проверка, финальные исправления блокирующих UI дефектов, SHOP-90/91/92. После M3 frontend готов к подключению настоящего backend по contract. |
+| M2 — Backend-ready Commerce Frontend (исторический frontend milestone) | SHOP-04/05/06, core SHOP-ARCH/API-CONTRACT, SHOP-07/08, SHOP-MOCK-API и core SHOP-COMMERCE-FLOW: типизированные границы, версия хранения, cart, безопасный demo checkout, delivery contract, auth и сменные adapters. M1 и M2 могут перекрываться; commerce/API расширения используют готовые границы. |
+| M3 — Production Readiness (исторический frontend milestone) | SHOP-RESILIENCE, SHOP-PERF baseline/budget, SHOP-SECURITY, минимальный SHOP-OBSERVABILITY, сквозная accessibility проверка, финальные исправления блокирующих UI дефектов, SHOP-90/91/92. После M3 frontend готов к подключению настоящего backend по contract. |
 
-- **A / production v1 blockers:** SHOP-04/05/06/07/08; SHOP-UI-01/02/03/04/06; core SHOP-CATALOG-POLISH и SHOP-COMMERCE-FLOW; core SHOP-ARCH/API-CONTRACT/MOCK-API/RESILIENCE/PERF/SECURITY; Logger/ErrorReporter baseline SHOP-OBSERVABILITY; SHOP-90/91/92. SHOP-00…03 уже DONE и остаются обязательной основой.
+- **A / production v1 blockers (исторический frontend scope):** SHOP-04/05/06/07/08; SHOP-UI-01/02/03/04/06; core SHOP-CATALOG-POLISH и SHOP-COMMERCE-FLOW; core SHOP-ARCH/API-CONTRACT/MOCK-API/RESILIENCE/PERF/SECURITY; Logger/ErrorReporter baseline SHOP-OBSERVABILITY; SHOP-90/91/92. SHOP-00…03 уже DONE и остаются основой; прежний SHOP-04 demo-order scope не возобновляется.
 - **B / post-v1 product enhancements:** SHOP-ACCOUNT, SHOP-COMMERCE-CONTENT, SHOP-UI-DEC/05/07; autocomplete, recent searches, favorites, recently viewed, comparison, advanced facets/recommendations, расширенные account/delivery/checkout conveniences и analytics event funnels. Эти функции полезны, но не требуются для критических v1 flows; каждая реализуется отдельным PR после проверки фактической ценности.
 - **C / optional integrations:** SHOP-BACKEND-REF, SHOP-INTEGRATION-TELEGRAM, внешний AI support adapter, Sentry/analytics vendor adapters и другие non-core integrations. Они не блокируют M3; безопасность их tokens/данных определяется отдельно перед включением.
 
 **Backend-ready acceptance:** подключение backend, соблюдающего SHOP-API-CONTRACT, не требует переписывать pages/components. Допустимы изменения environment/config, конкретных HTTP adapters, DTO mappings в рамках contract и реализация backend endpoints. Недопустимы перенос business logic из pages после релиза, переписывание UI flow или смена store architecture только из-за появления backend. Это проверяется adapter parity в M2 и итоговым audit SHOP-92.
 
-**Production-ready frontend v1 acceptance:** критические browse/search → PDP → cart → demo checkout/confirmation и demo auth flows завершены и покрыты tests; нет известных blocker/critical defects, white screens, случайного business behavior, client credentials/secrets. Loading/error/empty состояния предсказуемы; pricing/discounts детерминированы; backend contracts документированы; responsive и keyboard accessibility baseline пройдены; production bundle в согласованном budget; production build deployable, GitHub Pages demo работает, ограничения документированы. Это означает готовность frontend архитектуры, а не наличие реального backend или production payments.
+**Production-ready frontend v1 acceptance (исторический frontend milestone):** критические browse/search → PDP → cart → Checkout Preview без создания Order и demo auth flows завершены и покрыты tests; нет известных blocker/critical defects, white screens, случайного business behavior, client credentials/secrets. Loading/error/empty состояния предсказуемы; pricing/discounts детерминированы; backend contracts документированы; responsive и keyboard accessibility baseline пройдены; production bundle в согласованном budget; production build deployable, GitHub Pages demo работает, ограничения документированы. Это означает готовность frontend архитектуры, а не наличие реального backend или production payments.
 
 ### Dependency-aware execution order
 
-1. **Foundation DONE:** SHOP-00/01/02/03 уже merged. Сейчас возможны SHOP-UI-01, затем параллельно SHOP-UI-02/03/06; SHOP-04 и независимые core catalog/PDP fixes также могут идти параллельно. SHOP-UI-04 controls/thumbnails ждёт image slot SHOP-UI-02, но не весь SHOP-05. SHOP-UI-DEC остаётся gate только для post-v1 mobile flow SHOP-UI-05.
+**Исторический frontend execution order:** пункты ниже описывают прежние зависимости frontend release и не блокируют старт `SHOP-BACKEND-FOUNDATION-01`. Для новых server-backed операций действует core dependency chain выше; SHOP-ARCH/API-CONTRACT/MOCK-API не нужно заново проходить как общий research gate.
+
+1. **Foundation DONE (исторический frontend plan):** SHOP-00/01/02/03 уже merged. Исходный план допускал SHOP-UI-01, затем параллельно SHOP-UI-02/03/06; SHOP-04 и независимые core catalog/PDP fixes также могли идти параллельно. SHOP-UI-04 controls/thumbnails ждал image slot SHOP-UI-02, но не весь SHOP-05. SHOP-UI-DEC оставался gate только для post-v1 mobile flow SHOP-UI-05.
 2. **Базовый commerce/domain:** SHOP-04 → SHOP-05 → SHOP-06 согласно существующим зависимостям; SHOP-06 даёт typed domain/Price foundation и поэтому предшествует core SHOP-ARCH. SHOP-ARCH не блокирует уже согласованные локальные SHOP-04/05, но обязателен до новых HTTP-backed/cart/checkout расширений. Core SHOP-CATALOG-POLISH можно вести после SHOP-03; скидка/Price и DTO-dependent части ждут SHOP-06.
 3. **Контракты до расширений:** core SHOP-ARCH → SHOP-API-CONTRACT до проектирования новых HTTP flows и SHOP-COMMERCE-FLOW. SHOP-07 следует за SHOP-06, SHOP-08 — за SHOP-07 по действующему плану; auth-specific часть SHOP-ARCH/API-CONTRACT дополняется после SHOP-08, не задерживая catalog/cart contracts.
-4. **Backend-ready flows:** core SHOP-COMMERCE-FLOW после SHOP-04/05/06 и contracts. SHOP-MOCK-API вводится после соответствующего API contract и HTTP adapter boundary; catalog/product mock может идти раньше, auth mock — после SHOP-08. SHOP-ACCOUNT как B enhancement не блокирует v1; безопасные базовые auth/profile states остаются в SHOP-08 и SHOP-UI.
+4. **Backend-ready flows (исторический frontend plan):** core SHOP-COMMERCE-FLOW после SHOP-04/05/06 и contracts. SHOP-MOCK-API вводится после соответствующего API contract и HTTP adapter boundary; catalog/product mock может идти раньше, auth mock — после SHOP-08. Широкие Account enhancements относятся к B backlog; persistent customer-owned Orders/Details теперь core часть `SHOP-CHECKOUT-ORDER-PAYMENT-01`.
 5. **Quality и release:** SHOP-RESILIENCE state model начинается с core UI/catalog, HTTP recovery следует SHOP-ARCH; после основных flows SHOP-PERF фиксирует baseline, затем budget. SHOP-SECURITY завершается после auth/config boundaries; SHOP-OBSERVABILITY v1 ограничен Logger/ErrorReporter boundary и безопасным Noop. Критические accessibility и UI исправления выполняются в своих implementation PR до SHOP-90. Затем SHOP-90 → SHOP-91 → SHOP-92. B/C items не являются prerequisites этих gates.
 
 Параллельность не отменяет отдельные branches/PR и manual gates. Architecture/API contracts стоят сразу после необходимого SHOP-06 domain foundation и до новых HTTP/business flows, чтобы не переносить business logic из UI позднее. Новые epics делятся на reviewable tickets; cross-reference не создаёт вторую реализацию.
@@ -180,7 +205,7 @@ MyMyShop должен стать production-oriented e-commerce storefront/refer
 | T-023 — cart icon in drawer | PLANNED | SHOP-UI, в контексте единой системы иконок и решения по mobile drawers. |
 | T-024 — delivery details / promo | PARTIALLY IMPLEMENTED | Базовая delivery page есть; детали/promo в SHOP-COMMERCE-CONTENT, provider contract через SHOP-ARCH/API-CONTRACT. |
 | T-025 — pickup points / map | PLANNED | SHOP-COMMERCE-CONTENT; источник данных согласовать перед реализацией, backend-ready DeliveryProvider/API contract. |
-| T-026 — реальная/ложная оплата | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | SHOP-04 допускает только явно обозначенный локальный demo-checkout без реальных платёжных данных. |
+| T-026 — реальная/ложная оплата | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | CURRENT Checkout Preview не создаёт заказ и не принимает платёж; исторический SHOP-04 local demo-order scope superseded. Test payment возможен только через будущий backend-backed commerce flow. |
 | T-027 — quiz «Не знаю чего хочу» | PLANNED | SHOP-COMMERCE-CONTENT. |
 | T-028 — полноценная contact form | PARTIALLY IMPLEMENTED | Форма есть, но сейчас только локально логирует ввод; поведение и ограничения согласовать в SHOP-COMMERCE-CONTENT. |
 | T-029 — chatbot | PARTIALLY IMPLEMENTED | Простой локальный chatbot есть; границы и ожидаемый сценарий уточнить в SHOP-COMMERCE-CONTENT. Telegram и AI optional, не обязательны для T-029. |
@@ -421,7 +446,7 @@ SHOP-02
 
 ## SHOP-04 — Локальный demo-checkout
 
-Статус: NOT STARTED.
+Статус исходного scope: **SUPERSEDED / HISTORICAL**. Пункты ниже сохранены как история плана, а не как исполняемый acceptance для нового направления. CURRENT Checkout Preview не создаёт Order; demo `submit` не возвращает fake transactional success. Создание persistent app-owned Order относится к `SHOP-CHECKOUT-ORDER-PAYMENT-01` после backend foundation и auth/session gate. Локальный demo-order и demo confirmation из старого SHOP-04 не являются текущей целью.
 
 Цель:
 завершить сценарий корзины без ложного заказа.
@@ -471,7 +496,7 @@ SHOP-01
 Риски:
 storage quota и дублирование заказа; demo-история не должна содержать реальные персональные данные.
 
-Следующий backend-ready checkout stage планируется отдельно в SHOP-COMMERCE-FLOW после выполнения этого ограниченного SHOP-04: Cart → Contact → Delivery → Address/Pickup → Payment method → Review → Demo confirmation. Нужны validation, recoverable errors и возврат вперёд/назад между шагами. `PaymentProvider` имеет DemoPaymentProvider и возможный будущий RealPaymentProvider; настоящий provider допускается только за отдельной безопасной backend границей. Не хранить данные реальных карт и не имитировать реальную оплату. Этот future flow не расширяет acceptance criteria SHOP-04 молча.
+Историческое продолжение исходного SHOP-04 предполагало SHOP-COMMERCE-FLOW: Cart → Contact → Delivery → Address/Pickup → Payment method → Review → Demo confirmation. Нужны были validation, recoverable errors и возврат вперёд/назад между шагами. `PaymentProvider` разделял DemoPaymentProvider и возможный будущий RealPaymentProvider. Этот план не является текущей transactional целью; она зафиксирована в ближайшей интеграционной последовательности выше.
 
 ---
 
@@ -680,6 +705,9 @@ SHOP-01, SHOP-06, SHOP-07.
 
 - SHOP-ACCOUNT-02 — Profile editing & avatar: реализуется в `feat/shop-account-02-profile-editing`; защищённый `/account/profile`, редактируемое имя, read-only demo email, локальный preview аватара, Save/Cancel и обновление только в памяти через backend-ready `accountService.updateProfile`. Ожидает automated checks и manual QA.
 - SHOP-ACCOUNT-03 — демонстрационные Order History и Order Details в `feat/shop-account-03-orders`; tracking не входит в этот ticket и требует отдельного контракта доставки.
+
+Следующие Account возможности остаются lower-priority backlog и не вытесняют backend/auth/commerce chain:
+
 - SHOP-ACCOUNT-04 — Addresses.
 - SHOP-ACCOUNT-05 — Reviews & Ratings.
 - SHOP-ACCOUNT-06 — Recently Viewed.
@@ -693,21 +721,21 @@ SHOP-01, SHOP-06, SHOP-07.
 
 ## SHOP-COMMERCE-FLOW — Cart and staged checkout
 
-Статус: PLANNED. Release class: **A — PRODUCTION V1 BLOCKING** для core CartLine/pricing/checkout/delivery contracts; расширенные undo, promo и server reconciliation получают отдельные B PR. Делить на cart model и checkout flow PR после базовых SHOP-04/05.
+Статус исходного frontend demo scope: **HISTORICAL / SUPERSEDED** как финальная цель commerce. Ниже сохранён прежний staged flow до Demo confirmation через DemoPaymentProvider; это не исполняемая цепочка для настоящего Order или Payment. **Текущее transactional направление:** server quote → validated submit → persistent app-owned Order → PaymentAttempt → test PSP → проверенный provider event → reconciliation → Orders/Details по `SHOP-CHECKOUT-ORDER-PAYMENT-01`. Демо не выдаёт fixture за успешную покупку; части старого UI scope используются только если нужны этому flow.
 
-Цель: завершить backend-ready cart/checkout frontend без изменения ограниченного demo-checkout scope SHOP-04 задним числом. Владеет `CartLine` и правилами stock/unavailable/price/promo/total, optimistic mutation/rollback через service interface, а также staged Cart → Contact → Delivery → Address/Pickup → Payment method → Review → Demo confirmation с validation, recoverable errors и back/forward. `PaymentProvider` отделяет DemoPaymentProvider от возможного будущего RealPaymentProvider. Данные реальных карт, production payment и отправка реального заказа продавцу не входят в публичный demo. UI controls/thumbnails принадлежат SHOP-UI-04, local persistence — SHOP-05, delivery contract — SHOP-COMMERCE-CONTENT/SHOP-API-CONTRACT, общие ошибки — SHOP-RESILIENCE.
+Историческая цель: завершить backend-ready cart/checkout frontend без изменения ограниченного demo-checkout scope SHOP-04 задним числом. Владеет `CartLine` и правилами stock/unavailable/price/promo/total, optimistic mutation/rollback через service interface, а также staged Cart → Contact → Delivery → Address/Pickup → Payment method → Review → Demo confirmation с validation, recoverable errors и back/forward. `PaymentProvider` отделяет DemoPaymentProvider от возможного будущего RealPaymentProvider. Данные реальных карт, production payment и отправка реального заказа продавцу не входят в публичный demo. UI controls/thumbnails принадлежат SHOP-UI-04, local persistence — SHOP-05, delivery contract — SHOP-COMMERCE-CONTENT/SHOP-API-CONTRACT, общие ошибки — SHOP-RESILIENCE.
 
-Зависимости: SHOP-04/05/06, SHOP-ARCH/API-CONTRACT для backend-ready boundaries. Критические cart → checkout → demo confirmation и failure/retry проверяются до SHOP-90.
+Исторические зависимости frontend milestone: SHOP-04/05/06, SHOP-ARCH/API-CONTRACT для backend-ready boundaries. План cart → checkout → demo confirmation и failure/retry относился к SHOP-90, но не задаёт текущую транзакционную цепочку.
 
 ---
 
 ## SHOP-ACCOUNT — Account and order-facing frontend
 
-Статус: PLANNED. Release class: **B — POST-V1 / PRODUCT ENHANCEMENT**; делить на profile/addresses, favorites и orders PR. Базовая безопасная demo-session и auth architecture v1 принадлежат SHOP-01/08.
+Статус прежнего широкого Account enhancement: PLANNED / lower priority для profile, addresses, reviews, favorites и settings. CURRENT Order History/Details уже показывают фиксированные demo-записи; persistent customer-owned Orders/Details входят в core `SHOP-CHECKOUT-ORDER-PAYMENT-01`, а не в post-v1 Account backlog. Базовая demo-session не заменяет `SHOP-AUTH-SESSION-02`.
 
-Цель: backend-ready profile, addresses, favorites, order history/details и session lifecycle поверх SHOP-08 AuthService. Нужны session expiry, unauthorized handling, refresh-session strategy interface и safe logout; public demo-session SHOP-01 остаётся без реальных credentials и без ложной защищённости. Recently viewed относится к catalog/product experience, а не требует реального аккаунта; comparison optional. Order data следует SHOP-COMMERCE-FLOW и SHOP-API-CONTRACT, а не отдельному состоянию внутри ProfilePage.
+Историческая цель широкого Account epic: backend-ready profile, addresses, favorites, order history/details и session lifecycle поверх SHOP-08 AuthService. Public demo-session SHOP-01 остаётся без реальных credentials и без ложной защищённости. Recently viewed относится к catalog/product experience; comparison optional. По принятому направлению session correctness принадлежит `SHOP-AUTH-SESSION-02`, а persistent Order data и customer-owned Orders/Details — `SHOP-CHECKOUT-ORDER-PAYMENT-01`, не ProfilePage и не lower-priority Account backlog.
 
-Зависимости: SHOP-08, SHOP-ARCH/API-CONTRACT, SHOP-COMMERCE-FLOW для order-facing paths. Mobile profile flow следует SHOP-UI-DEC/05; не блокировать независимые UI icons/grid работы.
+Исторические зависимости широкого Account epic: SHOP-08, SHOP-ARCH/API-CONTRACT, SHOP-COMMERCE-FLOW. Для core Orders действует новая цепочка backend foundation → auth/session → commerce; mobile profile flow и остальные Account enhancements её не блокируют.
 
 ---
 
@@ -1059,6 +1087,8 @@ test(shop): cover accessible responsive journeys
 Зависимости:
 SHOP-04…08, core SHOP-COMMERCE-FLOW, core SHOP-CATALOG-POLISH, A tickets SHOP-UI-01/02/03/04/06 и A scope SHOP-ARCH, SHOP-API-CONTRACT, SHOP-MOCK-API, SHOP-RESILIENCE, SHOP-PERF, SHOP-OBSERVABILITY baseline, SHOP-SECURITY. SHOP-ACCOUNT, SHOP-COMMERCE-CONTENT, SHOP-UI-DEC/05/07 и advanced catalog/analytics B scope не блокируют v1. SHOP-90 проверяет итоговую систему, а не откладывает implementation fixes до финала.
 
+Этот список относится к историческому frontend release gate, не к prerequisites для `SHOP-BACKEND-FOUNDATION-01` или новой commerce slice. Прежний scope SHOP-04 и demo confirmation не возобновляются из-за ссылки в списке.
+
 Риски:
 flaky screenshots и слишком широкий scope; крупные независимые дефекты выносить отдельно.
 
@@ -1067,6 +1097,8 @@ flaky screenshots и слишком широкий scope; крупные нез�
 ## SHOP-91 — GitHub Pages Deployment
 
 Статус: NOT STARTED.
+
+Исторический scope статической публикации. На будущем deployment gate проверить его совместимость с функциональным public demo и при необходимости выбрать другой frontend hosting и отдельный backend hosting; этот пункт не фиксирует GitHub Pages как окончательный provider.
 
 Цель:
 дать воспроизводимый публичный demo.
@@ -1209,9 +1241,9 @@ SHOP-91 и все A — PRODUCTION V1 BLOCKING tickets/epics. B product enhancem
 
 ## SHOP-BACKEND-REF — Optional reference backend
 
-Статус: PLANNED. Release class: **C — OPTIONAL INTEGRATION**; поздний reference backend не блокирует SHOP-90/91/92 или завершение frontend.
+Статус: PLANNED. Release class: **C — OPTIONAL INTEGRATION** для прежнего широкого reference backend; он не блокирует SHOP-90/91/92 или завершение frontend demo. Отдельный `SHOP-BACKEND-FOUNDATION-01` из ближайшей последовательности обязателен перед payment/shipping vertical slice.
 
-Цель: показать, что независимый backend может обслуживать SHOP-API-CONTRACT. Предпочтителен небольшой Node.js + Fastify или эквивалент: routes → services → repositories → adapters, `MemoryRepository` с заменяемым будущим `PostgresRepository`. Минимальный contract: `GET /products`, `GET /products/:id`, auth/session endpoints, cart, checkout и orders. Contract tests подтверждают совместимость с frontend adapters. Не строить microservices, production payment или обязательную БД; реальные credentials/secrets остаются только на server side. Backend security проектируется отдельно и не объявляется выполненной SHOP-SECURITY frontend проверкой.
+Цель исходного optional ticket: показать, что независимый backend может обслуживать широкий SHOP-API-CONTRACT. Node.js + Fastify — предпочтительный кандидат, но не окончательно выбранный stack; Express, NestJS, serverless и Supabase capabilities сравниваются в [стратегии](docs/INTEGRATION_STRATEGY.md). Для прежнего contract prototype допустим `MemoryRepository`; для новой платёжной vertical slice сохранность Order/PaymentAttempt после перезапуска требует постоянного хранилища. Не строить microservices или full OMS; secrets остаются только на server side. Backend security проектируется отдельно и не объявляется выполненной SHOP-SECURITY frontend проверкой.
 
 Зависимости: SHOP-API-CONTRACT и SHOP-ARCH; по желанию после frontend release.
 

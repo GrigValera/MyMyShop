@@ -39,6 +39,8 @@
 
 **PROPOSED — инвариант:** OrderItem сохраняет коммерческий снимок, чтобы история заказа не менялась при последующем изменении Product или цены. Реальное оформление должно заново проверить на backend клиентские цены, итоги, наличие и права. В нынешней корзине эти правила не реализованы.
 
+**SHOP-INTEGRATIONS-01 — PROPOSED:** `Order` и его история принадлежат домену MyMyShop Orders. `PaymentAttempt` и `Shipment` ссылаются на `Order`, но статусы поставщика не подменяют `OrderStatus`. Для будущей test payment vertical slice backend сохраняет pending Order до подтверждения provider; `Order`, `Payment` и `Fulfillment` развиваются отдельно. Действующие три demo Order не связаны с checkout; подробности — в [стратегии интеграций](INTEGRATION_STRATEGY.md).
+
 ## Матрица владения доменами
 
 | Домен | Основная обязанность | Экран frontend | Планируемая серверная ответственность | Внешняя зависимость | Статус |
@@ -48,7 +50,7 @@
 | Каталог | Поиск товаров и содержимое | Каталог/PDP | Граница Catalog | PIM необязателен | CURRENT frontend; backend PLANNED |
 | Корзина | Намерение купить | Cart/Drawer | Граница Cart | Не требуется | CURRENT локально; backend PLANNED |
 | Оформление | Проверка и создание покупки | Checkout | Граница Checkout | Адаптеры доставки/оплаты по необходимости | PLANNED |
-| Заказы | Оформленная покупка и история | Account/Orders/Details | Граница Orders | OMS/ERP необязательны | PLANNED |
+| Заказы | Оформленная покупка и история | Account/Orders/Details | Граница Orders | OMS/ERP необязательны | CURRENT demo history / PLANNED real Orders |
 | Платежи/возвраты | Денежные состояния | Checkout/Order Details | Граница Payments | PSP нужен для реальной оплаты | PLANNED |
 | Исполнение/отгрузки | Ход доставки | Order Details/Tracking | Граница Fulfillment | WMS/перевозчик необязательны | PLANNED |
 | Отзывы/оценки | Обратная связь | PDP/Account | Граница Reviews | Модерация необязательна | SOURCE DATA CURRENT / FEATURE PLANNED |
@@ -59,11 +61,11 @@
 
 | Данные | CURRENT источник | Будущий источник истины | Статус |
 | --- | --- | --- | --- |
-| Сессия | Память Redux и demo-адаптер | Серверная сессия | CURRENT / PLANNED |
+| Сессия | Память Redux и demo-адаптер | Серверная проверка сессии/токена и обязательная backend authorization; источник identity выбирается в `SHOP-AUTH-SESSION-02` | CURRENT / PLANNED |
 | Профиль аккаунта | Demo fixture и in-memory обновление имени/аватара за `accountService` | Серверная граница Customer | CURRENT demo / PLANNED |
-| Корзина | Redux и `localStorage` | Серверная корзина авторизованного Customer; правило согласования открыто | CURRENT / PLANNED |
+| Корзина | Redux и `localStorage` | Локальное намерение с серверным quote; серверная корзина авторизованного Customer возможна позднее, правило согласования открыто | CURRENT / PROPOSED / PLANNED |
 | Каталог | Снимок и дополнительный режим DummyJSON | Серверная граница Catalog; PIM необязателен | CURRENT / PLANNED |
-| Заказ | Нет | Серверный домен Orders | PLANNED |
+| Заказ | Три фиксированные demo-записи `demoOrderAdapter`, не связанные с checkout | Серверный домен MyMyShop Orders | CURRENT demo / PLANNED real Order |
 | Платёж | Нет | Серверный домен Payments и подтверждённые события PSP | PLANNED |
 | Отгрузка | Нет | Серверный домен Fulfillment и при необходимости обновления перевозчика | PLANNED |
 | Отзывы | В локальном снимке `reviews` отсутствует; API-запрос PDP запрашивает поле, базовый компонент вывода есть | Серверный домен Reviews и полноценное представление | SOURCE DATA CURRENT / FEATURE PLANNED |
