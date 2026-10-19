@@ -13,10 +13,16 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npm run build && playwright test"
+    "test": "npm run build && playwright test",
+    "server:dev": "node --watch --env-file-if-exists=.env server/index.js",
+    "server:start": "node --env-file-if-exists=.env server/index.js",
+    "server:migrate": "node --env-file-if-exists=.env server/db/migrate.js",
+    "server:test": "node --test server/tests/*.test.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
+    "better-sqlite3": "^13.0.3",
+    "fastify": "^5.12.7",
     "i18next": "^26.0.8",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

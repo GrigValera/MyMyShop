@@ -1,6 +1,6 @@
 # MyMyShop
 
-MyMyShop — развивающийся пример интернет-магазина с честным демонстрационным режимом и архитектурой, рассчитанной на будущий backend. Сейчас доступны каталог и страницы товаров, локальная корзина, структура личного кабинета с демонстрационной сессией только в памяти, фиксированная история заказов с деталями и Checkout Preview. Preview не создаёт заказ; демонстрационная история не связана с покупкой. Платежи, отгрузка и сервер магазина ещё не реализованы.
+MyMyShop — развивающийся пример интернет-магазина с честным демонстрационным режимом и отдельной минимальной серверной основой. Во frontend доступны каталог и страницы товаров, локальная корзина, демонстрационная сессия только в памяти, фиксированная история заказов и Checkout Preview. Preview не создаёт заказ; демонстрационная история не связана с покупкой. Сервер пока не обслуживает commerce, платежи или доставку.
 
 **Цель публичного demo:** стабильная ссылка, по которой можно без учётных данных пройти связный сценарий от каталога и корзины до созданного demo/test заказа и его деталей. Такой Order должен сохраняться в demo/test окружении и показываться в той же истории; это будущая возможность, а не текущее поведение. Реального списания и выдачи demo-данных за production не будет.
 
@@ -15,9 +15,9 @@ npm run dev
 
 ## Документы и следующий шаг
 
-Следующая основная задача после объединения `SHOP-INTEGRATIONS-01` — `SHOP-BACKEND-FOUNDATION-01`. Текущий порядок и независимые задачи описаны в [дорожной карте](ROADMAP.md). [Стратегия интеграций](docs/INTEGRATION_STRATEGY.md) объясняет будущие режимы и поставщиков; [архитектура](docs/ARCHITECTURE.md), [доменная модель](docs/DOMAIN_MODEL.md), [среды](docs/DELIVERY_AND_ENVIRONMENTS.md) и [границы интеграций](docs/INTEGRATIONS.md) раскрывают детали. Также доступны [контекст системы](docs/SYSTEM_CONTEXT.md), [бизнес-процессы](docs/BUSINESS_FLOWS.md) и [архитектурные решения](docs/adr/README.md).
+Текущий порядок и независимые задачи описаны в [дорожной карте](ROADMAP.md). [Стратегия интеграций](docs/INTEGRATION_STRATEGY.md) объясняет будущие режимы и поставщиков; [архитектура](docs/ARCHITECTURE.md), [доменная модель](docs/DOMAIN_MODEL.md), [среды](docs/DELIVERY_AND_ENVIRONMENTS.md) и [границы интеграций](docs/INTEGRATIONS.md) раскрывают детали. Также доступны [контекст системы](docs/SYSTEM_CONTEXT.md), [бизнес-процессы](docs/BUSINESS_FLOWS.md) и [архитектурные решения](docs/adr/README.md).
 
-**CURRENT:** demo запускается без учётных данных; каталог использует локальный снимок и дополнительный публичный DummyJSON. **PROPOSED/PLANNED:** функциональный публичный demo может получить demo/test API; sandbox и backend-режимы потребуют отдельных API и серверных тестовых секретов. Сейчас ни один из этих backend-режимов не реализован. Описание будущей ответственности не означает, что backend или настоящие платежи уже существуют.
+**CURRENT:** frontend demo запускается без backend и учётных данных; каталог использует локальный снимок и дополнительный публичный DummyJSON. Отдельный Fastify API имеет SQLite, миграцию и локальный test actor для проверки границы доступа и сохранения профиля. **PLANNED:** функциональный публичный demo может получить demo/test API; auth, Orders, checkout, sandbox providers и production deployment ещё не реализованы.
 
 Стек demo: React, JavaScript, Redux Toolkit / RTK Query, Vite. TypeScript пока не настроен.
 
@@ -25,8 +25,7 @@ npm run dev
 
 Поддерживаемая пара: **Node 24.12.0 / npm 11.7.0**. Node также закреплён в
 `.nvmrc`, версии проверяются через `engines` и `.npmrc` (`engine-strict=true`).
-Установите эту пару до `npm ci`. Существующий lockfile сохранён без обновления
-зависимостей приложения; добавлен только Playwright и его зависимости.
+Установите эту пару до `npm ci`. Lockfile включает frontend и две backend runtime dependencies.
 
 В чистом checkout:
 
@@ -36,6 +35,7 @@ npm --version
 npm ci
 npx playwright install chromium
 npm run lint
+npm run server:test
 npm test
 git diff --check
 ```
@@ -50,9 +50,29 @@ git diff --check
 - `npm run build` — production build в `dist/`.
 - `npm test` — новый production build, затем unit и browser integration/E2E tests через Playwright Chromium.
 - `npm run preview -- --host 127.0.0.1 --port 4173 --strictPort` — просмотр `dist/`.
+- `npm run server:migrate` — применить серверные SQLite-миграции.
+- `npm run server:start` — запустить API после миграции.
+- `npm run server:dev` — запустить API в Node watch mode.
+- `npm run server:test` — изолированные backend config, migration и API tests.
 
 Production preview: http://127.0.0.1:4173/ . Сначала выполните `npm run build`.
 Перед `npm test` освободите порт 4173: тесты намеренно запускают собственный preview.
+
+## Минимальный backend foundation
+
+Backend запускается отдельно от frontend. Для локальной проверки скопируйте `.env.example` в игнорируемый Git файл `.env`, затем выполните:
+
+```sh
+npm ci
+npm run server:migrate
+npm run server:start
+```
+
+По умолчанию из примера API доступен на `http://127.0.0.1:3000`; маршруты `GET /api/v1/health` и `GET /api/v1/ready` открыты. Миграция создаёт `schema_migrations` и `actor_profiles`; старт API не применяет миграции автоматически. Файл `server/data/development.sqlite` игнорируется Git. Для иных сред задайте `APP_ENV=development|test|demo|production`, `DATABASE_PATH`, при необходимости `HOST`, `PORT`, `LOG_LEVEL`. `APP_ENV` обязателен; для `test`, `demo`, `production` обязателен явный путь к БД, для `demo` и `production` — абсолютный путь к постоянному хранилищу.
+
+`GET /api/v1/me` и `PATCH /api/v1/me` доступны **только для локального test actor**, когда `APP_ENV=development|test`, `HOST` указывает на loopback и явно установлено `ENABLE_TEST_ACTOR=true`. Заголовок `X-Test-Actor` принимает только `reviewer` или `second-reviewer`; другие значения и отсутствие заголовка дают `401`. Пример записи: `PATCH /api/v1/me` с `X-Test-Actor: reviewer`, `Content-Type: application/json` и body `{"displayName":"Reviewer"}`. Поле `actorId` нельзя передать для изменения чужого профиля. В `demo`, `production` или при `NODE_ENV=production` включение test actor останавливает запуск. Это проверка development/test authorization boundary, **не настоящая аутентификация**. Реальная сессия, persistent Customer, Order и commerce API относятся к будущим tickets.
+
+Каждый ответ содержит серверный `X-Request-Id`; ошибки имеют `{code,message,requestId,retryable}` без SQL, пути БД и stack trace. Сервер не открывает wildcard CORS. Не помещайте секреты в `.env.example`, `VITE_*` или логи. Для production-like размещения нужен отдельный durable SQLite volume и резервная копия перед миграцией; размещение пока не выполнено.
 
 ## Tests и CI
 
@@ -62,13 +82,13 @@ Production preview: http://127.0.0.1:4173/ . Сначала выполните `
 тестовым ответом; entry point, Redux и маршруты работают реально. Случайная скидка
 не фиксируется, тест не подтверждает корректность скидок.
 
-Linux PR workflow `.github/workflows/pr.yml`: Node/npm → npm ci → lint → Chromium
+Linux PR workflow `.github/workflows/pr.yml`: Node/npm → npm ci → lint → backend tests → Chromium
 → npm test (включает production build) → diff checks. Actions закреплены на SHA,
 проверенные через git ls-remote официальных репозиториев. Только contents: read,
 checkout credentials не сохраняются, deployment secrets/environments не используются.
 Нет continue-on-error и retries. Фактический GitHub PR run требует отдельно разрешённых
 commit/push и PR; локальный запуск не подтверждает Linux CI.
-Отдельные unit runner, typecheck, visual regression и axe не настроены.
+Backend использует встроенный `node:test`; отдельные typecheck, visual regression и axe не настроены.
 
 ## SHOP-02: поиск и категории
 
@@ -243,7 +263,7 @@ catalog follow-up — URL state фильтров и восстановление
 - [ ] README-команды и diff соответствуют текущему ticket.
 
 Сбой живого API фиксируйте отдельно от тестов с mock API.
-Реальные платежи/заказ: NOT APPLICABLE, backend отсутствует.
+Реальные платежи/заказ: NOT APPLICABLE, commerce backend отсутствует.
 
 ## Откат
 
