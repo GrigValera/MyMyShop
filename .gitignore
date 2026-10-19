@@ -26,3 +26,10 @@ node_modules/
 public/icons/
 test-results/
 playwright-report/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*

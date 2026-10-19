@@ -37,13 +37,13 @@ MyMyShop должен стать публичным portfolio/reference storefro
 
 ## Основание и порядок работы
 
-### SHOP-INTEGRATIONS-01 — ближайшая интеграционная последовательность
+### SHOP-INTEGRATIONS-01 — интеграционная последовательность
 
-**CURRENT:** исследование зафиксировано в [стратегии интеграций](docs/INTEGRATION_STRATEGY.md); runtime, provider и backend не добавлены. **PROPOSED:** `Order` принадлежит MyMyShop; minimal backend обязателен перед test payment/shipping, при этом demo продолжает работать без него. Следующие tickets требуют отдельного запуска и собственных gates:
+**CURRENT:** исследование зафиксировано в [стратегии интеграций](docs/INTEGRATION_STRATEGY.md); `SHOP-BACKEND-FOUNDATION-01` добавляет Fastify API, SQLite, миграцию, test actor и persistent profile proof. Provider и commerce runtime не добавлены. **PROPOSED:** `Order` принадлежит MyMyShop; demo продолжает работать без backend. Следующие tickets требуют отдельного запуска и собственных gates:
 
 **Основная цепочка зависимостей:**
 
-1. `SHOP-BACKEND-FOUNDATION-01` — выбрать stack на implementation gate; создать минимальные HTTP API и application/repository boundary, persistent DB и миграции, config/server secrets, ограниченного test actor с проверкой доступа, нормализованные ошибки, requestId/logging и детерминированные contract/integration tests. Connector boundary остаётся provider-neutral и допускает раздельные demo/test и sandbox/production-like data environments. Конкретные DTO/API schemas уточнить при реализации без отдельного повторного architecture-only ticket. Полные quote/submit, PSP, рабочий payment webhook и customer-facing payment states не обязаны входить в foundation.
+1. `SHOP-BACKEND-FOUNDATION-01` — текущая реализация foundation: HTTP API, application/repository boundary, SQLite и миграция, ограниченный test actor, нормализованные ошибки, requestId/logging и детерминированные tests. Connector boundary остаётся provider-neutral. Quote/submit, PSP, webhook и customer-facing payment states не входят в этот ticket.
 2. `SHOP-AUTH-SESSION-02` — восстановление сессии, expiry/logout, protected deep-link return и backend authorization; выбрать app session либо hosted IdP. Foundation может использовать ограниченного test actor, но завершённый customer-facing commerce slice требует проверенного Customer и защищённой истории Orders.
 3. `SHOP-CHECKOUT-ORDER-PAYMENT-01` — Cart → server quote → повторная проверка при submit → `pending_payment` app Order → PaymentAttempt → один test PSP → backend reconciliation → Orders/Details. Цель — связный flow с общим UI/доменным контрактом для функционального public demo/test, sandbox provider и будущего real backend: созданный Order читается в той же истории, а demo/test не выдаётся за реальное списание. К завершению ticket нужны quote/submit/status, provider connector и проверяемый webhook, idempotency, правила для abandoned pending Orders, duplicate submit, delayed webhook, browser close и retries; полный lifecycle проектируется при реализации. PSP gate проводится непосредственно перед этим ticket, а не перед foundation: Stripe — preferred first test candidate, PayPal — альтернатива, production provider не выбран.
 4. `SHOP-SHIPPING-TRACKING-01` — rates, test Shipment и tracking через backend после устойчивого persistent Order; EasyPost/Shippo остаются candidates.
@@ -1243,7 +1243,7 @@ SHOP-91 и все A — PRODUCTION V1 BLOCKING tickets/epics. B product enhancem
 
 Статус: PLANNED. Release class: **C — OPTIONAL INTEGRATION** для прежнего широкого reference backend; он не блокирует SHOP-90/91/92 или завершение frontend demo. Отдельный `SHOP-BACKEND-FOUNDATION-01` из ближайшей последовательности обязателен перед payment/shipping vertical slice.
 
-Цель исходного optional ticket: показать, что независимый backend может обслуживать широкий SHOP-API-CONTRACT. Node.js + Fastify — предпочтительный кандидат, но не окончательно выбранный stack; Express, NestJS, serverless и Supabase capabilities сравниваются в [стратегии](docs/INTEGRATION_STRATEGY.md). Для прежнего contract prototype допустим `MemoryRepository`; для новой платёжной vertical slice сохранность Order/PaymentAttempt после перезапуска требует постоянного хранилища. Не строить microservices или full OMS; secrets остаются только на server side. Backend security проектируется отдельно и не объявляется выполненной SHOP-SECURITY frontend проверкой.
+Цель исходного optional ticket: показать, что независимый backend может обслуживать широкий SHOP-API-CONTRACT. Для текущего foundation уже выбран Node.js + Fastify; сравнение кандидатов в [стратегии](docs/INTEGRATION_STRATEGY.md) относится к прежнему решению. Для будущей платёжной vertical slice сохранность Order/PaymentAttempt после перезапуска требует постоянного хранилища. Не строить microservices или full OMS; secrets остаются только на server side. Backend security проектируется отдельно и не объявляется выполненной SHOP-SECURITY frontend проверкой.
 
 Зависимости: SHOP-API-CONTRACT и SHOP-ARCH; по желанию после frontend release.
 
