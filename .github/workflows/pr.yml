@@ -8,7 +8,7 @@ permissions:
 jobs:
   baseline:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -21,6 +21,76 @@ jobs:
       - run: npm run lint
       - run: npm run server:test
       - run: npx playwright install --with-deps chromium
-      - run: npm test
+      - name: Production browser suite with test backend
+        shell: bash
+        env:
+          APP_ENV: test
+          HOST: 127.0.0.1
+          PORT: '3000'
+          ENABLE_TEST_ACTOR: 'false'
+          ENABLE_DEMO_SIGN_IN: 'true'
+          PUBLIC_ORIGIN: http://127.0.0.1:4173
+          VITE_API_PROXY_TARGET: http://127.0.0.1:3000
+          PLAYWRIGHT_PORT: '4173'
+          PLAYWRIGHT_EXTERNAL_SERVER: '1'
+        run: |
+          set -Eeuo pipefail
+          test_dir="$(mktemp -d "${RUNNER_TEMP}/shop-auth-ci.XXXXXX")"
+          export DATABASE_PATH="${test_dir}/session.sqlite"
+          backend_pid=''
+          preview_pid=''
+          cleanup() {
+            result=$?
+            trap - EXIT
+            if [[ -n "$preview_pid" ]]; then
+              kill -TERM -- "-$preview_pid" 2>/dev/null || true
+              wait "$preview_pid" 2>/dev/null || true
+            fi
+            if [[ -n "$backend_pid" ]]; then
+              kill -TERM -- "-$backend_pid" 2>/dev/null || true
+              wait "$backend_pid" 2>/dev/null || true
+            fi
+            rm -rf -- "$test_dir"
+            exit "$result"
+          }
+          trap cleanup EXIT
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+
+          npm run server:migrate
+          setsid npm run server:start >"${test_dir}/backend.log" 2>&1 &
+          backend_pid=$!
+          backend_ready=false
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/api/v1/ready >/dev/null 2>&1; then
+              backend_ready=true
+              break
+            fi
+            if ! kill -0 "$backend_pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          if [[ "$backend_ready" != true ]]; then
+            cat "${test_dir}/backend.log"
+            exit 1
+          fi
+
+          npm run build
+          setsid npm run preview -- --host 127.0.0.1 --port 4173 --strictPort >"${test_dir}/preview.log" 2>&1 &
+          preview_pid=$!
+          preview_ready=false
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; then
+              preview_ready=true
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          if [[ "$preview_ready" != true ]]; then
+            cat "${test_dir}/preview.log"
+            exit 1
+          fi
+
+          npx playwright test --output "${test_dir}/playwright-results"
       - run: git diff --exit-code -- package.json package-lock.json
       - run: git diff --check
