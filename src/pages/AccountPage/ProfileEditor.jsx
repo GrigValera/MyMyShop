@@ -156,18 +156,13 @@ export default function ProfileEditor() {
           </div>
         </div>
         </section>
-        <section className={styles.profileSection} aria-labelledby="personal-title">
-          <h2 id="personal-title">{t('account.nameAndEmail')}</h2>
+        <section className={styles.profileSection}>
+          <h2 id="personal-title">{t('account.displayName')}</h2>
         <div className={styles.field}>
           <label htmlFor="profile-name">{t('account.displayName')}</label>
           <input id="profile-name" value={name} onChange={(event) => { setName(event.target.value); setSaveStatus('idle'); }} onBlur={() => setTouched(true)} aria-invalid={!!(touched && nameError)} aria-describedby={touched && nameError ? 'name-error' : 'name-help'} />
           <p id="name-help" className={styles.help}>{t('account.nameHelp', { max: MAX_DISPLAY_NAME_LENGTH })}</p>
           {touched && nameError && <p id="name-error" className={styles.error} role="alert">{t(`account.${nameError}`, { max: MAX_DISPLAY_NAME_LENGTH })}</p>}
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="profile-email">{t('account.email')}</label>
-          <input id="profile-email" value={saved.email} readOnly aria-describedby="email-help" />
-          <p id="email-help" className={styles.help}>{t('account.emailHelp')}</p>
         </div>
         </section>
         <div className={styles.actions}>

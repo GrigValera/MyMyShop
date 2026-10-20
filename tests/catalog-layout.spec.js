@@ -85,6 +85,20 @@ test('sale cards share the responsive grid contract', async ({ page }) => {
   }
 });
 
+test('catalog and home product cards retain their hover lift', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  for (const { path, selector, distance } of [
+    { path: '/products', selector: '[class*="_cardInner_"]', distance: -3 },
+    { path: '/', selector: '[class*="_productCard_"]', distance: -7 },
+  ]) {
+    await page.goto(path);
+    const card = page.locator(selector).first();
+    await expect(card).toBeVisible();
+    await card.hover();
+    await expect.poll(() => card.evaluate(element => new DOMMatrix(getComputedStyle(element).transform).m42)).toBeLessThan(distance);
+  }
+});
+
 test('opening a product from a scrolled catalog starts at the product top', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/products');

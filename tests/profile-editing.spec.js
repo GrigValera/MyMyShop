@@ -1,3 +1,5 @@
+import { signInDemo } from './helpers/demoLogin.js';
+import { establishDefaultDemoProfile } from './helpers/demoProfile.js';
 import { test, expect } from '@playwright/test';
 import { Buffer, Blob } from 'node:buffer';
 import { deflateSync } from 'node:zlib';
@@ -22,9 +24,7 @@ test('a file renamed to PNG cannot pass avatar content validation', async () => 
 
 async function signIn(page) {
   if (!page.url().endsWith('/login')) await page.goto('/login');
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('entered@example.test');
-  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
-  await page.getByRole('button', { name: 'Войти в демо' }).click();
+  await signInDemo(page);
   await expect(page).toHaveURL('/account');
 }
 
@@ -67,19 +67,19 @@ function overlaps(a, b) {
   return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
-test('protected route, edit, account identity and runtime reset', async ({ page }) => {
+test('protected route, edit, account identity and runtime reset', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await page.goto('/account/profile');
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL(/\/login\?next=/);
   await signIn(page);
   await page.getByRole('link', { name: 'Редактировать профиль' }).click();
   await expect(page).toHaveURL('/account/profile');
-  await expect(page.getByLabel('Электронная почта')).toHaveValue('demo@example.test');
-  await expect(page.getByLabel('Электронная почта')).toHaveAttribute('readonly', '');
+  await expect(page.getByLabel('Электронная почта')).toHaveCount(0);
   const save = page.getByRole('button', { name: 'Сохранить изменения' });
   await expect(save).toBeDisabled();
   await page.getByLabel('Имя', { exact: true }).fill('  Валерий Григорьев  ');
   await save.click();
-  await expect(page.getByRole('status').getByText('Профиль сохранён в текущей демо-сессии.')).toBeVisible();
+  await expect(page.getByRole('status').getByText(/Имя сохранено на сервере/)).toBeVisible();
   await expect(page.getByLabel('Имя', { exact: true })).toHaveValue('Валерий Григорьев');
   await page.getByRole('navigation', { name: 'Личный кабинет' }).getByRole('link', { name: 'Личный кабинет' }).click();
   await expect(page.getByRole('heading', { name: 'Валерий Григорьев' })).toBeVisible();
@@ -89,16 +89,23 @@ test('protected route, edit, account identity and runtime reset', async ({ page 
   await page.getByRole('navigation', { name: 'Личный кабинет' }).getByRole('link', { name: 'Личные данные' }).click();
   await expect(page.getByLabel('Имя', { exact: true })).toHaveValue('Валерий Григорьев');
   await page.getByRole('navigation', { name: 'Личный кабинет' }).getByRole('link', { name: 'Личный кабинет' }).click();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Валерий Григорьев' })).toBeVisible();
   await page.getByRole('button', { name: 'Выйти' }).click();
   await signIn(page);
   await expect(page.getByRole('heading', { name: 'Валерий Григорьев' })).toBeVisible();
   await page.reload();
-  await expect(page).toHaveURL('/login');
-  await signIn(page);
-  await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
+  await expect(page).toHaveURL('/account');
+  await expect(page.getByRole('heading', { name: 'Валерий Григорьев' })).toBeVisible();
+  await page.getByRole('link', { name: 'Редактировать профиль' }).click();
+  await page.getByLabel('Имя', { exact: true }).fill('Demo User');
+  await page.getByRole('button', { name: 'Сохранить изменения' }).click();
+  await expect(page.getByRole('status').getByText(/Имя сохранено на сервере/)).toBeVisible();
+  await expect(page.getByLabel('Имя', { exact: true })).toHaveValue('Demo User');
 });
 
-test('avatar preview, save, remove and file errors', async ({ page }) => {
+test('avatar preview, save, remove and file errors', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await signIn(page);
   await page.getByRole('link', { name: 'Редактировать профиль' }).click();
   const input = page.locator('#profile-avatar');
@@ -131,7 +138,8 @@ test('avatar preview, save, remove and file errors', async ({ page }) => {
   await expect(page.getByRole('img', { name: 'Аватар Demo User' })).toContainText('DU');
 });
 
-test('portrait, landscape and square avatars keep circular geometry and clear controls', async ({ page }) => {
+test('portrait, landscape and square avatars keep circular geometry and clear controls', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await signIn(page);
   await page.getByRole('link', { name: 'Редактировать профиль' }).click();
   const avatar = page.getByRole('img', { name: 'Аватар Demo User' });
@@ -154,7 +162,7 @@ test('portrait, landscape and square avatars keep circular geometry and clear co
       expect(avatarBox.height).toBe(size);
       expect(imageBox.width).toBeLessThanOrEqual(size);
       expect(imageBox.height).toBeLessThanOrEqual(size);
-      for (const control of [trigger, page.getByText('JPEG, PNG или WebP · до 2 МиБ.'), page.getByRole('button', { name: 'Удалить фото' })]) {
+      for (const control of [trigger, page.getByText(/JPEG, PNG или WebP · до 2 МиБ/), page.getByRole('button', { name: 'Удалить фото' })]) {
         expect(overlaps(avatarBox, await control.boundingBox())).toBe(false);
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
@@ -196,7 +204,8 @@ test('avatar control fits narrow screens, long filenames and both languages', as
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 
-test('validation, cancel and unsaved navigation', async ({ page }) => {
+test('validation, cancel and unsaved navigation', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await signIn(page);
   await page.getByRole('link', { name: 'Редактировать профиль' }).click();
   const field = page.getByLabel('Имя', { exact: true });

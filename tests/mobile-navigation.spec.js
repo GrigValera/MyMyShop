@@ -24,7 +24,7 @@ test('mobile primary routes, catalog CTA and history stay usable', async ({ page
   await page.goBack();
   await expect(page).toHaveURL('/products');
   await nav.getByRole('link', { name: 'Профиль' }).click();
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL(/\/login\?next=/);
   await expect(page.getByRole('heading', { name: 'Войти' })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Профиль' })).not.toHaveAttribute('aria-current', 'page');
   await page.goto('/missing-mobile-route');
@@ -143,7 +143,7 @@ test('mobile PUSH starts at top while Back restores catalog scroll', async ({ pa
       await expect(page).toHaveURL('/products');
       await expect.poll(top).toBeGreaterThanOrEqual(catalogScroll - 50);
 
-      for (const { label, path } of [{ label: 'Корзина', path: '/cart' }, { label: 'Профиль', path: '/login' }]) {
+      for (const { label, path } of [{ label: 'Корзина', path: '/cart' }, { label: 'Профиль', path: /\/login\?next=/ }]) {
         await nav.getByRole('link', { name: label }).click();
         await expect(page).toHaveURL(path);
         await expect.poll(top).toBeLessThanOrEqual(2);

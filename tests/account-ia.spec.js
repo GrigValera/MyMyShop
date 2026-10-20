@@ -1,10 +1,10 @@
+import { signInDemo } from './helpers/demoLogin.js';
+import { establishDefaultDemoProfile } from './helpers/demoProfile.js';
 import { test, expect } from '@playwright/test';
 
 async function signIn(page) {
   await page.goto('/login');
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('entered@example.test');
-  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
-  await page.getByRole('button', { name: 'Войти в демо' }).click();
+  await signInDemo(page);
   await expect(page).toHaveURL('/account');
 }
 
@@ -32,17 +32,18 @@ test('desktop account destinations share a clear shell and active state', async 
   await expect(page.getByRole('button', { name: 'Выйти' })).toBeVisible();
 });
 
-test('account home shows identity, direct destinations and current cart count', async ({ page }) => {
+test('account home shows identity, direct destinations and current cart count', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await page.goto('/');
   await page.getByRole('button', { name: 'В корзину', exact: true }).first().click();
   await signIn(page);
   await expect(page.getByRole('heading', { name: 'Личный кабинет', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Demo User' })).toBeVisible();
-  await expect(page.getByText('demo@example.test')).toBeVisible();
+  await expect(page.getByText(/История заказов — пример/)).toBeVisible();
   await expect(page.getByText('Демо', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Редактировать профиль' })).toHaveAttribute('href', '/account/profile');
   await expect(page.getByRole('navigation', { name: 'Мои покупки' }).getByRole('link', { name: 'Корзина 1 товар' })).toHaveAttribute('href', '/cart');
-  await expect(page.getByText('Изменения сохраняются до перезагрузки страницы.')).toBeVisible();
+  await expect(page.getByText(/Имя сохраняется после обновления страницы/)).toBeVisible();
   await expect(page.getByText('Разделы аккаунта')).toHaveCount(0);
   await expect(page.getByText('Обзор')).toHaveCount(0);
   for (const [label, path] of sections.slice(2, 5)) {
@@ -51,7 +52,8 @@ test('account home shows identity, direct destinations and current cart count', 
   await expect(page.getByRole('navigation', { name: 'Аккаунт' }).getByRole('link', { name: 'Настройки' })).toHaveAttribute('href', '/account/settings');
 });
 
-test('mobile home exposes destination rows without navigation overhead', async ({ page }) => {
+test('mobile home exposes destination rows without navigation overhead', async ({ page }, testInfo) => {
+  await establishDefaultDemoProfile(testInfo);
   await signIn(page);
   await page.setViewportSize({ width: 320, height: 568 });
   await expect(page.locator('summary')).toHaveCount(0);
@@ -109,7 +111,7 @@ for (const width of [320, 390, 400, 480, 768]) {
     const logout = page.getByRole('button', { name: 'Выйти' });
     expect((await settings.boundingBox()).y + (await settings.boundingBox()).height).toBeLessThan((await logout.boundingBox()).y);
     await logout.click();
-    await expect(page).toHaveURL('/login');
+    await expect(page).toHaveURL(/\/login\?next=/);
   });
 }
 
@@ -176,15 +178,15 @@ test('future destinations keep honest localized placeholder states', async ({ pa
   await expect(page.locator('body')).toHaveClass(/dark/);
 });
 
-test('every account route requires the in-memory session after reload', async ({ page }) => {
+test('every account route requires a session and restore survives reload', async ({ page }) => {
   for (const [, path] of sections) {
     await page.goto(path);
-    await expect(page).toHaveURL('/login');
+    await expect(page).toHaveURL(/\/login\?next=/);
   }
   await signIn(page);
   await page.getByRole('navigation', { name: 'Мои покупки' }).getByRole('link', { name: 'Заказы' }).click();
   await page.reload();
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL('/account/orders');
 });
 
 test('desktop sidebar supports keyboard focus and Enter', async ({ page }) => {
@@ -204,7 +206,7 @@ test('desktop sidebar supports keyboard focus and Enter', async ({ page }) => {
 test('public and protected routes render a visible page', async ({ page }) => {
   for (const route of ['/', '/account', '/account/profile', '/account/orders', '/account/addresses', '/account/reviews', '/account/settings', '/profile', '/login', '/register', '/forgot-password', '/products', '/cart']) {
     await page.goto(route);
-    if (route.startsWith('/account') || route === '/profile') await expect(page).toHaveURL('/login');
+    if (route.startsWith('/account') || route === '/profile') await expect(page).toHaveURL(/\/login\?next=/);
     await expect(page.locator('main').getByRole('heading').first()).toBeVisible();
   }
 });

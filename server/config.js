@@ -21,6 +21,10 @@ export function loadConfig(env = process.env) {
   const actorFlag = env.ENABLE_TEST_ACTOR ?? 'false';
   if (actorFlag !== 'true' && actorFlag !== 'false') throw new Error('Invalid ENABLE_TEST_ACTOR');
   const enableTestActor = actorFlag === 'true';
+  const demoFlag = env.ENABLE_DEMO_SIGN_IN ?? 'false';
+  if (!['true', 'false'].includes(demoFlag)) throw new Error('Invalid ENABLE_DEMO_SIGN_IN');
+  const enableDemoSignIn = demoFlag === 'true';
+  if (enableDemoSignIn && !['development', 'test', 'demo'].includes(appEnv)) throw new Error('Demo sign-in is forbidden in this APP_ENV');
   if (enableTestActor && !['development', 'test'].includes(appEnv)) {
     throw new Error('Test actor is forbidden in this APP_ENV');
   }
@@ -38,9 +42,16 @@ export function loadConfig(env = process.env) {
   if (['demo', 'production'].includes(appEnv) && !path.isAbsolute(databasePath)) {
     throw new Error('DATABASE_PATH must be absolute in demo and production');
   }
+  const publicOrigin = env.PUBLIC_ORIGIN;
+  if (!publicOrigin) throw new Error('PUBLIC_ORIGIN is required');
+  let origin;
+  try { origin = new URL(publicOrigin); } catch { throw new Error('Invalid PUBLIC_ORIGIN'); }
+  if (!['http:', 'https:'].includes(origin.protocol) || origin.origin !== publicOrigin || origin.username || origin.password) throw new Error('Invalid PUBLIC_ORIGIN');
+  if (['demo', 'production'].includes(appEnv) && origin.protocol !== 'https:') throw new Error('Public origin requires HTTPS');
+  if (origin.protocol === 'http:' && !['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)) throw new Error('HTTP requires loopback origin');
 
   return Object.freeze({
     appEnv, host, port: Number(rawPort), logLevel, enableTestActor,
-    databasePath: path.resolve(databasePath),
+    databasePath: path.resolve(databasePath), publicOrigin, enableDemoSignIn,
   });
 }

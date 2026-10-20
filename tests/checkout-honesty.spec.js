@@ -1,3 +1,4 @@
+import { signInDemo } from './helpers/demoLogin.js';
 import { test, expect } from '@playwright/test';
 
 for (const { width, locale, theme, action, title, message } of [
@@ -63,11 +64,10 @@ test('preview does not change deterministic Account Orders or clear the cart', a
   await page.goto('/products');
   await page.getByRole('button', { name: 'В корзину' }).first().click();
   await page.goto('/login');
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('checkout@example.test');
-  await page.getByLabel('Пароль', { exact: true }).fill('demo-password');
-  await page.getByRole('button', { name: 'Войти в демо' }).click();
+  await signInDemo(page);
   await expect(page).toHaveURL('/account');
   await page.getByRole('link', { name: 'Заказы', exact: true }).first().click();
+  await expect(page.getByRole('article')).toHaveCount(3);
   const before = await page.getByRole('article').allTextContents();
   await page.getByRole('navigation', { name: 'Личный кабинет' }).getByRole('link', { name: 'Личный кабинет' }).click();
   await page.getByRole('navigation', { name: 'Мои покупки' }).getByRole('link', { name: 'Корзина 1 товар' }).click();

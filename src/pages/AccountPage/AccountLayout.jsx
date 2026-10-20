@@ -1,8 +1,8 @@
 import { useLayoutEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { logout } from '../../features/auth/store/authSlice';
+import { useLogout } from '../../features/auth/model/useLogout';
+import LogoutFeedback from '../../features/auth/components/LogoutFeedback';
 import { Button } from '../../shared/ui';
 import styles from './AccountPage.module.css';
 
@@ -17,7 +17,7 @@ const destinations = [
 
 export default function AccountLayout() {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const signOut = useLogout();
   const { pathname } = useLocation();
 
   useLayoutEffect(() => {
@@ -32,7 +32,8 @@ export default function AccountLayout() {
           {t(`account.${label}`)}
         </NavLink>)}
       </nav>
-      <Button className={styles.logoutAction} variant="secondary" onClick={() => dispatch(logout())}>{t('account.signOut')}</Button>
+      <Button className={styles.logoutAction} variant="secondary" onClick={signOut.run} disabled={signOut.pending}>{t(signOut.pending ? 'auth.submitting' : 'account.signOut')}</Button>
+      {signOut.error && <LogoutFeedback />}
     </aside>
     <div className={styles.accountMain}>
       {pathname !== '/account' && <Link to="/account" className={styles.backToAccount}>
@@ -41,6 +42,6 @@ export default function AccountLayout() {
       </Link>}
       <Outlet />
     </div>
-    {pathname === '/account' && <div className={styles.mobileLogout}><Button variant="secondary" onClick={() => dispatch(logout())}>{t('account.signOut')}</Button></div>}
+    {pathname === '/account' && <div className={styles.mobileLogout}><Button variant="secondary" onClick={signOut.run} disabled={signOut.pending}>{t(signOut.pending ? 'auth.submitting' : 'account.signOut')}</Button>{signOut.error && <LogoutFeedback />}</div>}
   </div>;
 }

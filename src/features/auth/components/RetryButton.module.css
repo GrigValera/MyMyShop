@@ -1,0 +1,7 @@
+.retryButton { min-width: 132px; }
+button.retryButton:hover:not(:disabled) { transform: none; box-shadow: none; }
+button.retryButton:disabled { opacity: 1; cursor: progress; }
+.progressSlot { display: inline-grid; flex: none; place-items: center; width: 1em; height: 1em; visibility: hidden; }
+.retryButton[aria-busy="true"] .progressSlot { visibility: visible; }
+.spinner { width: .8em; height: .8em; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

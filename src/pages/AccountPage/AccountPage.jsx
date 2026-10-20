@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { accountService } from '../../features/account/api/accountService';
 import { useAccountProfile } from '../../features/account/model/useAccountProfile';
 import AccountAvatar from '../../features/account/components/AccountAvatar';
-import { Button, Card } from '../../shared/ui';
+import { Card } from '../../shared/ui';
+import RetryButton from '../../features/auth/components/RetryButton';
 import styles from './AccountPage.module.css';
 
 function DestinationRow({ to, label, detail }) {
@@ -21,15 +22,19 @@ export default function AccountPage() {
   const profile = useAccountProfile();
   const [overview, setOverview] = useState({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
+  const [retrying, setRetrying] = useState(false);
+  const retryInFlight = useRef(false);
   const retry = useCallback(() => {
-    setOverview({ status: 'loading' });
+    if (retryInFlight.current) return;
+    retryInFlight.current = true;
+    setRetrying(true);
     setAttempt((current) => current + 1);
   }, []);
 
   useEffect(() => {
     let active = true;
     accountService.getOverview().then((result) => {
-      if (active) setOverview(result);
+      if (active) { setOverview(result); retryInFlight.current = false; setRetrying(false); }
     });
     return () => { active = false; };
   }, [attempt]);
@@ -38,9 +43,9 @@ export default function AccountPage() {
     <header className={styles.heading}><h1 id="account-title">{t('account.title')}</h1></header>
 
     {overview.status === 'loading' && <p role="status">{t('account.loading')}</p>}
-    {overview.status === 'error' && <Card className={styles.stateCard}>
+    {overview.status === 'error' && <Card staticSurface className={styles.stateCard}>
       <p role="alert">{t('account.unavailable')}</p>
-      <Button onClick={retry}>{t('common.retry')}</Button>
+      <RetryButton onClick={retry} pending={retrying} />
     </Card>}
     {overview.status === 'success' && <div className={styles.overviewContent}>
       <section className={styles.profileSummary} aria-labelledby="profile-summary-title">
@@ -48,7 +53,7 @@ export default function AccountPage() {
           <AccountAvatar profile={profile} />
           <div className={styles.identityText}>
             <div className={styles.identityHeading}><h2 id="profile-summary-title">{profile.displayName}</h2><span className={styles.badge}>{t('account.demoBadge')}</span></div>
-            <p>{profile.email}</p>
+            <p>{t('auth.demoRefresh')}</p>
           </div>
         </div>
         <Link to="/account/profile" className={styles.editProfileLink}>{t('account.editProfile')}</Link>

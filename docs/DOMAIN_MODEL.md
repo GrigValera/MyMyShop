@@ -9,8 +9,8 @@
 | Product | Локальный снимок и дополнительный ответ DummyJSON; карточки/PDP | Форма источника во многом доходит до UI; общего доменного преобразования нет |
 | Category | Метаданные снимка и категории DummyJSON | Семантика полного локального набора и загруженных API-страниц различается |
 | Cart / CartItem | Redux slice и версионированное локальное хранение | Снимок для отображения, а не заказ или достоверный итог |
-| Session / DemoUser | `sessionService`, адаптер и auth slice | Только память, без прав доступа и Customer-идентичности |
-| Demo account profile | `accountService → demoAccountAdapter`; исходный fixture и изменения имени/аватара только в памяти runtime | Не серверная запись покупателя и не источник авторизации; email read-only |
+| Session / Demo actor | `sessionService → httpSessionAdapter`, HttpOnly cookie и SQLite | Семидневная серверная сессия для постоянного demo actor, без production identity integration |
+| Demo identity / profile | Backend проверяет email и scrypt verifier; `accountService → httpAccountAdapter` сохраняет имя в `/me`, фото локально | Не Customer с реальными заказами; публичные демо-данные |
 | Данные Review / Rating | Рейтинг товара есть в снимке и карточках; поле `reviews` запрашивается в API-режиме PDP, но отсутствует в локальном снимке | Базовый компонент `Reviews` не образует полноценный UI; нет домена и отправки отзывов |
 
 ## PLANNED — будущие понятия
@@ -45,7 +45,7 @@
 
 | Домен | Основная обязанность | Экран frontend | Планируемая серверная ответственность | Внешняя зависимость | Статус |
 | --- | --- | --- | --- | --- | --- |
-| Идентификация/сессия | Состояние доступа | Вход и сессия | Граница идентификации | Поставщик необязателен | CURRENT demo; backend PLANNED |
+| Идентификация/сессия | Состояние доступа | Вход и сессия | Backend проверяет публичные demo credentials и хранит app-owned session в SQLite; production не принимает demo sessions | Production identity provider ещё отсутствует | CURRENT demo backend / PLANNED production identity |
 | Покупатель/аккаунт | Профиль, адрес, настройки | Demo Account Overview сейчас; остальные разделы позднее | Граница Customer | Передача в CRM необязательна | CURRENT demo overview / PLANNED |
 | Каталог | Поиск товаров и содержимое | Каталог/PDP | Граница Catalog | PIM необязателен | CURRENT frontend; backend PLANNED |
 | Корзина | Намерение купить | Cart/Drawer | Граница Cart | Не требуется | CURRENT локально; backend PLANNED |
@@ -61,8 +61,8 @@
 
 | Данные | CURRENT источник | Будущий источник истины | Статус |
 | --- | --- | --- | --- |
-| Сессия | Память Redux и demo-адаптер | Серверная проверка сессии/токена и обязательная backend authorization; источник identity выбирается в `SHOP-AUTH-SESSION-02` | CURRENT / PLANNED |
-| Профиль аккаунта | Demo fixture и in-memory обновление имени/аватара за `accountService` | Серверная граница Customer | CURRENT demo / PLANNED |
+| Сессия | Cookie и SQLite demo actor | Внешняя проверка identity перед выдачей той же app-owned session | CURRENT demo / PLANNED production identity |
+| Профиль аккаунта | Имя через `/me`, фото локально | Серверная граница Customer и хранение фото | CURRENT demo / PLANNED |
 | Корзина | Redux и `localStorage` | Локальное намерение с серверным quote; серверная корзина авторизованного Customer возможна позднее, правило согласования открыто | CURRENT / PROPOSED / PLANNED |
 | Каталог | Снимок и дополнительный режим DummyJSON | Серверная граница Catalog; PIM необязателен | CURRENT / PLANNED |
 | Заказ | Три фиксированные demo-записи `demoOrderAdapter`, не связанные с checkout | Серверный домен MyMyShop Orders | CURRENT demo / PLANNED real Order |

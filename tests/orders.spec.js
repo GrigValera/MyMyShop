@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { signInDemo } from './helpers/demoLogin.js';
 import { demoOrders } from '../src/features/orders/data/demoOrders.js';
 import { demoOrderAdapter } from '../src/features/orders/api/demoOrderAdapter.js';
 import { orderService } from '../src/features/orders/api/orderService.js';
@@ -10,9 +11,7 @@ async function signIn(page, language = 'ru') {
     await page.evaluate(() => localStorage.setItem('language', 'en'));
     await page.reload();
   }
-  await page.getByRole('textbox', { name: language === 'ru' ? 'Электронная почта' : 'Email' }).fill('demo@example.test');
-  await page.getByLabel(language === 'ru' ? 'Пароль' : 'Password', { exact: true }).fill('demo-password');
-  await page.getByRole('button', { name: language === 'ru' ? 'Войти в демо' : 'Sign in to demo' }).click();
+  await signInDemo(page, language);
   await expect(page).toHaveURL('/account');
 }
 
@@ -102,15 +101,14 @@ test('authenticated history and details support navigation, Back and unknown ID'
   await expect(page).toHaveURL('/account/orders');
 });
 
-test('direct details in session work; reload follows in-memory session guard', async ({ page }) => {
+test('direct details return after sign-in and survive reload', async ({ page }) => {
   await page.goto('/account/orders/demo-2026-102');
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL(/\/login\?next=/);
   await signIn(page);
   await page.evaluate(() => { history.pushState({}, '', '/account/orders/demo-2026-102'); dispatchEvent(new PopStateEvent('popstate')); });
   await expect(page.getByRole('heading', { name: 'Заказ № MS-2026-102' })).toBeVisible();
   await page.reload();
-  await expect(page).toHaveURL('/login');
-  await signIn(page);
+  await expect(page).toHaveURL('/account/orders/demo-2026-102');
   await page.getByRole('link', { name: 'Заказы', exact: true }).first().click();
   await expect(page.getByRole('article')).toHaveCount(3);
 });
@@ -155,5 +153,5 @@ test('orders remain readable across widths, languages and themes', async ({ page
   await page.setViewportSize({ width: 320, height: 700 });
   await page.getByRole('link', { name: 'Личный кабинет' }).click();
   await page.getByRole('button', { name: 'Выйти' }).click();
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL(/\/login\?next=/);
 });

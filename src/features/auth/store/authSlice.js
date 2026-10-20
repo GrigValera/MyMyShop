@@ -10,25 +10,32 @@ const authSlice = createSlice({
 });
 
 export const selectSessionStatus = (state) => state.auth.status;
-export const selectHasSession = (state) => selectSessionStatus(state) !== 'anonymous';
+export const selectHasSession = (state) => selectSessionStatus(state) === 'authenticated';
 export const selectSessionUser = (state) => state.auth.user;
-export const selectSessionCleanupFailed = (state) => state.auth.cleanupFailed;
-export const selectSessionError = (state) => state.auth.error;
+export const selectCanDemoSignIn = (state) => state.auth.canDemoSignIn;
 
-export const startSession = () => async (dispatch) => {
-  const session = await sessionService.startSession();
-  dispatch(authSlice.actions.sessionChanged(session));
+export const startSession = credentials => async (dispatch) => {
+  const session = await sessionService.startSession(credentials);
+  if (session.status === 'authenticated') dispatch(authSlice.actions.sessionChanged(session));
   return session;
 };
-export const signIn = (input) => async (dispatch) => {
-  const session = await sessionService.signIn(input);
-  dispatch(authSlice.actions.sessionChanged(session));
-  return session;
+let logoutInFlight = null;
+export const logout = () => (dispatch, getState) => {
+  if (logoutInFlight) return logoutInFlight;
+  const canDemoSignIn = getState().auth.canDemoSignIn;
+  logoutInFlight = sessionService.endSession().then(result => {
+    if (result.status === 'anonymous') dispatch(authSlice.actions.sessionChanged({ ...result, canDemoSignIn }));
+    return result;
+  }).finally(() => { logoutInFlight = null; });
+  return logoutInFlight;
 };
-export const logout = () => async (dispatch) => {
-  dispatch(authSlice.actions.sessionChanged(await sessionService.endSession()));
+export const restoreAuth = () => async (dispatch) => {
+  dispatch(authSlice.actions.sessionChanged(sessionService.getInitialSession()));
+  dispatch(authSlice.actions.sessionChanged(await sessionService.restoreSession()));
 };
-export const restoreAuth = () => (dispatch) => {
-  dispatch(authSlice.actions.sessionChanged(sessionService.restoreSession()));
+export const retryAuth = () => async (dispatch, getState) => {
+  if (getState().auth.status !== 'unavailable') return;
+  const session = await sessionService.restoreSession();
+  if (session.status !== 'unavailable') dispatch(authSlice.actions.sessionChanged(session));
 };
 export default authSlice.reducer;
