@@ -175,6 +175,21 @@ test('login keeps one unavailable card through repeated failed retries', async (
   const originalBounds = await card.boundingBox();
   const retryButton = error.getByRole('button', { name: 'Повторить' });
   const originalButtonBounds = await retryButton.boundingBox();
+  const spinnerSlot = retryButton.locator('[aria-hidden="true"]');
+  const readSlotSize = () => spinnerSlot.evaluate(element => ({
+    width: element.getBoundingClientRect().width,
+    height: element.getBoundingClientRect().height,
+  }));
+  const originalSlotSize = await readSlotSize();
+  const expectStableButtonGeometry = async () => {
+    const bounds = await retryButton.boundingBox();
+    expect(bounds.x).toBe(originalButtonBounds.x);
+    expect(bounds.y).toBe(originalButtonBounds.y);
+    expect(bounds.height).toBe(originalButtonBounds.height);
+    // Chromium can change text width by a fraction of a CSS pixel while fonts settle.
+    expect(Math.abs(bounds.width - originalButtonBounds.width)).toBeLessThan(1);
+    expect(await readSlotSize()).toEqual(originalSlotSize);
+  };
   await card.evaluate(element => { element.dataset.retryIdentity = 'original'; });
   await page.unroute('**/api/v1/session');
   let requests = 0;
@@ -191,8 +206,8 @@ test('login keeps one unavailable card through repeated failed retries', async (
     await expect(retryButton).toHaveText('Повторить');
     await expect(retryButton).toBeDisabled();
     await expect(retryButton).toHaveAttribute('aria-busy', 'true');
-    await expect(retryButton.locator('[aria-hidden="true"]')).toBeVisible();
-    expect(await retryButton.boundingBox()).toEqual(originalButtonBounds);
+    await expect(spinnerSlot).toBeVisible();
+    await expectStableButtonGeometry();
     await expect.poll(() => requests).toBe(attempt);
     await page.evaluate(() => { const button = document.querySelector('[role="alert"] button'); button.click(); button.click(); });
     expect(requests).toBe(attempt);
@@ -202,12 +217,12 @@ test('login keeps one unavailable card through repeated failed retries', async (
     await expect(retryButton).toBeEnabled();
     await expect(retryButton).toHaveText('Повторить');
     await expect(retryButton).toHaveAttribute('aria-busy', 'false');
-    await expect(retryButton.locator('[aria-hidden="true"]')).toBeHidden();
+    await expect(spinnerSlot).toBeHidden();
     await expect(error).toContainText('Сейчас не удалось проверить вход');
     await expect(page.getByRole('status')).toHaveCount(0);
     await expect(card).toHaveAttribute('data-retry-identity', 'original');
     expect(await card.boundingBox()).toEqual(originalBounds);
-    expect(await retryButton.boundingBox()).toEqual(originalButtonBounds);
+    await expectStableButtonGeometry();
   }
   expect(requests).toBe(2);
 });
