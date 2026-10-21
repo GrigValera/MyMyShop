@@ -1,8 +1,7 @@
-import { demoAccountAdapter } from './demoAccountAdapter';
+import { httpAccountAdapter } from './httpAccountAdapter';
 import { normalizeDisplayName, validateAvatar, validateAvatarContent, validateDisplayName } from '../model/profileValidation';
 
-// Серверный адаптер может заменить текущий без изменений в использующих его модулях.
-const adapter = demoAccountAdapter;
+const adapter = httpAccountAdapter;
 
 async function read(method) {
   try { return { status: 'success', data: await adapter[method]() }; }

@@ -1,12 +1,31 @@
 # MyMyShop
 
-MyMyShop — развивающийся пример интернет-магазина с честным демонстрационным режимом и отдельной минимальной серверной основой. Во frontend доступны каталог и страницы товаров, локальная корзина, демонстрационная сессия только в памяти, фиксированная история заказов и Checkout Preview. Preview не создаёт заказ; демонстрационная история не связана с покупкой. Сервер пока не обслуживает commerce, платежи или доставку.
+## Серверная демо-сессия (SHOP-AUTH-SESSION-02)
 
-**Цель публичного demo:** стабильная ссылка, по которой можно без учётных данных пройти связный сценарий от каталога и корзины до созданного demo/test заказа и его деталей. Такой Order должен сохраняться в demo/test окружении и показываться в той же истории; это будущая возможность, а не текущее поведение. Реального списания и выдачи demo-данных за production не будет.
+Для локального просмотра production-сборки скопируйте `.env.example` в `.env`, затем в отдельных терминалах запустите:
+
+```powershell
+npm run server:migrate
+npm run server:start
+npm run build
+npm run preview -- --host 127.0.0.1 --port 4173
+```
+
+Откройте `http://127.0.0.1:4173`. Vite proxy передаёт `/api` на `http://127.0.0.1:3000`; backend требует `PUBLIC_ORIGIN=http://127.0.0.1:4173` и явный `ENABLE_DEMO_SIGN_IN=true`. Для `npm run dev` задайте `PUBLIC_ORIGIN=http://127.0.0.1:5173` перед запуском backend. При занятом порте используйте другой порт и согласуйте `PUBLIC_ORIGIN` и `VITE_API_PROXY_TARGET` с адресами процессов. Миграции выполняются отдельно до старта API.
+
+На странице входа указаны публичные демо-данные: `demo@mymyshop.dev` / `DemoShop-2026!`. Форма отправляет `POST /api/v1/session` с JSON `{"email":"…","password":"…"}`; backend проверяет пароль через scrypt и выдаёт серверную сессию на семь суток только при верных данных. Неверные данные возвращают `401 invalid_credentials`, некорректное тело — `400 validation`. Тот же демо-аккаунт и имя профиля сохраняются после выхода и повторного входа; повторный вход ротирует токен. Сессия восстанавливается после refresh, выход удаляет её на сервере. Фото остаётся только в текущей вкладке. История заказов содержит примеры, не покупки этого аккаунта. Регистрация и восстановление доступа пока недоступны. При недоступном API вход не подменяется локальной имитацией.
+
+Миграция `003_demo_identity.sql` добавляет постоянную демо-идентичность и хранит только salt и verifier пароля; существующую `qa-session.sqlite` можно сохранить и выполнить `npm run server:migrate` перед перезапуском backend. Старые сессии demo actors без подтверждённой identity после обновления не восстанавливаются. Демо-пароль открыт для reviewer и не является секретом. Это демонстрационный механизм проверки, а не production-аутентификация покупателей; будущий поставщик identity заменит проверку credentials перед той же app-owned session.
+
+Открытый public demo требует HTTPS, постоянной SQLite, SPA fallback для прямых ссылок и защиты `POST /api/v1/session` от злоупотреблений (rate limiting/anti-bot). Эти условия размещения ещё не выполнены в репозитории. В `APP_ENV=production` демо-вход запрещён; будущий поставщик identity сможет выдавать ту же app-owned сессию после отдельной интеграции.
+
+MyMyShop — развивающийся пример интернет-магазина с честным демонстрационным режимом и серверной сессией. Во frontend доступны каталог и страницы товаров, локальная корзина, постоянный демо-аккаунт, фиксированная история заказов и Checkout Preview. Preview не создаёт заказ; демонстрационная история не связана с покупкой. Сервер пока не обслуживает commerce, платежи или доставку.
+
+**Цель публичного demo:** стабильная ссылка, по которой можно с данными, показанными на странице входа, пройти связный сценарий от каталога и корзины до созданного demo/test заказа и его деталей. Такой Order должен сохраняться в demo/test окружении и показываться в той же истории; это будущая возможность, а не текущее поведение. Реального списания и выдачи demo-данных за production не будет.
 
 ## Быстрый запуск demo
 
-Нужны Node 24.12.0 и npm 11.7.0. Для demo не нужны backend, ключи Stripe/PayPal, учётные данные службы доставки или аккаунт поставщика идентификации.
+Нужны Node 24.12.0 и npm 11.7.0. Команды ниже открывают каталог без MyMyShop backend API: основной режим использует снимок товаров, дополнительный обращается к внешнему DummyJSON API. Для входа в демо-аккаунт запустите MyMyShop backend по инструкции выше. Ключи Stripe/PayPal, учётные данные службы доставки и аккаунт поставщика идентификации не нужны.
 
 ```sh
 npm install
@@ -17,7 +36,7 @@ npm run dev
 
 Текущий порядок и независимые задачи описаны в [дорожной карте](ROADMAP.md). [Стратегия интеграций](docs/INTEGRATION_STRATEGY.md) объясняет будущие режимы и поставщиков; [архитектура](docs/ARCHITECTURE.md), [доменная модель](docs/DOMAIN_MODEL.md), [среды](docs/DELIVERY_AND_ENVIRONMENTS.md) и [границы интеграций](docs/INTEGRATIONS.md) раскрывают детали. Также доступны [контекст системы](docs/SYSTEM_CONTEXT.md), [бизнес-процессы](docs/BUSINESS_FLOWS.md) и [архитектурные решения](docs/adr/README.md).
 
-**CURRENT:** frontend demo запускается без backend и учётных данных; каталог использует локальный снимок и дополнительный публичный DummyJSON. Отдельный Fastify API имеет SQLite, миграцию и локальный test actor для проверки границы доступа и сохранения профиля. **PLANNED:** функциональный публичный demo может получить demo/test API; auth, Orders, checkout, sandbox providers и production deployment ещё не реализованы.
+**CURRENT:** каталог не требует MyMyShop backend API: основной режим использует датированный снимок товаров с внешними URL изображений, а `?source=api` делает запросы к DummyJSON через существующий адаптер. Вход по указанным на странице demo email и паролю требует Fastify API с SQLite; backend проверяет данные, хранит реальную серверную сессию и имя профиля. Локальный test actor остаётся отдельным диагностическим механизмом. **PLANNED:** связные demo/test Orders и рабочий checkout должны выполнять реальные операции в demo/test/sandbox системах, без имитации успешной покупки; эти возможности, sandbox providers и production deployment ещё не реализованы.
 
 Стек demo: React, JavaScript, Redux Toolkit / RTK Query, Vite. TypeScript пока не настроен.
 
@@ -68,9 +87,9 @@ npm run server:migrate
 npm run server:start
 ```
 
-По умолчанию из примера API доступен на `http://127.0.0.1:3000`; маршруты `GET /api/v1/health` и `GET /api/v1/ready` открыты. Миграция создаёт `schema_migrations` и `actor_profiles`; старт API не применяет миграции автоматически. Файл `server/data/development.sqlite` игнорируется Git. Для иных сред задайте `APP_ENV=development|test|demo|production`, `DATABASE_PATH`, при необходимости `HOST`, `PORT`, `LOG_LEVEL`. `APP_ENV` обязателен; для `test`, `demo`, `production` обязателен явный путь к БД, для `demo` и `production` — абсолютный путь к постоянному хранилищу.
+По умолчанию из примера API доступен на `http://127.0.0.1:3000`; маршруты `GET /api/v1/health` и `GET /api/v1/ready` открыты. Миграции создают `schema_migrations`, `actors`, `actor_profiles`, `sessions` и `demo_identities`; старт API не применяет миграции автоматически. Файл `server/data/development.sqlite` игнорируется Git. Для иных сред задайте `APP_ENV=development|test|demo|production`, `DATABASE_PATH`, при необходимости `HOST`, `PORT`, `LOG_LEVEL`. `APP_ENV` обязателен; для `test`, `demo`, `production` обязателен явный путь к БД, для `demo` и `production` — абсолютный путь к постоянному хранилищу.
 
-`GET /api/v1/me` и `PATCH /api/v1/me` доступны **только для локального test actor**, когда `APP_ENV=development|test`, `HOST` указывает на loopback и явно установлено `ENABLE_TEST_ACTOR=true`. Заголовок `X-Test-Actor` принимает только `reviewer` или `second-reviewer`; другие значения и отсутствие заголовка дают `401`. Пример записи: `PATCH /api/v1/me` с `X-Test-Actor: reviewer`, `Content-Type: application/json` и body `{"displayName":"Reviewer"}`. Поле `actorId` нельзя передать для изменения чужого профиля. В `demo`, `production` или при `NODE_ENV=production` включение test actor останавливает запуск. Это проверка development/test authorization boundary, **не настоящая аутентификация**. Реальная сессия, persistent Customer, Order и commerce API относятся к будущим tickets.
+`GET /api/v1/me` и `PATCH /api/v1/me` доступны после входа по demo credentials и также для локального test actor, когда `APP_ENV=development|test`, `HOST` указывает на loopback и явно установлено `ENABLE_TEST_ACTOR=true`. Заголовок `X-Test-Actor` принимает только `reviewer` или `second-reviewer`; другие значения и отсутствие заголовка без cookie дают `401`. Поле `actorId` нельзя передать для изменения чужого профиля. В `demo`, `production` или при `NODE_ENV=production` включение test actor останавливает запуск. Test actor — диагностический механизм, не часть входа. Persistent Customer, Order и commerce API относятся к будущим tickets.
 
 Каждый ответ содержит серверный `X-Request-Id`; ошибки имеют `{code,message,requestId,retryable}` без SQL, пути БД и stack trace. Сервер не открывает wildcard CORS. Не помещайте секреты в `.env.example`, `VITE_*` или логи. Для production-like размещения нужен отдельный durable SQLite volume и резервная копия перед миграцией; размещение пока не выполнено.
 
@@ -227,7 +246,7 @@ catalog follow-up — URL state фильтров и восстановление
 
 ## Известные дефекты
 
-- SHOP-01: demo-session только в памяти; refresh завершает её. Защищённой авторизации нет.
+- SHOP-01 закрыт для backend demo: серверная сессия переживает refresh. Для публичного запуска ещё нужны deployment и abuse protection.
 - В дополнительном API-режиме фильтры по категориям и ценам ограничены
   загруженными страницами; точный полный результат гарантирован в основном demo.
 - Значок скидки и цена используют два независимых случайных значения.
@@ -272,7 +291,9 @@ catalog follow-up — URL state фильтров и восстановление
 сохранив текущие изменения. После разрешённого commit — согласованный revert SHOP-00,
 затем npm ci, применимые проверки, build и manual QA. Автоматического reset нет.
 
-## SHOP-01: demo-session
+## Историческое описание SHOP-01: demo-session
+
+Ниже сохранено описание прежней frontend-only реализации для истории ticket. Текущее поведение сессии и инструкция запуска приведены в разделе SHOP-AUTH-SESSION-02 в начале README.
 
 `/login`, `/register` и `/forgot-password` показывают формы входа, регистрации
 и восстановления. Поля проверяются локально; данные не отправляются на сервер,

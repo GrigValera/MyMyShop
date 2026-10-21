@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Поиск товара | Покупатель → каталог → локальный поиск/категории/фильтры/сортировка → PDP; дополнительный режим DummyJSON ограничен загруженными страницами | PLANNED API каталога и преобразование DTO; PIM OPTIONAL |
 | Корзина | Товар → добавление/количество/удаление → Redux → версионированный `localStorage` | PLANNED серверная корзина Customer; правило объединения открыто |
-| Сессия/аккаунт | Анонимный посетитель → demo-сессия в памяти → demo Profile; обновление страницы завершает сессию | PLANNED настоящая авторизация, истечение сессии, Account, редактирование Profile/аватара и настройки |
+| Сессия/аккаунт | Анонимный посетитель → серверная проверка публичных demo credentials → HttpOnly cookie и SQLite session постоянного demo actor; обновление страницы восстанавливает сессию, имя профиля сохраняется через `/me` | PLANNED production identity provider, серверное фото и настройки; регистрация и восстановление пароля отсутствуют |
 | Недавно просмотренные | Сервиса истории нет | PLANNED просмотр PDP → возможно, сначала локальная история; серверная синхронизация требует Customer-идентичности |
 
 ```mermaid
@@ -16,14 +16,13 @@ sequenceDiagram
   actor Customer as Покупатель
   participant Web as Веб-приложение
   participant Service as sessionService
-  participant Demo as demoSessionAdapter
-  Customer->>Web: Включить demo-сессию
-  Web->>Service: startSession
-  Service->>Service: Удалить известные старые credentials
-  Service->>Demo: startSession
-  Demo-->>Service: Только demo-идентичность
+  participant API as MyMyShop API
+  Customer->>Web: Ввести публичные demo credentials
+  Web->>Service: startSession(credentials)
+  Service->>API: POST /api/v1/session
+  API-->>Service: HttpOnly cookie и demo actor
   Service-->>Web: Данные сессии для отображения
-  Note over Web: CURRENT, только память, без прав доступа
+  Note over Web,API: CURRENT, серверная demo-сессия; production её не принимает
 ```
 
 ```mermaid

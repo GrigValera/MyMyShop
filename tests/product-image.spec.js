@@ -45,9 +45,16 @@ test('HTTP, connection and decode failures each show a real fallback without ret
     await expect(slot).toHaveAttribute('data-image-state', 'fallback');
     await expect(slot.locator('svg[aria-hidden="true"]')).toBeVisible();
     await expect(slot.locator('img')).toHaveCount(0);
-    const attempts = requests.filter(url => url.includes('/essence-mascara-lash-princess/1.webp')).length;
-    expect(attempts, `${failure}: no request loop`).toBeGreaterThan(0);
-    expect(attempts, `${failure}: no request loop`).toBeLessThanOrEqual(2);
+    const attempts = () => requests.filter(url => url.includes('/essence-mascara-lash-princess/1.webp')).length;
+    expect(attempts(), `${failure}: remote image was requested`).toBeGreaterThan(0);
+    // A failed browser image load can produce more than one initial GET. Once the
+    // component shows its inline SVG fallback, requests must stop rather than loop.
+    await page.waitForTimeout(400);
+    const settledAttempts = attempts();
+    await page.waitForTimeout(400);
+    expect(attempts(), `${failure}: no request loop after fallback`).toBe(settledAttempts);
+    await expect(slot).toHaveAttribute('data-image-state', 'fallback');
+    await expect(slot.locator('img')).toHaveCount(0);
     await page.unrouteAll();
   }
 });

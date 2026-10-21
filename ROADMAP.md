@@ -2,7 +2,7 @@
 
 ## Target State
 
-MyMyShop должен стать публичным portfolio/reference storefront со стабильной ссылкой и связными demo/test journeys без credentials. UI и domain logic должны быть готовы к backend: общие контракты и сменные demo/test и MyMyShop API adapters позволяют подключить реальный backend без переписывания страниц, форм, маршрутов и покупательского flow. Cart, checkout, auth, orders, delivery и profile получают backend-ready границы. Текущий локальный demo запускается без backend; будущий функциональный public demo может использовать demo backend и persistent test data. Чистый static hosting, включая GitHub Pages, допустим только если подходит выбранному mode; provider размещения выбирается позднее. Для доверенных payment/shipping transactions backend обязателен.
+MyMyShop должен стать публичным portfolio/reference storefront со стабильной ссылкой и связными demo/test journeys. Данные для входа в демо-аккаунт показаны на странице; каталог и корзина открываются без входа. UI и доменный слой должны быть готовы к backend: demo/test adapter заменяется на MyMyShop API adapter без переписывания страниц, форм и бизнес-потоков. Demo/test/sandbox операции должны выполнять реальные запросы к соответствующим системам и возвращать их результат, без подмены отказа успехом. Cart, checkout, auth, orders, delivery и profile получают backend-ready границы. Текущий каталог не требует MyMyShop backend API: основной режим использует снимок товаров с внешними изображениями, дополнительный обращается к DummyJSON API. Демо-вход и аккаунт уже требуют MyMyShop backend и реальную серверную сессию в SQLite. Чистый static hosting, включая GitHub Pages, допустим только если подходит выбранному mode; provider размещения выбирается позднее. Для доверенных payment/shipping transactions backend обязателен.
 
 Цель — production-ready storefront/frontend architecture, а не инфраструктурный клон крупного marketplace или marketplace backend platform. Текущее поведение не объявляется production-ready до выполнения release gates ниже.
 
@@ -33,18 +33,18 @@ MyMyShop должен стать публичным portfolio/reference storefro
 - README, соответствующий реальному поведению;
 - backend-ready contracts, устойчивость, безопасность, наблюдаемость и измеренный performance budget.
 
-Магазин показывает обработку ошибок и качественный UX. **CURRENT:** посетитель может найти товар, изменить корзину и открыть Checkout Preview; заказ через checkout не создаётся. Order History содержит независимые фиксированные примеры. Реальные credentials и оплата в публичном demo не запрашиваются. Старые описания локального demo-order в отдельных запланированных SHOP tickets ниже — исторический scope плана, а не реализованное поведение или решение этого ticket; перед их запуском требуется сверка с [SHOP-INTEGRATIONS-01](docs/INTEGRATION_STRATEGY.md).
+Магазин показывает обработку ошибок и качественный UX. **CURRENT:** посетитель может найти товар, изменить корзину и открыть Checkout Preview; заказ через checkout не создаётся. Order History содержит независимые фиксированные примеры. Для демо-входа используются опубликованные на странице данные; платёжные реквизиты и секреты внешних систем не запрашиваются. Старые описания локального demo-order в отдельных запланированных SHOP tickets ниже — исторический scope плана, а не реализованное поведение или решение этого ticket; перед их запуском требуется сверка с [SHOP-INTEGRATIONS-01](docs/INTEGRATION_STRATEGY.md).
 
 ## Основание и порядок работы
 
 ### SHOP-INTEGRATIONS-01 — интеграционная последовательность
 
-**CURRENT:** исследование зафиксировано в [стратегии интеграций](docs/INTEGRATION_STRATEGY.md); `SHOP-BACKEND-FOUNDATION-01` добавляет Fastify API, SQLite, миграцию, test actor и persistent profile proof. Provider и commerce runtime не добавлены. **PROPOSED:** `Order` принадлежит MyMyShop; demo продолжает работать без backend. Следующие tickets требуют отдельного запуска и собственных gates:
+**CURRENT:** исследование зафиксировано в [стратегии интеграций](docs/INTEGRATION_STRATEGY.md); `SHOP-BACKEND-FOUNDATION-01` добавил Fastify API и SQLite, а `SHOP-AUTH-SESSION-02` — проверку демо-данных и серверную сессию. Provider и commerce runtime не добавлены. **PROPOSED:** `Order` принадлежит MyMyShop; каталог может использовать существующий demo/external data adapter без MyMyShop backend API, а вход уже требует этот API. Следующие tickets требуют отдельного запуска и собственных gates:
 
 **Основная цепочка зависимостей:**
 
 1. `SHOP-BACKEND-FOUNDATION-01` — текущая реализация foundation: HTTP API, application/repository boundary, SQLite и миграция, ограниченный test actor, нормализованные ошибки, requestId/logging и детерминированные tests. Connector boundary остаётся provider-neutral. Quote/submit, PSP, webhook и customer-facing payment states не входят в этот ticket.
-2. `SHOP-AUTH-SESSION-02` — восстановление сессии, expiry/logout, protected deep-link return и backend authorization; выбрать app session либо hosted IdP. Foundation может использовать ограниченного test actor, но завершённый customer-facing commerce slice требует проверенного Customer и защищённой истории Orders.
+2. `SHOP-AUTH-SESSION-02` — реализованы проверка публичных демо-данных, app-owned server session, восстановление, expiry/logout и возврат на защищённую прямую ссылку. Перед customer-facing commerce slice потребуются отдельная production identity integration, проверенный Customer и защищённая история Orders.
 3. `SHOP-CHECKOUT-ORDER-PAYMENT-01` — Cart → server quote → повторная проверка при submit → `pending_payment` app Order → PaymentAttempt → один test PSP → backend reconciliation → Orders/Details. Цель — связный flow с общим UI/доменным контрактом для функционального public demo/test, sandbox provider и будущего real backend: созданный Order читается в той же истории, а demo/test не выдаётся за реальное списание. К завершению ticket нужны quote/submit/status, provider connector и проверяемый webhook, idempotency, правила для abandoned pending Orders, duplicate submit, delayed webhook, browser close и retries; полный lifecycle проектируется при реализации. PSP gate проводится непосредственно перед этим ticket, а не перед foundation: Stripe — preferred first test candidate, PayPal — альтернатива, production provider не выбран.
 4. `SHOP-SHIPPING-TRACKING-01` — rates, test Shipment и tracking через backend после устойчивого persistent Order; EasyPost/Shippo остаются candidates.
 
@@ -128,7 +128,7 @@ MyMyShop должен стать публичным portfolio/reference storefro
 | Commerce domain | Исторический frontend план: SHOP-04/05/06/08, SHOP-COMMERCE-FLOW и SHOP-ACCOUNT; текущая transactional chain указана выше |
 | Platform / architecture | SHOP-ARCH, SHOP-API-CONTRACT, SHOP-MOCK-API, SHOP-RESILIENCE, SHOP-PERF, SHOP-OBSERVABILITY, SHOP-SECURITY; SHOP-07 обеспечивает dependency baseline |
 | Delivery / release | SHOP-90, SHOP-91, SHOP-92 |
-| Optional after frontend completion | Прежний широкий SHOP-BACKEND-REF и SHOP-INTEGRATION-TELEGRAM; frontend demo работает без backend, но отдельный minimal BACKEND-FOUNDATION обязателен до trusted payment/shipping |
+| Optional after frontend completion | Прежний широкий SHOP-BACKEND-REF и SHOP-INTEGRATION-TELEGRAM; каталог не требует MyMyShop backend API, но демо-вход уже использует его, а trusted payment/shipping потребуют дальнейшей серверной реализации |
 
 ### Release classes и milestones
 
@@ -218,7 +218,7 @@ MyMyShop должен стать публичным portfolio/reference storefro
 | T-036 — unit/component tests | PARTIALLY IMPLEMENTED | Отдельные unit-проверки добавлены SHOP-00…02; component coverage на implementation stages, testing pyramid и итоговый SHOP-90. |
 | T-037 — integration tests | PARTIALLY IMPLEMENTED | Базовые проверки добавлены SHOP-00…02; contract/adapter сценарии на каждом stage, testing pyramid и итоговый SHOP-90. |
 | T-038 — architecture documentation | PLANNED | SHOP-92, сверить с фактическими контрактами и release commit. |
-| T-039 — cart persistence / server sync | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | Локальное versioned persistence в SHOP-05; server sync не реализуется в публичном demo без backend, но future reconciliation boundary планируется в SHOP-ARCH. |
+| T-039 — cart persistence / server sync | REPLACED / SUPERSEDED BY APPROVED ARCHITECTURE | Локальное versioned persistence в SHOP-05; server sync корзины пока не реализован, хотя MyMyShop backend уже обслуживает вход и профиль. Future reconciliation boundary планируется в SHOP-ARCH. |
 
 Отдельная запись исходного материала «Названание 1-1-7»: `SOURCE UNAVAILABLE / NEEDS CLARIFICATION`. Смысл не установлен; implementation ticket не создаётся.
 

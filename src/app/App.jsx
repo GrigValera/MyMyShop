@@ -74,6 +74,9 @@ function App() {
 
   useEffect(() => {
     dispatch(restoreAuth());
+    const restoreInvalidSession = () => dispatch(restoreAuth());
+    window.addEventListener('mymyshop:session-invalid', restoreInvalidSession);
+    return () => window.removeEventListener('mymyshop:session-invalid', restoreInvalidSession);
   }, [dispatch]);
 
   return (

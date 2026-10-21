@@ -12,6 +12,11 @@
   box-shadow: var(--shadow-lg);
 }
 
+.card.staticSurface:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
 .clickable {
   cursor: pointer;
   transition: transform var(--transition-base), box-shadow var(--transition-base);

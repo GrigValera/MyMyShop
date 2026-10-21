@@ -1,22 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../../features/auth/store/authSlice';
+import { useLogout } from '../../../features/auth/model/useLogout';
+import LogoutFeedback from '../../../features/auth/components/LogoutFeedback';
 import { useAccountProfile } from '../../../features/account/model/useAccountProfile';
 import AccountAvatar from '../../../features/account/components/AccountAvatar';
 import styles from './ProfileDrawer.module.css';
 
 const ProfileDrawer = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const signOut = useLogout(() => { onClose(); navigate('/'); });
   const profile = useAccountProfile();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    onClose();
-    navigate('/');
-  };
 
   if (!isOpen) return null;
 
@@ -43,9 +37,10 @@ const ProfileDrawer = ({ isOpen, onClose }) => {
             </Link>
 
           </div>
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            {t('nav.logout')}
+          <button className={styles.logoutBtn} onClick={signOut.run} disabled={signOut.pending}>
+            {t(signOut.pending ? 'auth.submitting' : 'nav.logout')}
           </button>
+          {signOut.error && <LogoutFeedback />}
         </div>
       </div>
     </>

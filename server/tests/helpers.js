@@ -18,4 +18,5 @@ export function temporaryDatabase(t, migrate = true) {
 
 export const testConfig = Object.freeze({
   appEnv: 'test', host: '127.0.0.1', port: 3000, logLevel: 'silent', enableTestActor: true,
+  enableDemoSignIn: true, publicOrigin: 'http://127.0.0.1:4173',
 });

@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, selectHasSession } from "../../../features/auth/store/authSlice";
+import { useSelector } from "react-redux";
+import { selectHasSession } from "../../../features/auth/store/authSlice";
+import { useLogout } from '../../../features/auth/model/useLogout';
+import LogoutFeedback from '../../../features/auth/components/LogoutFeedback';
 import ThemeToggle from "../../../features/theme/components/ThemeToggle";
 import LanguageSwitcher from "../../../features/language/LanguageSwitcher";
 import ProfileDrawer from "../ProfileDrawer/ProfileDrawer";
@@ -13,8 +15,8 @@ import styles from "./Header.module.css";
 
 const Header = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const signOut = useLogout(() => navigate('/'));
   const location = useLocation();
   const hasSession = useSelector(selectHasSession);
   const cartItems = useSelector((state) => state.cart.items);
@@ -45,13 +47,6 @@ const Header = () => {
     }, 0);
     return () => window.clearTimeout(timeout);
   }, [location.pathname]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
-    setIsMenuOpen(false);
-    setIsProfileDrawerOpen(false);
-  };
 
   const navLinks = [
     { path: "/", label: t("nav.home") },
@@ -147,16 +142,18 @@ const Header = () => {
           <button
             onClick={() => {
               if (hasSession) {
-                handleLogout();
+                signOut.run();
               } else {
                 navigate("/login");
               }
-              setIsMenuOpen(false);
+              if (!hasSession) setIsMenuOpen(false);
             }}
             className={styles.mobileLogoutBtn}
+            disabled={signOut.pending}
           >
-            {hasSession ? t("nav.logout") : t("nav.login")}
+            {hasSession ? t(signOut.pending ? 'auth.submitting' : "nav.logout") : t("nav.login")}
           </button>
+          {signOut.error && <LogoutFeedback />}
         </nav>
         <div className={styles.mobileToggles}>
           <div className={styles.mobileToggleItem}>

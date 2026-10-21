@@ -1,0 +1,80 @@
+.field {
+  display: grid;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.field label {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+}
+
+.inputWrap {
+  position: relative;
+  min-width: 0;
+}
+
+.input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 var(--spacing-4);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input:hover:not(:disabled) { border-color: var(--color-primary-light); }
+.input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-glow); }
+.input.invalid { border-color: var(--color-error); }
+.input.invalid:focus { border-color: var(--color-error); }
+.input:disabled { background: var(--bg-secondary); color: var(--text-secondary); cursor: not-allowed; }
+.input.passwordInput { padding-right: 112px; }
+
+.input:is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+  box-shadow: 0 0 0 1000px var(--bg-primary) inset;
+  transition: border-color var(--transition-fast);
+}
+.input:is(:autofill, :-webkit-autofill):focus {
+  box-shadow: 0 0 0 1000px var(--bg-primary) inset, 0 0 0 3px var(--color-primary-glow);
+}
+
+.visibility {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 40px;
+  padding: 0 var(--spacing-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+  cursor: pointer;
+}
+.visibility:hover { background: var(--border-light); }
+.visibility:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
+.error {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}

@@ -33,3 +33,4 @@ playwright-report/
 *.sqlite-*
 *.db
 *.db-*
+qa-session-cookie*.txt
