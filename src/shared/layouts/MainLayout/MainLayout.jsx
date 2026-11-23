@@ -9,13 +9,14 @@ const MainLayout = () => {
   return (
     <div className={styles.layout}>
       <Header />
+      {import.meta.env.MODE === 'portfolio' && <p style={{ margin: 0, padding: '0.65rem 1rem', background: '#262240', color: 'white', textAlign: 'center' }}>Демонстрационный магазин. Оплата и отправка заказов отключены.</p>}
       <main className={styles.main}>
         <div className="container">
           <Outlet />
         </div>
       </main>
       <Footer />
-      <ChatBot />
+      {import.meta.env.MODE !== 'portfolio' && <ChatBot />}
       <MobileNavigation />
     </div>
   );

@@ -1,5 +1,5 @@
 import { Component, lazy, Suspense, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '../shared/layouts/MainLayout/MainLayout';
@@ -69,10 +69,17 @@ const LazyPage = ({ children }) => {
   );
 };
 
+const portfolio = import.meta.env.MODE === 'portfolio';
+
+function DemoUnavailable() {
+  return <section><h1>Демонстрационная витрина</h1><p>В демо доступны каталог, корзина и предпросмотр оформления.</p><Link to="/products">Открыть каталог</Link></section>;
+}
+
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (portfolio) return undefined;
     dispatch(restoreAuth());
     const restoreInvalidSession = () => dispatch(restoreAuth());
     window.addEventListener('mymyshop:session-invalid', restoreInvalidSession);
@@ -82,9 +89,9 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="login" element={portfolio ? <DemoUnavailable /> : <LoginPage />} />
+        <Route path="register" element={portfolio ? <DemoUnavailable /> : <RegisterPage />} />
+        <Route path="forgot-password" element={portfolio ? <DemoUnavailable /> : <ForgotPasswordPage />} />
         <Route index element={<HomePage />} />
         <Route 
           path="products" 
@@ -131,11 +138,11 @@ function App() {
           path="contact" 
           element={
             <LazyPage>
-              <ContactPage />
+              {portfolio ? <DemoUnavailable /> : <ContactPage />}
             </LazyPage>
           } 
         />
-        <Route element={<RequireSession />}>
+        <Route element={portfolio ? <DemoUnavailable /> : <RequireSession />}>
           <Route path="account" element={<AccountLayout />}>
             <Route index element={<AccountPage />} />
             <Route path="profile" element={<ProfileEditor />} />
