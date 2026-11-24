@@ -1,6 +1,17 @@
-import { demoOrders } from '../data/demoOrders';
+import { demoOrderHistory, isPortfolioDemo } from '../../../shared/portfolioDemo.js';
+import { demoOrderAdapter } from './demoOrderAdapter';
 
-export const demoOrderAdapter = {
-  async listOrders() { return demoOrders; },
-  async getOrder(id) { return demoOrders.find((order) => order.id === id) ?? null; },
+const adapter = demoOrderAdapter;
+
+export const orderService = {
+  async listOrders() {
+    try { return { status: 'success', data: await adapter.listOrders() }; }
+    catch { return { status: 'error', error: 'unavailable' }; }
+  },
+  async getOrder(id) {
+    try {
+      const data = await adapter.getOrder(id);
+      return data ? { status: 'success', data } : { status: 'not-found' };
+    } catch { return { status: 'error', error: 'unavailable' }; }
+  },
 };

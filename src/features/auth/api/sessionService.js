@@ -1,9 +1,10 @@
+import { demoSessionAdapter, isPortfolioDemo } from '../../../shared/portfolioDemo.js';
 import { cleanupBrowserCredentials } from './authService.js';
 import { httpSessionAdapter } from './httpSessionAdapter.js';
 import { httpAccountAdapter } from '../../account/api/httpAccountAdapter.js';
 
 // UI получает только состояние и имя, а токен остаётся в HttpOnly cookie.
-const adapter = httpSessionAdapter;
+const adapter = isPortfolioDemo ? demoSessionAdapter : httpSessionAdapter;
 
 const anonymousSession = () => ({ status: 'anonymous', user: null, mode: null, error: null, canDemoSignIn: false });
 const unavailable = () => ({ status: 'unavailable', user: null, mode: null, error: 'unavailable', canDemoSignIn: false });
@@ -35,7 +36,7 @@ export const sessionService = {
     try {
       await adapter.end();
       httpAccountAdapter.reset();
-      return anonymousSession();
+      return isPortfolioDemo ? await adapter.restore() : anonymousSession();
     } catch { return unavailable(); }
   },
 };
